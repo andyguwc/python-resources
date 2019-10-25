@@ -11,10 +11,8 @@
 # by implementing __len__ and __getitem__ the object behaves like a standard sequence with iteration and slicing 
 
 
-# Normally, your code should not have many direct calls to special methods. Unless you
-# are doing a lot of metaprogramming, you should be implementing special methods
-# more often than invoking them explicitly. The only special method that is frequently
-# called by user code directly is __init__, to invoke the initializer of the superclass in
+# Normally, your code should not have many direct calls to special methods. Unless youare doing a lot of metaprogramming, you should be implementing special methods
+# more often than invoking them explicitly. The only special method that is frequently called by user code directly is __init__, to invoke the initializer of the superclass in
 # your own __init__ implementation.
 
 
@@ -28,7 +26,7 @@ class Vector:
         self.y=y
     
     def __repr__(self):
-        return 'Vector(%r, %r') % (self.x, self.y)
+        return 'Vector(%r, %r)' % (self.x, self.y)
     
     def __abs__(self):
         return hypot(self.x, self.y)
@@ -43,6 +41,7 @@ class Vector:
     
     def __mul__(self, scalar):
         return Vector(self.x * scalar, self.y * scalar)
+
 
 # By default, instances of user-defined classes are considered truthy, unless either
 # __bool__ or __len__ is implemented. Basically, bool(x) calls x.__bool__() and uses
@@ -117,7 +116,6 @@ index = seq.index(item)
 num = seq.count(item)
 # reversed sequence
 r = reversed(seq)
-
 
 # implement equality and inequality
 def __eq__(self, rhs):

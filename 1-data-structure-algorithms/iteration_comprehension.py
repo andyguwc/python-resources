@@ -19,7 +19,6 @@ for counter, item in enumerate(['a','b','c']):
 for n in range(len(fruit)):
     print(n, fruit[n])
 
-
 # enumeration
 # return an iterable. using for loop then index, value
 fruits = ['apple', 'pear', 'apricot', 'cherry', 'peach']
@@ -60,6 +59,44 @@ for name in student_names:
     print("currently testing"+name)
 
 
+# using iterator by next
+with open('/etc/passwd') as f:
+    while True:
+        line = next(f, None)
+        if line is None:
+            break
+        print(line, end='')
+
+'''
+delegating iterator to __iter__()
+'''
+class Node:
+    def __init__(self, value):
+        self._value = value 
+        self._children = []
+
+    def __repr__(self):
+        return 'Node({!r})'.format(self._value)
+    
+    def add_child(self, node):
+        self._children.append(node)
+    
+    def __iter__(self):
+        return iter(self._children)
+
+# example 
+if __name__ == '__main__':
+    root = Node(0)
+    child1 = Node(1)
+    child2 = Node(2)
+    root.add_child(child1)
+    root.add_child(child2)
+    for ch in root:
+        print(ch)
+
+# Python’s iterator protocol requires __iter__() to return a special iterator object that
+# implements a __next__() method to carry out the actual iteration.
+
 ##################################################
 # List Comprehensions & Maps
 ##################################################
@@ -80,6 +117,7 @@ symbols = '$¢£¥€¤'
 beyond_ascii = [ord(s) for s in symbols if ord(s) > 127]
 
 beyond_ascii = list(filter(lambda c: c > 127, map(ord, symbols)))
+
 
 '''
 Cartesian Product 
@@ -107,10 +145,9 @@ tuple(ord(symbol) for symbol in symbols)
 colors = ['black', 'white']
 sizes = ['S','M','L']
 # using a generator expression saves the expense of building a list of a lot of items
+# generator expressions
 for tshirt in ('%s %s' % (c, s) for c in colors for s in sizes):
     print(tshirt)
-
-
 
 
 '''
@@ -171,7 +208,7 @@ Iterators and Generators
 # generator creates iterator using functions
 
 # iter() create an iterator
-# next() get next elment in sequence
+# next() get next element in sequence
 # stopIteration signal the end of the sequence
 
 def my_range(x):
@@ -179,7 +216,7 @@ def my_range(x):
     while i <x:
         yield i
         i+=1
-
+    
 for n in my_range(4):
     print(n)
 
@@ -228,3 +265,145 @@ class Sensor:
 
 sensor = Sensor()
 timestamps = iter(datetime.datetime.now, None)
+
+# iterating in reverse 
+a = [1,2,3,4]
+for x in reversed(a):
+    print(x)
+
+# print a file backwards 
+f = open('somefile')
+for line in reversed(list(f)):
+    print(line, end='')
+
+# reversed iteration can be customozed on user defined classes with the __reversed__() method
+class Countdown:
+    def __init__(self, start):
+        self.start = start 
+    
+    # forward iterator 
+    def __iter__(self):
+        n = self.start 
+        while n > 0:
+            yield n 
+            n -= 1
+
+    # reverse iterator 
+    def __reversed__(self):
+        n = 1
+        while n <= self.start:
+            yield n 
+            n += 1
+'''
+Stacking Iterators 
+'''
+# stacking generators together 
+# yield acts as a kind of producer while for loop acts as a data consumer 
+import os 
+import fnmatch 
+import gzip
+import bz2
+import re 
+
+def gen_find(filepat, top):
+    '''
+    Find all filenames in a directory tree
+    '''
+    for path, dirlist, filelist is os.walk(top):
+        for name in fnmatch.filter(filelist, filepat):
+            yield os.path.join(path, name)
+
+def gen_opener(filenames):
+    '''
+    Open a sequence of filenames one at a time 
+    '''
+    for filename in filenames:
+        if filename.endswith('.gz'):
+            f = gzip.open(filename, 'rt')
+        elif filename.endswith('.bz2'):
+            f = bz2.open(filename, 'rt')
+        else:
+            f = open(filename, 'rt')
+        yield f 
+        f.close()
+
+def gen_concatenate(iterators):
+    '''
+    Chain a sequence of iterators together
+    '''
+    for it in iterators:
+        yield from it 
+
+def gen_grep(pattern, lines):
+    '''
+    Look for a regex pattern in a sequence of lines 
+    '''
+    pat = re.compile(pattern)
+    for line in lines: 
+        if pat.search(line):
+            yield line 
+
+lognames = gen_find('access-log*', 'www')
+files = gen_opener(lognames)
+lines = gen_concatenate(files)
+pylines = gen_grep('(?i)python', lines)
+for line in pylines:
+    print(line)
+
+
+
+''' 
+yield 
+'''
+# the presence of the yield statement turns a function into a generator 
+# customize an iteration pattern 
+def frange(start, stop, increment):
+    x = start
+    while x < stop:
+        yield x 
+        x += increment 
+
+# yield from 
+from collections import Iterable 
+
+def flatten(items, ignore_types=(str, bytes)):
+    for x in items:
+        if isinstance(x, Iterable) and not isinstance(x, ignore_types):
+            yield from flatten(x)
+        else:
+            yield x 
+
+items = [1, 2, [3, 4, [5, 6], 7], 8]
+for x in flatten(items):
+    print(x)
+
+# yield from flatten(x) is the same as for i in flatten(x): yield i 
+
+
+
+'''
+customized iterator protocol
+'''
+# Python iterator protocl requires __iter__() to return a special iterator object that implements a __next__() operation
+# and implements a StopIteration exception to signal completion 
+
+'''
+slice of an iterator 
+'''
+# use the itertools.isslice() function for taking slices of iterators and generators 
+
+def count(n):
+    while True: 
+        yield n 
+        n += 1
+
+c = count(0)
+import itertools 
+for x in itertools.islice(c, 10, 20):
+    print(x)
+
+# want everything beyond the first three items 
+# for x in itertools.islice(c, 3, None):
+
+
+

@@ -34,7 +34,8 @@ Fraction(2,3)
 abs() # distance from zero
 round() # aviid bias, round to event numbers
 round(1.5) # 2
-rount(2.5) # 2
+round(2.5) # 2
+
 
 '''
 Datetime
@@ -105,6 +106,77 @@ mylist.sort()
 lastitem = mylist.pop()
 
 
+
+
+'''
+Unpacking
+'''
+# Unpacking actually works with any object that happens to be iterable, not just tuples or
+# lists. This includes strings, files, iterators, and generators.
+data = [ 'ACME', 50, 91.1, (2012, 12, 21) ]
+name, shares, price, date = data
+# throw away variable names 
+_, shares, price, _ = data
+
+
+# unpacking elements from iterables of arbitrary length 
+record = ['name', 'email', 'phone1', 'phone2']
+name, email, *phone_numbers = user_record 
+
+# string unpacking
+line = 'nobody:*:-2:-2:Unprivileged User:/var/empty:/usr/bin/false'
+uname, *fields, homedir, sh = line.split(':')
+
+
+'''
+Filtering
+'''
+# best to use list comprehension 
+
+# filter creates an iterator. To make sure using a list of results use the list()
+values = ['1', '2', '-3', '-', '4', 'N/A', '5']
+def is_int(val):
+    try:
+        x = int(val)
+        return True
+    except ValueError:
+        return False
+ivals = list(filter(is_int, values))
+print(ivals)
+
+
+'''
+Enumerate
+'''
+# iterating over the index value pairs 
+my_list = ['a','b','c']
+for idx, val in enumerate(my_list):
+    print(idx, val)
+
+
+'''
+Zip
+'''
+# iterating over multiple sequences simultaneously
+# use zip whenever you need to pair data together 
+xpts = [1,2,3]
+ypts = [3,4,5]
+for x,y in zip(xpts, ypts):
+    print(x, y)
+
+# use chain for iterating on items in separate containers
+from itertools import chain 
+a = [1,2,3]
+b = ['x','y','z']
+for x in chain(a, b):
+    print(x)
+
+
+##################################################
+# Strings and Text
+##################################################
+
+
 '''
 String Operations
 '''
@@ -126,7 +198,6 @@ glue = ';'
 s = glue.join(wds)
 print(s)
 
-
 ss = "Hello, World"
 els = ss.count("l")
 
@@ -135,6 +206,106 @@ els = ss.count("l")
 
 # ord() converts a character to an integer unicode 
 # chr() converts an integer unicode into a single character string
+
+'''
+Text Manipulation
+'''
+# specify multiple patterns for the separator 
+# use the re.split() method 
+line = 'asdf fjdk; afed, fjek,asdf, foo'
+import re
+re.split(r'[;,\s]\s*', line)
+
+# matching test 
+str.startswith()
+str.endswith()
+filename = 'spam.txt'
+filename.endswith('.txt')
+
+# Normally, fnmatch() matches patterns using the same case-sensitivity rules as the system’s underlying filesystem
+import os 
+filenames = os.listdir('.')
+filenames
+[name for name in filenames if name.endswith(('.c','.h'))]
+[name for name in names if fnmatch(name, 'Dat*.csv')]
+
+# replacing text 
+text = 'yeah, but not, yeah'
+text.replace('yeah', 'yep')
+
+# for more complicated patterns, use the sub() function
+# The first argument to sub() is the pattern to match and the second argument is the replacement pattern. 
+# Backslashed digits such as \3 refer to capture group numbers in the pattern.
+text = 'Today is 11/27/2012. PyCon starts 3/13/2013.'
+import re
+re.sub(r'(\d+)/(\d+)/(\d+)', r'\3-\1-\2', text)
+
+# strip chracters from strings 
+s = ' hello world \n'
+s.strip()
+# >>> t = '-----hello====='
+# >>> t.lstrip('-')
+# 'hello====='
+# >>> t.strip('-=')
+# 'hello'
+
+text = 'Hello World'
+format(text, '=>20s')
+# '=========Hello World'
+format(text, '*^20s')
+# '****Hello World*****'
+
+# combining and concatenating string 
+parts = ['Is', 'Chicago', 'Not', 'Chicago?']
+' '.join(parts)
+
+a = 'Is Chicago'
+b = 'Not Chicago?'
+print('{} {}'.format(a,b))  
+# Is Chicago Not Chicago?
+
+','.join(str(d) for d in data)
+print(a, b, c, sep=':')
+
+
+'''
+interpolating variables in strings
+'''
+s = '{name} has {n} messages'
+s.format(name='Hello', n=37)
+
+name = 'Guido'
+n = 37
+'%(name) has %(n) messages.' % vars()
+
+
+'''
+byte strings
+'''
+# byte strings support most of the operations for regular strings 
+data = b'Hello World'
+data[0:5]
+data.startwith(b'Hello')
+
+data = b'FOO:BAR,SPAM'
+re.split(b'[:,]',data) # pattern as bytes
+
+
+'{:10s} {:10d} {:10.2f}'.format('ACME', 100, 490.1).encode('ascii')
+
+
+x = 1.23456
+format(x, '0.2f')
+format(x, '0.3f')
+'value is {:0.3f}'.format(x)
+
+
+
+'''
+datetime
+'''
+from datetime improt timedelta 
+a = timedelta(days=2, hours=6)
 
 
 ##################################################
@@ -205,6 +376,8 @@ states = {"Minnesota": ["St. Paul", "Minneapolis", "Saint Cloud", "Stillwater"],
 
 print(sorted(states, key=lambda state: s_cities_count(states[state])))
 
+
+
 '''
 bisect
 '''
@@ -236,6 +409,38 @@ for i in range(SIZE):
     bisect.insort(my_list, new_item)
     print()
 
+'''
+heapq
+'''
+
+#  heapq module for finding nlargest or nsmallest 
+import heapq 
+
+nums = [1,2,3,-4]
+print(heapq.nlargest(3, nums))
+print(heapq.nsmallest(3, nums))
+
+# heap[0] is slways the smallest item. Subsequent items can be found using heapq.heappop() method 
+nums = [1, 8, 2, 23, 7, -4, 18, 23, 42, 37, 2]
+heap = list(nums)
+heap.heapify(heap)
+# [-4, 2, 1, 23, 7, 2, 18, 23, 42, 37, 8]
+
+# for more complicated data structures 
+portfolio = [
+    {'name': 'IBM', 'shares': 100, 'price': 91.1},
+    {'name': 'AAPL', 'shares': 50, 'price': 543.22},
+    {'name': 'FB', 'shares': 200, 'price': 21.09},
+    {'name': 'HPQ', 'shares': 35, 'price': 31.75},
+    {'name': 'YHOO', 'shares': 45, 'price': 16.35},
+    {'name': 'ACME', 'shares': 75, 'price': 115.65}
+]
+
+cheap = heapq.nsmallest(3, portfolio, key=lambda s: s['price'])
+expensive = heapq.nlargest(3, portfolio, key=lambda s: s['price'])
+
+
+
 
 ##################################################
 # Array
@@ -261,9 +466,33 @@ floats[-1] # the last item in the array
 # inserting and removing from both ends.
 
 from collections import deque
-dq = deque(range(10), maxlen=10) # optional maxlen set the maximum number if items allowed 
+dq = deque(range(10), maxlen=10) # optional maxlen set the maximum number of items allowed 
 dq.rotate(3) # takes items from the right end and prepends them to the left 
 
+dq.append(e) # push the element onto the queue
+dq.appendleft(4) # append to the beginning 
+dq[0] # retrieve but not remove the element at the front
+dq.popleft() # remove and return element at the front of the queue
+dq.pop() # pops on the right 
+# keeping a limited history using deque
+# example yielding matching line and previous n lines while found
+from collections import deque 
+
+def search(lines, pattern, history=5):
+    previous_lines = deque(maxlen=history)
+    for line in lines:
+        if pattern in line:
+            yield line, previous_lines 
+        previous_lines.append(line)
+
+# Example use on a file 
+if __name__ == '___main__':
+    with open('somefile.txt') as f:
+        for line, prevlines in search(f, 'python', 5):
+            for pline in prevlines:
+                print(pline, end='')
+            print(line, end='')
+            print('-'*20)
 
 
 ##################################################
@@ -329,6 +558,27 @@ tokyo.population
 tokyo[1]
 
 
+from collections import namedtuple
+Stock = namedtuple('Stock', ['name', 'shares', 'price'])
+def compute_cost(records):
+    total = 0.0
+    for rec in records: 
+        s = Stock(*rec)
+        total += s.shares * s.price
+    return total 
+
+# generator expression 
+# more efficient than creating a temporary list
+portfolio = [
+    {'name':'GOOG', 'shares': 50},
+    {'name':'YHOO', 'shares': 75},
+    {'name':'AOL', 'shares': 20},
+    {'name':'SCOX', 'shares': 65}
+]
+min_shares = min(s['shares'] for s in portfolio)
+
+
+
 
 ##################################################
 # Dictionaries 
@@ -348,7 +598,6 @@ Hashable
 # value.
 
 
-
 '''
 Dictionary
 '''
@@ -360,6 +609,7 @@ d = dict([('two', 2), ('one', 1), ('three', 3)])
 e = dict({'three': 3, 'one': 1, 'two': 2})
 a == b == c == d == e # True
 
+b = {'one':1, 'two':2, 'three':3}
 
 # dict comprehensions
 # build a dict instance by producing key:value pair from any iterable 
@@ -382,6 +632,15 @@ eng2sp['three'] = 'tres'
 # keys
 # values
 # items
+
+# find keys in common 
+a.keys() & b.keys()
+# find (key, value) pairs in common 
+a.items() & b.items()
+
+# alter or filter dictionary contents
+# make a new dictionary with certain keys removed 
+c = {key:a[key] for key in a.keys() - {'z', 'w'}}
 
 inventory = {'apples': 430, 'bananas': 312, 'oranges': 525, 'pears': 217}
 for akey in inventory.keys():
@@ -418,29 +677,114 @@ for c in letter_counts.keys():
 
 
 '''
+Calculating with Dictionaries
+'''
+# to perform useful calculations on dictionary contents, you can invert the keys and values of the dictionary using zip()
+prices = {
+    'ACME': 45.23,
+    'FB': 10.75
+}
+min_price = min(zip(prices.values(), prices.keys()))
+
+# regular solution
+min(prices, key=lambda k: prices[k]) # Returns 'FB'
+min_value = prices[min(prices, key=lambda k: prices[k])]
+
+
+'''
 Missing Keys & Default Keys
 '''
 # The end result of this line
 # my_dict.setdefault(key, []).append(new_value)
 
 # is the same as running
-# if key not in my_dict:
-#     my_dict[key] = []
-#     my_dict[key].append(new_value)
+for key, value in pairs: 
+    if key not in my_dict:
+        my_dict[key] = []
+        my_dict[key].append(new_value)
+
+# Using defaultdict leads to cleaner code 
+d = defaultdict(list)
+for key, value in pairs:
+    d[key].append(value)
 
 
-# defaultdict: taking on missing keys 
-# given an empty defaultdict created as dd = defaultdict(list), 
+'''
+defaultdict
+'''
+# automatically initializes the first value so you can add items 
+
 # if 'new-key' is not in dd, the expression dd['new-key'] does the following steps:
 # 1. Calls list() to create a new list.
 # 2. Inserts the list into dd using 'new-key' as key.
 # 3. Returns a reference to that list.
+d = defaultdict(list)
+d['a'].append(1)
+
+d = defaultdict(set)
+d['a'].add(1)
+d['a'].add(2)
+
 
 # The __missing__ Method
 # Underlying the way mappings deal with missing keys is the aptly named __missing__
 # method. This method is not defined in the base dict class, but dict is aware of it: if you
 # subclass dict and provide a __missing__ method, the standard dict.__getitem__ will
 # call it whenever a key is not found, instead of raising KeyError.
+
+'''
+OrderedDict
+'''
+# OrderedDict preserves the original insertion order of data when iterating 
+# An OrderedDict can be particularly useful when you want to build a mapping that you
+# may want to later serialize or encode into a different format. For example, if you want
+# to precisely control the order of fields appearing in a JSON encoding, first building the
+# data in an OrderedDict will do the trick
+from collections import OrderedDict
+d = OrderedDict()
+d['foo'] = 1
+d['bar'] = 2
+
+import json 
+json.dumps(d)
+
+# An OrderedDict internally maintains a doubly linked list that orders the keys according
+# to insertion order. When a new item is first inserted, it is placed at the end of this list.
+# Subsequent reassignment of an existing key doesn’t change the order
+
+
+'''
+sorting dictionary 
+'''
+# sort entries according to dictionary values 
+# use itemgetter function
+
+rows = [
+    {'fname': 'Brian', 'lname': 'Jones', 'uid': 1003},
+    {'fname': 'David', 'lname': 'Beazley', 'uid': 1002},
+    {'fname': 'John', 'lname': 'Cleese', 'uid': 1001},
+    {'fname': 'Big', 'lname': 'Jones', 'uid': 1004}
+]
+
+from operator import itemgetter
+
+rows_by_fname = sorted(rows, key=itemgetter('fname'))
+rows_by_uid = sorted(rows, key=itemgetter('uid'))
+
+# oruse the lambda expression 
+rows_by_fname = sorted(rows, key=lambda r: r['fname'])
+
+print(rows_by_fname)
+print(rows_by_uid)
+
+
+'''
+Dictionary List Comprehension
+'''
+# make a dictionary that is subset of another using list comprehension
+p1 = {key:value for key, value in prices.items() if value > 100}
+p1 = dict((key, value) for key, value in prices.items() if value > 200)
+
 
 
 '''
@@ -469,6 +813,32 @@ Practical Implications of How Dict Works
 # of a dict from 1,000 to 10,000,000 elements, the time to search grew by a factor of 2.8,
 # from 0.000163s to 0.000456s. The latter figure means we could search more than 2
 # million keys per second in a dict with 10 million items.
+
+'''
+counters
+'''
+# determine the most frequently occurring items in the sequence 
+words = ['look', 'into', 'this', 'look']
+
+
+from collections import Counter
+word_counts = Counter(words)
+top_three = word_counts.most_common(3)
+print(top_three)
+
+# update counters
+word_counts.update(morewords)
+
+# combine counts
+c = a+b
+
+'''
+update
+'''
+a = {'x': 1, 'z': 3 }
+b = {'y': 2, 'z': 4 }
+merged = dict(b)
+merged.update(a)
 
 
 ##################################################
