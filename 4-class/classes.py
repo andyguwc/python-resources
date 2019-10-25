@@ -172,7 +172,6 @@ class SubClass(Base1, Base2):
 # method resolution order 
 SortedList.__mro__ # to print out the method resolution order 
 
-
 # super()
 # given a method resolution order and a class C, super gives you an object which resolves method using only the part which comes after C
 # super() returns a proxy object which routes method calls

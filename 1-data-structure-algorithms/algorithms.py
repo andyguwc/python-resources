@@ -28,6 +28,7 @@ astring.lower() # a string in all lowercase
 astring.ljust(w) # string left adjusted in a field of size w
 astring.find(item) # returns the index of the first occurence of item
 
+
 # List if Mutable and String is Immutable
 myList = [1,3,True, 6.5]
 myList[0] = 2**10
@@ -55,7 +56,6 @@ list(phoneext.values())
 print("Hello", "World")
 print("%s is %d years old" % (aName, age)) # print("%s is %d years old." % (aName, age))
 # d,i integer; u unsigned integer; f floating point; s String
-
 
 # Control Structures
 counter = 1
@@ -95,6 +95,12 @@ if aNumber < 0:
 else:
 	print(math.sqrt(aNumber))
 
+
+try: 
+	print(math.sqrt(anumber))
+except:
+	print("bad value for square root")
+	print(math.sqrt(abs(anumber)))
 # Defining Functions
 
 def square(n):
@@ -104,6 +110,13 @@ def square(n):
 # Defining Classes
 # Fraction Class
 
+class Fraction:
+	def __init__(self, bottom, top):
+		self.num = top
+		self.den = bottom 
+	
+	def show(self):
+		print
 class Fraction:
 	def __init__(self, bottom, top):
 		self.num = top
@@ -345,6 +358,12 @@ def palchecker(aString):
 			stillEqual = False
 	return stillEqual 
 
+# def palchecker(aString):
+# 	if len(aString) <=1:
+# 		return True
+# 	else:
+# 		return aString[0] == aString[-1] and palchecker(aString[1:-1])
+	
 # Lists
 List()
 add(item)
@@ -567,6 +586,15 @@ def sequentialSearch(list, item):
 			pos+=1
 	return isFound
 
+def sequntialSearch(list,item):
+	isFound = False
+	pos = 0 
+	while pos < len(list) and not isFound:
+		if list[pos] == item:
+			isFound = True
+		else: 
+			pos+=1
+	return isFound 
 
 # Binary Search
 
@@ -586,7 +614,6 @@ def binarySearch(list, item):
 			else:
 				last = midpoint-1
 
-
 # recursive version
 def binarySearch(list, item):
 	if len(list) = 0:
@@ -600,7 +627,6 @@ def binarySearch(list, item):
 		else list[i] > item:
 		    return binarySearch(list[mid:], item)
 
-
 # Hashing
 
 # a data structure to be searched in O(1) time
@@ -608,7 +634,7 @@ def binarySearch(list, item):
 # load factor = number of items / table size
 # two or more items in the same slot - collision
 
-# Collission Resolution
+# Collision Resolution
 # when two items are hashed to the same slot
 # Linear Probing - open addressing - find the next open slot or address in the hash table
 # rehash(pos)=(pos+skip)%sizeoftable
@@ -912,7 +938,6 @@ print(accum)
 for counter, item in enumerate(['apple', 'pear', 'apricot', 'cherry', 'peach']):
     print(counter, item)
 
-
 # Printing intermediate results 
 w = range(10)
 
@@ -1149,6 +1174,14 @@ for c in txt:
 for c in letter_counts.keys():
     print(c + ": " + str(letter_counts[c]) + " occurrences")
 
+f = open('scarlet.txt', 'r')
+txt = f.read()
+letter_counts = {}
+for c in txt:
+	if c not in letter_counts:
+		letter_counts[c] = 0 
+	letter_counts[c]+=1
+
 
 # Decoding a function
 
@@ -1185,7 +1218,6 @@ def last_char(s):
 last_char = (lambda s: s[-1])
 
 print("This is a sentence".replace("s", "").replace("t", ""))
-
 
 # Sorting
 # Sorted vs. Sort
@@ -1393,7 +1425,7 @@ class Point:
     def move(self, dx, dy):
         self.x = self.x + dx
         self.y = self.y + dy
-
+	
 import test
 
 #testing class constructor (__init__ method)

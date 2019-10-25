@@ -48,7 +48,6 @@ def f(x, y =3, z=initial):
 # Callable Objects 
 ##################################################
 
-
 # The call operator (i.e., ()) may be applied to other objects beyond user-defined functions.
 # To determine whether an object is callable, use the callable() built-in function.
 # callable instances
@@ -63,11 +62,6 @@ def f(x, y =3, z=initial):
 #  - generator functions: functions or methods that use the yield keyword. When called, generator functions return a generator object
 
 __call__() # call method
-
-# calling a class invokes the constructor
-
-
-
 
 
 ##################################################
@@ -103,12 +97,17 @@ def is_event(x):
     return x % 2 == 0
 callable(is_event)
 
+# the inputs to lambda expression is a free variable that get bound at runtime not definition time
+
+
+
 ##################################################
-# Extended Arguments 
+# Arguments 
 ##################################################
 
-# extended arguments syntax
-
+'''
+args, kwargs (extended arguments)
+'''
 def hypervolume(length, *lengths): # accept a number of arguments with a lower bound
     v = length
     for item in lengths:
@@ -116,16 +115,43 @@ def hypervolume(length, *lengths): # accept a number of arguments with a lower b
     return v
 
 # keyword arguments
-def function_name(arg1, arg2=8) # arg1 is positional argument, and arg2 is keyword argument, and 8 is default value
+def function_name(arg1, arg2=8):
+    # arg1 is positional argument, and arg2 is keyword argument, and 8 is default value
+    pass
 
-def extended(*args, **kwargs): # args is passed as a tuple
+def extended(*args, **kwargs): 
+    # args is passed as a tuple
+
+    # kwargs a dictionary
+    pass
 
 # forwarding arguments
 # pull args into another function
-def trace(f, *args, **kwargs)
+def trace(f, *args, **kwargs):
+    pass 
+
+# function that accepts any uber of positional arguments
+# rest is a tuple of all the extra positional arguments passed
+def avg(first, *rest):
+    return (first+sum(rest)) / (1+len(rest))
 
 
-# local functions
+'''
+default args
+'''
+# if default value is supposed to be a mutable container (list, set, ord dict) then use None
+def spam(a, b=None):
+    if be is None:
+        b = []
+
+# the values assigned as a default are bound only once at the time of function definition.
+
+
+
+##################################################
+# Local Functions 
+##################################################
+
 # functions defined within the scope of other functions
 def sort_by_last_letter(strings):
     def last_letter(s): # function is created each time def is called
@@ -148,6 +174,8 @@ def raise_to(exp):
 # LEGB
 # global keyword - introduces names from the enclosing namespace into the local namespace 
 # nonlocal - introduce names from enclosing namespace into the local namespace
+
+
 
 ##################################################
 # Decorators
@@ -224,6 +252,42 @@ def check_non_negative(index):
 def create_list(value, size):
     return [value] *size 
 
+
+
+##################################################
+# Closures
+##################################################
+# Replacing Single Method classes with functions using closures 
+
+# Closure is just like a function but wiht an extra environment of the variables taht are used inside the function
+
+from urllib.request import urlopen 
+
+class UrlTemplate:
+    def __init__(self, template):
+        self.template = template 
+    def open(self, **kwargs):
+        return urlopen(self.template.format_map(kwargs))
+
+# example use 
+yahoo = UrlTemplate('http://finance.yahoo.com/d/quotes.csv?s={names}&f={fields}')
+for line in yahoo.open(names='IBM,AAPL,FB', fields='sl1c1v'):
+    print(line.decode('utf-8'))
+
+# replacing with a closure function 
+def urltemplate(template):
+    def opener(**kwargs):
+        return urlopen(template.format_map(kwargs))
+    return opener 
+
+# example use 
+yahoo = urltemplate('http://finance.yahoo.com/d/quotes.csv?s={names}&f={fields}')
+for line in yahoo(names='IBM,AAPL,FB', fields='sl1c1v'):
+    print(line.decode('utf-8'))
+
+# There are really two main approaches that are useful for capturing and carrying state.
+# You can carry it around on an instance (attached to a bound method perhaps) or 
+# you can carry it around in a closure (an inner function).
 
 
 ##################################################
