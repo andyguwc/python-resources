@@ -43,6 +43,13 @@ __exit__(self, exc_type, exc_val, exc_tb) # exception type, exception object, ex
 # contextlib
 # standard library module for working with context managers
 # contextlib.contextmanager is a decorator you can use to create new context managers
+# Essentially the contextlib.contextmanager decorator wraps the function in a class that implements the __enter__ and __exit__ methods
+
+# find the yield keyword: everything before it deals with setting up the context, which entails creating
+# a backup file, then opening and yielding references to the readable and writable file
+# handles that will be returned by the __enter__ call. The __exit__ processing after the
+# yield closes the file handles and restores the file from the backup if something went wrong.
+
 @contextlib.contextmanager
 def my_context_manager():
     # Enter
@@ -66,7 +73,7 @@ def start_transaction(connection):
     tx=Transaction(connection)
     
     try:
-        yielf tx
+        yield tx
     except:
         tx.rollback()
         raise

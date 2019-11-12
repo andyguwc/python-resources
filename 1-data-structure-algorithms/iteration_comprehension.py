@@ -58,7 +58,6 @@ for name in student_names:
         print("found him"+name)
     print("currently testing"+name)
 
-
 # using iterator by next
 with open('/etc/passwd') as f:
     while True:
@@ -96,6 +95,7 @@ if __name__ == '__main__':
 
 # Python’s iterator protocol requires __iter__() to return a special iterator object that
 # implements a __next__() method to carry out the actual iteration.
+
 
 ##################################################
 # List Comprehensions & Maps
@@ -136,18 +136,23 @@ Generator Expressions
 # listcomp, but a genexp saves memory because it yields items one by one using the iterator
 # protocol instead of building a whole list just to feed another constructor.
 
+# When processing one item at a time, we only need the current object stored in memory at any one moment. But when we create a container, all the
+# objects have to be stored in that container before we start processing them.
+
 # Genexps use the same syntax as listcomps, but are enclosed in parentheses rather than
 # brackets.
 
 tuple(ord(symbol) for symbol in symbols)
 
 
+# cartesian product in a generator expression
 colors = ['black', 'white']
 sizes = ['S','M','L']
 # using a generator expression saves the expense of building a list of a lot of items
 # generator expressions
 for tshirt in ('%s %s' % (c, s) for c in colors for s in sizes):
     print(tshirt)
+
 
 
 '''
@@ -201,10 +206,9 @@ list(map(factorial, filter(lambda n: n%2, range(6))))
 Iterators and Generators
 '''
 
-# iterable - an object which implements the __iter__() method
+# iterable - an object which implements the __iter__() method (which returns an iterator)
+# an iterator is an object with a next() method and a done() method 
 
-# iterables are objects that can return one of their elements a time
-# iterator is an object that is a stream of data (implements the iterable protocols amd __next__ method)
 # generator creates iterator using functions
 
 # iter() create an iterator

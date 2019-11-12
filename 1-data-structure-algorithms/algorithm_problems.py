@@ -4020,41 +4020,6 @@ print("Sub: ${0:0.2f} Tax: ${1:0.2f} "
 subtotal, tax, total=total))
 
 
-# regular expressions
-import re
-search_string = "hello world"
-pattern = "hello world"
-match = re.match(pattern, search_string)
-if match:
-	print("regex matches")
-
-import re
-pattern = sys.argv[1]
-search_string = sys.argv[2]
-match = re.match(pattern, search_string)
-if match:
-	template = "'{}' matches pattern '{}'"
-else:
-	template = "'{}' does not match pattern '{}'"
-print(template.format(search_string, pattern))
-
-. # any character as long as not empty
-[] # a set of characters as long as matches one of them
-'hello world' matches pattern 'hel[lp]o world'
-
-'hello 2 world' matches pattern 'hello [a-zA-Z0-9] world'
-
-# \. matches . escaping 
-
-'helllllo' matches pattern 'hel*o' # can be zero or more times 
-
-'abcabcabc' matches pattern '(abc){3}'
-
-'abccc' matches pattern 'abc{3}'
-
-# Make repeated regular expressions efficient 
-
-
 
 # Pickle
 # objected oriented way to store objects directly in a special storage format. Converts an object into a sequence of bytes that can be stored

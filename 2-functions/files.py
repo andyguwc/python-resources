@@ -91,16 +91,16 @@ serializing python objects
 
 import pickle 
 
-data = ... # some python object
-f = open('somefile', 'wb')
-pickle.dump(data, f)
+some_data = ["a list", "containing"]
+# dump serializes data to a file 
+with open("pickled_list", 'wb') as file:
+    pickle.dump(some_data, file)
 
-# dump an object to a string
-s = pickle.dumps(data)
-
-# restore from a file 
-f = open('somefile', 'rb')
-data = pickle.load(f)
+# load reads a serialized object from a file-like object 
+with open("pickled_list", 'rb') as file:
+    loaded_data = pickle.load(file)
+print(loaded_data)
+assert loaded_data == some_data
 
 # restore from a string
 data = pickle.loads(s)

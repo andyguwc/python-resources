@@ -2,12 +2,24 @@
 # Nesting Modules with Packages 
 ##################################################
 
+# We have a deep hierarchy of packaging techniques. We can simply organize the
+# functionality into defined functions. We can combine the defined functions and
+# their related data into a class. We can combine related classes into a module. We can
+# combine related modules into a package.
+
+# A small application may be a single module. A larger application will often be a
+# package. As with module design, packages should be designed for reuse. A larger
+# application package should properly include a __main__ module.
+
+
 # import modules 
 # import x
 # from x import y
 # from x import y as z 
 
 # main block to distinguish module execution from module import 
+# only executes main when we know we are running the module as a script 
+# and run this when it's imported 
 import sys 
 
 def main():
@@ -16,6 +28,8 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
+
 
 
 # Package vs. Module  
@@ -75,6 +89,23 @@ from pprint import pprint
 pprint(locals())
 __all__ = ['bz2_opener', 'gzip_opener'] # list of strings for the names in module
 
+
+# example 
+
+# A package is a collection of modules in a folder. The name of the package is the name of the folder. All we need to
+# do to tell Python that a folder is a package is place a (normally empty) file in the folder
+# named __init__.py. If we forget this file, we won't be able to import modules from that folder.
+
+parent_directory/
+    main.py
+    ecommerce/
+        __init__.py
+        database.py
+        products.py
+        payments/
+            __init__.py
+            square.py
+            stripe.py
 
 
 ##################################################
@@ -183,6 +214,11 @@ project_name/ # project root - not the package
 # 1. creating a source dist 
 # packing with setuptools 
 # add setup.py
+
+# you have to manually list every subdirectory that makes up the packages source code. A common mistake is to only list the top-level directory of a
+# package and to forget to include package subcomponents. This is why the specification
+# for packages in setup.py includes the list packages=['projectname', 'projectname.utils'].
+
 from setuptools import setup 
 
 setup(name='amaze',
@@ -212,6 +248,9 @@ setup(name='amaze',
 
 # include or exclude other pythons
 # MANIFEST.in: 
+# include *.txt
+# recursive-include examples *
+# recursive-include Doc *
 
 # sample project by Python Packaging Authority 
 # https://github.com/pypa/sampleproject
@@ -225,4 +264,21 @@ setup(name='amaze',
 # Py2exe (windows executable)
 # Py2app (for MacOS)
 # PyInstaller (support multiple)
+
+# example structure 
+projectname/
+    README.txt 
+    Doc/
+        documentation.txt 
+    projectname/
+        __init__.py
+        foo.py
+        bar.py
+        utils/
+            __init__.py 
+            spam.py 
+            grok.py 
+    examples/
+        helloworld.py 
+
 

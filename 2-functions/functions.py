@@ -72,14 +72,17 @@ __call__() # call method
 # higher-order function.
 
 # example: map, filter, reduce, apply
+list(map(fact, range(6)))
+
+[fact(n) for n in range(6)]
+
 # example: sorted function which take an optional key argument 
+# pass the len function as the key
 sorted(fruits, key=len)
 # any one-argument function can be used with a key 
 def reverse(word):
     return word[::-1]
 sorted(fruits, key=reverse)
-
-
 
 
 
@@ -135,6 +138,24 @@ def trace(f, *args, **kwargs):
 def avg(first, *rest):
     return (first+sum(rest)) / (1+len(rest))
 
+# example using arbitrary keyword arguments in configuration setups 
+class Options:
+    default_options = {
+        'port': 21, 
+        'host': 'localhost',
+        'username': None, 
+        'password': None, 
+        'debug': False, 
+    }
+
+    def __init__(self, **kwargs):
+        self.options = dict(Options.default_options)
+        self.options.update(kwargs)
+    
+    def __getitem__(self, key):
+        return self.options[key]
+
+
 
 '''
 default args
@@ -145,6 +166,18 @@ def spam(a, b=None):
         b = []
 
 # the values assigned as a default are bound only once at the time of function definition.
+
+
+
+'''
+signature (inspect pacakge)
+'''
+from clip import clip 
+from inspect import signature 
+sig = signature(clip)
+sig 
+for name, param in sig.parameters.items():
+    print(param.kind, ":", name, "=", param.default)
 
 
 
@@ -302,10 +335,20 @@ for line in yahoo(names='IBM,AAPL,FB', fields='sl1c1v'):
 # appear in __kwdefaults__. The names of the arguments, however, are found within the
 # __code__ attribute, which is a reference to a code object with many attributes of its own.
 
+'''
+__dict__
+'''
+# Like the instances of a plain user-defined class, a function uses the __dict__ attribute
+# to store user attributes assigned to it. This is useful as a primitive form of annotation.
+
+
 
 ##################################################
 # Functional Programming
 ##################################################
+'''
+reduce (functools)
+'''
 # the operator module 
 # provide arithmetic operator as a function 
 from functools import reduce 
@@ -316,7 +359,13 @@ def fact(n):
     # same as 
     # return reduce(lambda a, b: a*b, range(1, n+1))
 
-#  using itemgetter and attrgetter to build custom functions
+'''
+itemgetter, attrgetter
+'''
+
+# using itemgetter and attrgetter to build custom functions
+# essentially itemgetter(1) does the same as lambda fields: fields[1]: 
+# create a function that, given a collection, returns the item at index 1.
 metro_data = [
     ('Tokyo', 'JP', 36.933, (35.682, 130.212)),
     ('Mexico City', 'MX', 20.142, (19.682, -30.212))
@@ -325,13 +374,51 @@ metro_data = [
 from operator import itemgetter
 for city in sorted(metro_data, key=itemgetter(1)):
     print(city)
-# same as 
-# for city in sorted(metro_data, key=lambda fields: fields[1])
+
+# passing multiple index arguments, the function will return tuples
+cc_name = itemgetter(1,0)
+for city in metro_data:
+    print(cc_name(city))
 
 # A sibling of itemgetter is attrgetter, which creates functions to extract object attributes
 # by name. If you pass attrgetter several attribute names as arguments, it also
-# returns a tuple of values. In addition, if any argument name contains a . (dot), attrget
-# ter navigates through nested objects to retrieve the attribute.
+# returns a tuple of values. In addition, if any argument name contains a . (dot), attrgetter navigates through nested objects to retrieve the attribute.
+from collections import namedtuple
+LatLong = namedtuple('LatLong', 'lat long') # using namedtuple to define LatLong
+Metropolis = namedtuple('Metropolis', 'name cc pop coord') 
+metro_areas = [Metropolis(name, cc, pop,LatLong(lat, long))
+    for name, cc, pop, (lat, long) in metro_data]
+metro_areas[0] # a named tuple Metropolis(name='Tokyo', cc='JP', pop=36.933, coord=LatLong(lat=35.689722,long=139.691667))
+
+from operator import attrgetter
+name_lat = attrgetter('name', 'coord.lat') # get nested attribute with coord.lat
+for city in sorted(metro_areas, key=attrgetter('coord.lat')):
+    print(name_lat(city))
+
+
+'''
+partial (functools)
+'''
+# allows partial application of a function 
+# using partial to use a two-argument function where a one-argument callable is required
+from operator import mul 
+from functools import partial 
+triple = partial(mul, 3) # binding the first positional argument to 3 
+triple(7)
+list(map(triple, range(10)))
+
+
+##################################################
+# Function Annotations
+##################################################
+# attach metadata to the parameters of a function declaration and its return value 
+def clip(text:str, max_len:'int > 0'=80) -> str:
+    """Return text clipped at the last space before or after max_len
+    """
+    pass 
+
+# python store the annotations in the __annotations__ attribute 
+
 
 
 

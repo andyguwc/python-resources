@@ -105,7 +105,12 @@ mylist.insert(1,12)
 mylist.sort()
 lastitem = mylist.pop()
 
-
+# slicing 
+# [start:stop:step]
+s = 'bicycle'
+s[::3] # 'bye'
+s[::-1] # 'elcycib'
+s[::-2] # 'eccb'
 
 
 '''
@@ -126,6 +131,17 @@ name, email, *phone_numbers = user_record
 # string unpacking
 line = 'nobody:*:-2:-2:Unprivileged User:/var/empty:/usr/bin/false'
 uname, *fields, homedir, sh = line.split(':')
+
+# append vs. extend
+# Append: Adds its argument as a single element to the end of a list. The length of the list increases by one.
+my_list = ['geeks', 'for'] 
+my_list.append('geeks') 
+print my_list 
+
+# extend(): Iterates over its argument and adding each element to the list and extending the list. The length of the list increases by number of elements in it’s argument.
+my_list = ['geeks', 'for'] 
+another_list = [6, 0, 4, 1] 
+my_list.extend(another_list) 
 
 
 '''
@@ -208,11 +224,50 @@ els = ss.count("l")
 # chr() converts an integer unicode into a single character string
 
 '''
-Text Manipulation
+Regular Expressions (re)
+
 '''
+# matching patterns 
+
+# regular expressions
+import re
+search_string = "hello world"
+pattern = "hello world"
+match = re.match(pattern, search_string)
+if match:
+	print("regex matches")
+
+import re
+pattern = sys.argv[1]
+search_string = sys.argv[2]
+match = re.match(pattern, search_string)
+if match:
+	template = "'{}' matches pattern '{}'"
+else:
+	template = "'{}' does not match pattern '{}'"
+print(template.format(search_string, pattern))
+
+. # any character as long as not empty
+[] # a set of characters as long as matches one of them
+'hello world' matches pattern 'hel[lp]o world'
+
+'hello 2 world' matches pattern 'hello [a-zA-Z0-9] world'
+
+# \. matches . escaping 
+
+'helllllo' matches pattern 'hel*o' # can be zero or more times 
+
+'abcabcabc' matches pattern '(abc){3}'
+
+'abccc' matches pattern 'abc{3}'
+
+# Make repeated regular expressions efficient 
+
+
 # specify multiple patterns for the separator 
 # use the re.split() method 
 line = 'asdf fjdk; afed, fjek,asdf, foo'
+
 import re
 re.split(r'[;,\s]\s*', line)
 
@@ -269,14 +324,60 @@ print(a, b, c, sep=':')
 
 
 '''
-interpolating variables in strings
+format (interpolating values in strings)
 '''
+# format
 s = '{name} has {n} messages'
 s.format(name='Hello', n=37)
 
 name = 'Guido'
 n = 37
 '%(name) has %(n) messages.' % vars()
+
+# container lookup 
+# we can access complex objects (indexes, variables of arrays, lists, etc.) from the format string
+emails = ("a@example.com", "b@example.com")
+message = {
+    'subject': "You Have Mail!",
+    'message': "Here's some mail for you!"
+}
+template = """
+From: <{0[0]}>
+To: <{0[1]}>
+Subject: {message[subject]}
+{message[message]}"""
+print(template.format(emails, message=message))
+# so 0[0] maps to emails[0], in the emails tuple
+
+# object lookup
+# We can pass arbitrary objects as parameters, and use the dot notation to look up attributes on those objects.
+class EMail:
+    def __init__(self, from_addr, to_addr, subject, message):
+        self.from_addr = from_addr
+        self.to_addr = to_addr
+        self.subject = subject
+        self.message = message
+email = EMail("a@example.com", "b@example.com",
+"You Have Mail!",
+"Here's some mail for you!")
+
+template = """
+From: <{0.from_addr}>
+To: <{0.to_addr}>
+Subject: {0.subject}
+{0.message}"""
+print(template.format(email))
+
+'{:10s} {:10d} {:10.2f}'.format('ACME', 100, 490.1).encode('ascii')
+
+x = 1.23456
+format(x, '0.2f')
+format(x, '0.3f')
+'value is {:0.3f}'.format(x)
+
+
+print("Sub: ${0:0.2f} Tax: ${1:0.2f} Total: ${total:0.2f}".format(subtotal, tax, total=total))
+
 
 
 '''
@@ -291,13 +392,6 @@ data = b'FOO:BAR,SPAM'
 re.split(b'[:,]',data) # pattern as bytes
 
 
-'{:10s} {:10d} {:10.2f}'.format('ACME', 100, 490.1).encode('ascii')
-
-
-x = 1.23456
-format(x, '0.2f')
-format(x, '0.3f')
-'value is {:0.3f}'.format(x)
 
 
 
@@ -383,6 +477,7 @@ bisect
 '''
 # bisect and insort use the binary search algorithm to find and insert items in any sorted sequence
 # bisect(haystack, meedle) to locate the position where needle can be inserted 
+# maintaining haystack in ascending order. All items appearing up to that position are less than or equal to needle
 
 # bisect is actually an alias for bisect_right, and there is a sister function called
 # bisect_left. Their difference is apparent only when the needle compares equal to an
@@ -494,6 +589,19 @@ if __name__ == '___main__':
             print(line, end='')
             print('-'*20)
 
+'''
+numpy
+'''
+import numpy 
+a = numpy.arange(12)
+a # array([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+type(a) # <class 'numpy.ndarray'>
+a.shape = 3,4
+array([[ 0, 1, 2, 3],
+       [ 4, 5, 6, 7],
+       [ 8, 9, 10, 11]])
+
+
 
 ##################################################
 # Tuple
@@ -502,6 +610,8 @@ if __name__ == '___main__':
 '''
 Tuple
 '''
+# use tuple as data records 
+
 
 # In ptyhon automatically packed into a tuple
 julia = ("Julia", "Roberts", 1967, "Duplicity", 2009, "Actress", "Atlanta, Georgia")
@@ -543,9 +653,9 @@ from collections import namedtuple
 
 Card = collections.namedtuple('Card', ['rank', 'suit'])
 
-# Two parameters are required to create a named tuple: a class name and a list of
-# field names, which can be given as an iterable of strings or as a single spacedelimited
-# string.
+# Two parameters are required to create a named tuple: 
+# - a class name and 
+# - a list of field names, which can be given as an iterable of strings or as a single spacedelimited string.
 
 City = namedtuple('City', 'name country population coordinates')
 
@@ -597,6 +707,10 @@ Hashable
 # __eq__() method). Hashable objects which compare equal must have the same hash
 # value.
 
+# User-defined types are hashable by default because their hash value is their id() and
+# they all compare not equal. If an object implements a custom __eq__ that takes into
+# account its internal state, it may be hashable only if all its attributes are immutable.
+
 
 '''
 Dictionary
@@ -611,16 +725,20 @@ a == b == c == d == e # True
 
 b = {'one':1, 'two':2, 'three':3}
 
+
+d.get(ke, default) # is an alternative to d[k] whenever a default value is more convenient than handling KeyError
+
 # dict comprehensions
 # build a dict instance by producing key:value pair from any iterable 
 DIAL_CODES = [
     (81, 'Japan'),
     (7, 'Russia'),
-    (55, 'Brazil')
+    (55, 'Brazil'),
 ]
 
 country_code = {country:code for code, country in DIAL_CODES}
 
+{code:country.upper() for country, code in country_code.items()}
 
 # empty dictionary is denoted {}
 eng2sp = {}
@@ -771,7 +889,12 @@ from operator import itemgetter
 rows_by_fname = sorted(rows, key=itemgetter('fname'))
 rows_by_uid = sorted(rows, key=itemgetter('uid'))
 
-# oruse the lambda expression 
+from operator import itemgetter
+l = [('h', 4), ('n', 6), ('o', 5), ('p', 1), ('t', 3), ('y', 2)]
+l.sort(key=itemgetter(1))
+
+
+# or use the lambda expression 
 rows_by_fname = sorted(rows, key=lambda r: r['fname'])
 
 print(rows_by_fname)
@@ -840,13 +963,35 @@ b = {'y': 2, 'z': 4 }
 merged = dict(b)
 merged.update(a)
 
+ct = collections.Counter('abracadabra')
+ct # Counter({'a': 5, 'b': 2, 'r': 2, 'c': 1, 'd': 1})
+ct.update('aaaaazzz')
+ct # Counter({'a': 10, 'z': 3, 'b': 2, 'r': 2, 'c': 1, 'd': 1})
+
+
 
 ##################################################
 # Sets
 ##################################################
 
+# basic use case is to remove duplication 
+l = ['spam', 'spam', 'eggs', 'spam']
+list(set(l))
+
+# set operations
+a | b the union 
+a & b the intersection
+a - b the difference 
+# another application of set operations is to count needles in haystack 
+found = len(needles & haystack)
 from unicodedata import name 
 {chr(i) for i in range(32, 256) if 'SIGN' in name(chr(i),'')}
+
+# set comprehension 
+
+from unicodedata import name 
+{chr(i) for i in range(32,256) if 'SIGN' in name(chr(i),'')}
+
 
 # hash tables in dictionaries 
 # In standard data structure texts, the cells in a hash table are often called “buckets.” In a dict hash table,
