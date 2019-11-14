@@ -14,11 +14,7 @@
 # Arrange all necessary preconditions and input
 # Act on the object or method under test
 # Assert that the expected results have occurred
-
-
-################################################
-# Test Best Practices
-################################################
+ 
 
 '''
 minimize dependencies
@@ -68,7 +64,7 @@ class Deck2(list):
 
 
 ################################################
-# Test Case Design
+# Unittest 
 ################################################
 
 # Reasons for Unit Testing
@@ -117,6 +113,83 @@ class TestPhonebook(unittest.TestCase):
 class Phonebook:
     pass
 
+import unittest
+class CheckNumbers(unittest.TestCase):
+    def test_int_float(self):
+        self.assertEqual(1,1.0)
+if __name__ == "__main__":
+    unittest.main()
+
+# run the test
+# python 6-testing/test.py
+# pytest 6-testing/test.py
+# python3 -m unittest 6-testing/test.py
+
+# We can have as many test methods on one TestCase class as we like; as long as
+# the method name begins with test, the test runner will execute each one as a
+# separate test. Each test should be completely independent of other tests.
+
+'''
+assert
+'''
+# assertRaises
+# It can be used as a context manager to wrap inline code. 
+# The test passes if the code inside the with statement raises the proper exception; otherwise, it fails.
+
+import unittest 
+
+def average(seq):
+    return sum(seq)/len(seq)
+
+class TestAverage(unittest.TestCase):
+    def test_with_zero(self):
+        with self.assertRaises(ZeroDivisionError):
+            average([])
+
+if __name__ == "__main__":
+    unittest.main()
+
+# assertGreater
+# assertGreaterEqual
+# assertIn
+# assertNotIn
+# assertIsNone
+# assertSetEqual 
+
+
+'''
+setup 
+'''
+# setUp()
+# before each test case is run, the test case can access the object defined in setUp
+def setUp(self):
+    self.phonebook = Phonebook()
+
+# to do cleanup 
+def tearDown(self):
+    pass
+
+
+# if need to do the same setup code multiple time, put it in setUp
+from stats import StatsList 
+import unittest 
+
+class TestValidInputs(unittes.TestCase):
+    # setup is called individually before each test, to ensure tests start with clean slate
+
+    def setUp(self):
+        self.stats = StatsList([1,2,3,4,5])
+    
+    def test_mean(self):
+        self.assertEqual(self.stats.mean(), 2.5)
+    
+    def test_median(self):
+        self.assertEqual(self.stats.median(), 2.5)
+        self.stats.append(4)
+        self.assertEqual(self.stats.median(), 3)
+
+if __name__ == "__main__":
+    unittest.main()
 
 # example test Card class
 
@@ -157,47 +230,11 @@ class TestCardFactory(unittest.TestCase):
             c = card(0, '♦')
 
 
-
 # run a specific test 
 # $ python3 -m unittest -q test_phonebook.TestPhonebook.test_lookup_entry_by_name
 
 # skip a test
 @unittest.skip("WIP")
-
-def tearDown(self):
-    pass
-
-# setUp()
-# before each test case is run, the test case can access the object defined in setUp
-def setUp(self):
-    self.phonebook = Phonebook()
-
-# to do cleanup 
-def tearDown(self):
-    pass
-
-
-# Test Case Name
-#  - Arrange setup the object to be tested & collaborators
-#  - Act exercise functionality on the object
-#  - Assert make claims about the object & its collaborators
-#  - Cleanup
-
-# Test last (Design code -> design tests -> debug & rework)
-# Risk: discover testability problems and bugs late in the process
-
-# Test first (Design code -> design tests -> write code )
-# Risk: rework (needs to refactor tests and code)
-
-# Test first (Design code -> design tests -> write code )
-# Risk: rework (needs to refactor tests and code)
-
-# Test driven (design and build up test case together)
-# write a test -> write a little code -> refactor 
-
-
-# Continuous integration
-# version control -> continous integration server 
 
 
 '''
@@ -268,11 +305,28 @@ class Test_Blog_Queries( unittest.TestCase ):
 # Pytest
 ################################################
 
+# pytest doesn't require test cases to be classes 
+# instead takes advantage of the fact that python functions are objects and allow function to behave like a test
+
+# When we run py.test, it will start in the current folder and search for any modules
+# in that folder or subpackages whose names start with the characters test_. If any
+# functions in this module also start with test, they will be executed as individual
+# tests. Furthermore, if there are any classes in the module whose name starts with
+# Test, any methods on that class that start with test_ will also be executed in the
+# test environment.
+
+
 # pip install -U pytest
 
 # run tests
 # python3 -m pytest
 
+
+# simple example
+def test_int_float():
+    assert 1==1.0
+
+# another example 
 from phonebook import Phonebook
 
 def test_add_and_lookup_entry():
@@ -281,7 +335,145 @@ def test_add_and_lookup_entry():
     assert "123" == phonebook.lookup("Bob")
     assert "123" == None
 
+# can also use classes for grouping related tests together 
+class TestNumbers:
+    def test_int_float(self):
+        assert 1==1.0
+    
+    def test_int_str(self):
+        assert 1=="1"
 
+'''
+test debugging
+'''
+# By default, py.test suppresses output from print statements if the test is
+# successful. This is useful for test debugging; when a test is failing, we can add
+# print statements to the test to check the values of specific variables and attributes
+# as the test runs. 
+
+# If the test fails, these values are output to help with diagnosis.
+# However, once the test is successful, the print statement output is not displayed,
+# and they can be easily ignored. We don't have to "clean up" the output by removing
+# print statements. If the tests ever fail again, due to future changes, the debugging
+# output will be immediately available.
+
+'''
+setUp
+'''
+# similar to unittest we also have setup and teardown methods 
+# the setup_class and teardown_class methods are expected to be class methods 
+# we have the setup_module and teardown_module functions which are run immediately before and after all tests 
+# useful for one time setup - such as creating a socket or database connection that will be used by all tests in the module 
+def setup_module(module):
+    print("setting up MODULE {0}".format(module.__name__))
+
+def teardown_module(module):
+    print("tearing down MODULE {0}".format(module.__name__))
+
+def test_a_function():
+    print("Running test function")
+
+class BaseTest:
+    def setup_class(cls):
+        print("setting up CLASS {0}".format(cls.__name__))
+
+    def teardown_class(cls):
+        print("tearing down CLASS {0}\n".format(cls.__name__))
+    
+    def setup_method(self, method):
+        print("setting up METHOD {0}".format(method.__name__))
+   
+    def teardown_method(self, method):
+        print("tearing down METHOD {0}".format(method.__name__))
+
+
+'''
+funcargs
+'''
+
+# py.test offers a completely different way to do this using what are known as
+# funcargs, short for function arguments. Funcargs are basically named variables that
+# are predefined in a test configuration file. This allows us to separate configuration
+# from execution of tests, and allows the funcargs to be used across multiple classes
+# and modules.
+
+# As with other py.test features, the name of the factory for returning a funcarg is
+# important; funcargs are functions that are named pytest_funcarg__<identifier>,
+# where <identifier> is a valid variable name that can be used as a parameter in a
+# test function.
+
+# for example to "setup" a list of valid integers 
+from stats import StatsList 
+
+def pytest_funcarg__valid_stats(request):
+    return StatsList([1,2,3,4,5,6])
+
+def test_mean(valid_stats):
+    assert valid_stats.mean() == 2.5
+
+def test_median(valid_stats):
+    assert valid_stats.median() == 2.5
+    valid_stats.append(4)
+    assert valid_stats.median() == 3
+
+def test_mode(valid_stats):
+    assert valid_stats.mode() == [2,3]
+    valid_stats.remove(2)
+    assert valid_stats.mode() == [3]
+
+# Each of the three test methods accepts a parameter named valid_stats; this
+# parameter is created by calling the pytest_funcarg__valid_stats function defined
+# at the top of the file. It can also be defined in a file called conftest.py if the funcarg
+# is needed by multiple modules. The conftest.py file is parsed by py.test to
+# load any "global" test configuration; it is a sort of catch-all for customizing the
+# py.test experience.
+
+
+# use request.addfinalizer for cleanup 
+# after each test function that uses the funcargs has been called 
+import tempfile 
+import shutil 
+import os.path 
+
+def pytest_funcarg__temp_dir(request):
+    dir = tempfile.mkdtemp()
+    print(dir)
+
+    def cleanup():
+        shutil.rmtree(dir)
+    
+    request.addfinalizer(cleanup)
+    return dir 
+
+def test_osfiles(temp_dir):
+    os.mkdir(os.path.join(temp_dir, 'a'))
+    os.mkdir(os.path.join(temp_dir, 'b'))
+    dir_contents = os.listdir(temp_dir)
+    assert len(dir_contents) == 2
+    assert 'a' in dir_contents
+    assert 'b' in dir_contents
+
+'''
+skipping tests
+'''
+# use py.test.skip
+# accepts a string describing why it's skipped
+# can execute skip anywhere in the python code 
+
+import sys
+import py.test 
+
+def test_simple_skip():
+    if sys.platform != "fakeos":
+        py.test.skip("Test works only on fakeOS")
+    
+    fakeos.do_something_faken()
+    assert fakeos.did_not_happen 
+
+
+'''
+fixture 
+'''
 # text fixture https://docs.pytest.org/en/latest/fixture.html#fixtures
 # to share data between test cases
 # offers a baseline upon which tests can execute
@@ -314,58 +506,14 @@ def test_ehlo(smtp_connection):
     assert 0 
 
 
-
-
-
+'''
+exceptions
+'''
 # assertions about expected exceptions
 
 def test_zero_division():
     with pytest.raises(ZeroDivisionError):
         1 / 0 
-
-################################################
-# doctest
-################################################
-# make documentation comments more truthful
-# searches for pieces of text that look like interactive python sessions in docstrings and then executes those sessions
-def square(x):
-    """Return the square of x.
-    >>> square(2)
-    4
-    >>> square(-2)
-    4
-    """
-    return x*x 
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
-
-
-# checking examples in docstrings
-# regression testing 
-
-# $ python3 -m doctest -v xx.py
-
-# docstring runs each test while pytest treats the entire block as one test 
-
-# tracebacks
-
-# example doc string 
-
-def factorial(n):
-    """compute n! recursively.
-
-    :param n: an integer >= 0
-    :returns: n!
-
-    Because of Python's stack limitation, this won't
-    compute a value larger than about 1000!.
-    >>> factorial(5)
-    120
-    """
-    if n == 0: return 1
-    return n*factorial(n-1)
 
 
 ################################################
@@ -525,7 +673,6 @@ import example
 def test1(x, mock_func):
     example.func(x) # Uses patched example.func
     mock_func.assert_called_with(x)
-
 
 
 # example delete function
@@ -880,7 +1027,51 @@ def test_early_game_scores_equal(expected_score, player1_points, player2_points)
 # continuous integration - constant management 
 
 
+################################################
+# doctest
+################################################
+# make documentation comments more truthful
+# searches for pieces of text that look like interactive python sessions in docstrings and then executes those sessions
+def square(x):
+    """Return the square of x.
+    >>> square(2)
+    4
+    >>> square(-2)
+    4
+    """
+    return x*x 
 
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
+
+
+# checking examples in docstrings
+# regression testing 
+
+# $ python3 -m doctest -v xx.py
+
+# docstring runs each test while pytest treats the entire block as one test 
+
+# tracebacks
+
+# example doc string 
+
+def factorial(n):
+    """compute n! recursively.
+
+    :param n: an integer >= 0
+    :returns: n!
+
+    Because of Python's stack limitation, this won't
+    compute a value larger than about 1000!.
+    >>> factorial(5)
+    120
+    """
+    if n == 0: return 1
+    return n*factorial(n-1)
+
+    
 ##################################################
 # Exceptions
 ##################################################

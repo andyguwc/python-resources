@@ -2249,8 +2249,6 @@ class EmailableContact(Contact, MailSender):
 # e.send_mail("Hello, test e-mail here")
 
 
-
-
 '''
 monkey patching
 '''
