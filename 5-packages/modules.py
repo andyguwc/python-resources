@@ -274,9 +274,6 @@ pyvenv
 # The name supplied to pyvenv is the name of a directory that will be created
 pyvenv Spam
 
-
-
-
 '''
 virual environments
 '''
@@ -292,3 +289,19 @@ cd ./dist/main
 ./main.exe
 
 pyinstaller --onefile ./main.py
+
+'''
+requirements.txt to reproduce dependencies 
+'''
+# use pip freeze command to save all of your explicit package dependencies into a file
+# (myproject)$ pip3 freeze > requirements.txt
+# (myproject)$ cat requirements.txt
+
+# now if you need to have another virtual environment that matches myproject
+# $ pyenv /tmp/otherproject
+# $ cd /tmp/otherproject
+# source bin/activate
+# (otherproject)$
+# (otherproject)$ pip3 install -r /tmp/myproject/requirements.txt
+# (otherproject)$ pip list
+

@@ -164,21 +164,40 @@ print(ivals)
 '''
 Enumerate
 '''
+# enumerate provides concise syntax for looping over an iterator and getting the
+# index of each item from the iterator as you go.
+
 # iterating over the index value pairs 
 my_list = ['a','b','c']
 for idx, val in enumerate(my_list):
     print(idx, val)
 
+# use enumerate instead of range(len(astr))
+# clumsy implementation
+for i in range(len(flavor_list)):
+    flavor = flavor_list[i]
+    print('%d: %s' % (i+1, flavor))
+# enumerate implementation 
+for i, flavor in enumerate(flavor_list):
+    print('%d: %s' % (i+1, flavor))
+
 
 '''
-Zip
+Zip & Chain
 '''
 # iterating over multiple sequences simultaneously
 # use zip whenever you need to pair data together 
+# In Python 3, zip is a lazy generator that produces tuples
+
 xpts = [1,2,3]
 ypts = [3,4,5]
 for x,y in zip(xpts, ypts):
     print(x, y)
+
+for name, count in zip(names, letters):
+    if count > max_letters:
+        longest_name = name
+        max_letters = count
 
 # use chain for iterating on items in separate containers
 from itertools import chain 
@@ -504,16 +523,25 @@ for i in range(SIZE):
     bisect.insort(my_list, new_item)
     print()
 
+
 '''
 heapq
 '''
+# useful data structure for maintaining priority queue
+# heapq module for finding nlargest or nsmallest 
 
-#  heapq module for finding nlargest or nsmallest 
 import heapq 
 
 nums = [1,2,3,-4]
 print(heapq.nlargest(3, nums))
 print(heapq.nsmallest(3, nums))
+
+a = []
+heappush(a, 1)
+heappush(a, 3)
+heappop(a)
+
+# Accessing the 0 index of the heap will always return the smallest item.
 
 # heap[0] is slways the smallest item. Subsequent items can be found using heapq.heappop() method 
 nums = [1, 8, 2, 23, 7, -4, 18, 23, 42, 37, 2]
@@ -533,7 +561,6 @@ portfolio = [
 
 cheap = heapq.nsmallest(3, portfolio, key=lambda s: s['price'])
 expensive = heapq.nlargest(3, portfolio, key=lambda s: s['price'])
-
 
 
 
@@ -558,7 +585,7 @@ floats[-1] # the last item in the array
 # But inserting and removing from left of list is costly 
 
 # The class collections.deque is a thread-safe double-ended queue designed for fast
-# inserting and removing from both ends.
+# inserting and removing from both ends. Provides constant time operations for inserting or removing items from beginning or end
 
 from collections import deque
 dq = deque(range(10), maxlen=10) # optional maxlen set the maximum number of items allowed 
@@ -647,7 +674,10 @@ print(add(*z))
 # using * to grab excess items
 a,b, *rest = range(5) # rest will be assigned [2,3,4]
 
-# named tuples 
+'''
+named tuple
+'''
+
 # collections.namedtuple function is a factory that produces subclasses of tuple enhanced with field names and a class name 
 from collections import namedtuple
 
@@ -677,15 +707,13 @@ def compute_cost(records):
         total += s.shares * s.price
     return total 
 
-# generator expression 
-# more efficient than creating a temporary list
-portfolio = [
-    {'name':'GOOG', 'shares': 50},
-    {'name':'YHOO', 'shares': 75},
-    {'name':'AOL', 'shares': 20},
-    {'name':'SCOX', 'shares': 65}
-]
-min_shares = min(s['shares'] for s in portfolio)
+# note on using dict, namedtuple or class for book-keeping 
+# Use namedtuple for lightweight, immutable data containers before you need the
+# flexibility of a full class.
+# Move your bookkeeping code to use multiple helper classes when your internal state
+# dictionaries get complicated
+
+
 
 
 
@@ -843,6 +871,10 @@ d = defaultdict(set)
 d['a'].add(1)
 d['a'].add(2)
 
+# counter
+stats = defaultdict(int)
+stats['my_counter'] +=1 
+
 
 # The __missing__ Method
 # Underlying the way mappings deal with missing keys is the aptly named __missing__
@@ -858,6 +890,7 @@ OrderedDict
 # may want to later serialize or encode into a different format. For example, if you want
 # to precisely control the order of fields appearing in a JSON encoding, first building the
 # data in an OrderedDict will do the trick
+
 from collections import OrderedDict
 d = OrderedDict()
 d['foo'] = 1
@@ -1029,5 +1062,40 @@ Practical Implications of How Set Works
 # - Element ordering depends on insertion order.
 # - Adding elements to a set may change the order of other elements.
 
+
+
+##################################################
+# Datetime Module
+##################################################
+
+from datetime import datetime, timezone
+now = datetime(2014, 8, 10, 18, 18, 30)
+
+# convert utc to local time 
+now_utc = now.replace(tzinfo=timezone.utc) # utc time 
+now_local = now_utc.astimezone() # local time
+print(now_local)
+
+# convert local time to utc 
+time_format = '%Y-%m-%d %H:%M:%S'
+time_str = '2014-08-10 11:18:30'
+now = datetime.strptime(time_str, time_format)
+time_tuple = now.timetuple()
+utc_now = mktime(time_tuple)
+print(utc_now)
+
+# pytz for converting between time zones 
+# first convert Eastern Time time to UTC datetime
+arrival_nyc = '2014-05-01 23:33:24'
+nyc_dt_naive = datetime.strptime(arrival_nyc, time_format)
+eastern = pytz.timezone('US/Eastern')
+nyc_dt = eastern.localize(nyc_dt_naive)
+utc_dt = pytz.utc.normalize(nyc_dt.astimezone(pytz.utc))
+print(utc_dt)
+
+# once with UTC datetime, can covnert to Pacific Time 
+pacific = pytz.timezone('US/Pacific')
+sf_dt = pacific.normalize(utc_dt.astimezone(pacific))
+print(sf_dt)
 
 

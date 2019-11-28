@@ -516,6 +516,7 @@ def test_zero_division():
         1 / 0 
 
 
+
 ################################################
 # Mock
 ################################################
@@ -1071,7 +1072,7 @@ def factorial(n):
     if n == 0: return 1
     return n*factorial(n-1)
 
-    
+
 ##################################################
 # Exceptions
 ##################################################
@@ -1133,6 +1134,32 @@ else:
     print("this code is called if no exception")
 finally:
     print("this cleanup code is always called")
+
+
+def load_json_key(data, key):
+    try:
+        result_dict = json.loads(data) # May raise ValueError
+    except ValueError as e:
+        raise KeyError from e
+    else:
+        return result_dict[key]
+
+
+# raise ValueError so when other functions use it can write except statement
+# better than the alternative of returning None
+def divide(a,b):
+    try:
+        return a/b
+    except ZeroDivisionError as e: 
+        raise ValueError('Invalid Inputs') from e 
+
+# using the ValueError returned above 
+try:
+    result = divide(x, y)
+except ValueError: 
+    print('Invalid inputs')
+else:
+    print('Result is %.1f' % result)
 
 
 '''
@@ -1434,4 +1461,58 @@ if 'model' not in globals():
 # running. The content of the resource will be set to an empty list. The log message will
 # be written every time, vs. A warnings module warning is ordinarily shown only once
 # from a given location in the program and is suppressed after that.
+
+
+##################################################
+#  Environment
+##################################################
+
+# handle multiple environments
+import sys
+
+class Win32Database(object):
+  # …
+class PosixDatabase(object):
+  # …
+if sys.platform.startswith(‘win32’):
+  Database = Win32Database
+else:
+  Database = PosixDatabase
+
+
+##################################################
+#  PDB
+##################################################
+# import the pdb built-in module and run set_trace function
+def complex_function(a, b, c):
+    # ...
+    import pdb; pdb.set_trace()
+    # as soon as this runs, the program will pause execution
+    # the terminal will turn into an interactive shell
+
+# At the (Pdb) prompt, you can type in the name of local variables to see their values
+# printed out. You can see a list of all local variables by calling the locals built-in
+# function. You can import modules, inspect global state, construct new objects, run the
+# help built-in function, and even modify parts of the program—whatever you need to do
+# to aid in your debugging. In addition, the debugger has three commands that make
+# inspecting the running program easier.
+# bt: Print the traceback of the current execution call stack. This lets you figure out
+# where you are in your program and how you arrived at the pdb.set_trace
+# trigger point.
+# up: Move your scope up the function call stack to the caller of the current function.
+# This allows you to inspect the local variables in higher levels of the call stack.
+# down: Move your scope back down the function call stack one level.
+# Once you’re done inspecting the current state, you can use debugger commands to resume
+# the program’s execution under precise control.
+# step: Run the program until the next line of execution in the program, then return
+# control back to the debugger. If the next line of execution includes calling a
+# function, the debugger will stop in the function that was called.
+# next: Run the program until the next line of execution in the current function, then
+# return control back to the debugger. If the next line of execution includes calling a
+# function, the debugger will not stop until the called function has returned.
+# return: Run the program until the current function returns, then return control
+# back to the debugger.
+# continue: Continue running the program until the next breakpoint (or
+# set_trace is called again).
+
 

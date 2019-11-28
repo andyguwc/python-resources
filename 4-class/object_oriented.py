@@ -372,6 +372,7 @@ Define more than one constructor
 # create instances in more than one way 
 # use a class method 
 # receive the class as the first argument (cls)
+# class polymorphism 
 
 import time 
 
@@ -392,6 +393,24 @@ class Date:
 # a = Date(2012, 12, 21) # Primary
 # b = Date.today() # Alternate
 
+# since python only support __init__ as a single constructor per class 
+# use @classmethod to define alternative constructors for your classes 
+# use class method polymorphism to provide generic way to build and connect concrete subclasses 
+
+class GenericWorker(object):
+    # ...
+    def map(self):
+        raise NotImplementedError 
+    
+    def reduce(other, self):
+        raise NotImplementedError 
+
+    @classmethod
+    def create_workers(cls, input_class, config):
+        workers = []
+        for input_data in input_class.generate_inputs(config):
+            workers.append(cls(input_data))
+        return workers 
 
 '''
 get attributes
@@ -1489,34 +1508,17 @@ isinstance('hello', str)
 # issubclass()
 # determines if one type is a subclass of another
 
-# multiple inheritance
-# define class with more than one base class 
-class SubClass(Base1, Base2):
-    pass
-# subclass inherit methods of all bases 
-# if a class defines no intializer, then only the init from the first base class is called
-# __bases__ a tuple of base classes 
-# method resolution order 
-SortedList.__mro__ # to print out the method resolution order 
-
-# super()
-# given a method resolution order and a class C, super gives you an object which resolves method using only the part which comes after C
-# super() returns a proxy object which routes method calls
-super(base-class, derived-class) 
-# instance bound proxy
-super(class, instance-of-class)
-
-# object model
-# the ultimate base class of every class object 
-NoBaseClass.__bases__
-dir(object) # outputs ['__class__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__']
 
 '''
 polymorphism
 '''
 # different behaviors happen depending on which subclass is being used, without having to explicitly know what the subclass actually is.
 # use objects of different types through a common interface
-# determined at the time of use 
+# determined at the time of use
+
+# Polymorphism is a way for multiple classes in a hierarchy to implement their own unique
+# versions of a method. This allows many classes to fulfill the same interface or abstract
+# base class while providing different functionality 
 
 # checka valid extension was given upon initialization. Note the __init__ method in the parent class is able to access
 # the ext class variable from different subclasses. That's polymorphism at work. If the filename doesn't end with the correct name, it raises an exception. 
@@ -1655,6 +1657,36 @@ multiple inheritance
 # We'll consider a base class plus mixin class definitions to introduce features. Often, we'll use the mixin classes to build cross-cutting aspects.
 
 
+# define class with more than one base class 
+class SubClass(Base1, Base2):
+    pass
+# subclass inherit methods of all bases 
+# if a class defines no intializer, then only the init from the first base class is called
+# __bases__ a tuple of base classes 
+# method resolution order 
+SortedList.__mro__ # to print out the method resolution order 
+
+# super()
+# given a method resolution order and a class C, super gives you an object which resolves method using only the part which comes after C
+# super() returns a proxy object which routes method calls
+super(base-class, derived-class) 
+# instance bound proxy
+super(class, instance-of-class)
+
+# object model
+# the ultimate base class of every class object 
+NoBaseClass.__bases__
+dir(object) # outputs ['__class__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__']
+
+# best practice
+# use multiple inheritance only for mix-in utility 
+# If you find yourself desiring the convenience and encapsulation that comes with multiple
+# inheritance, consider writing a mix-in instead. A mix-in is a small class that only defines a
+# set of additional methods that a class should provide. Mix-in classes don’t define their
+# own instance attributes nor require their __init__ constructor to be called.
+
+
+# MRO 
 # An object's class will define a Method Resolution Order (MRO).
 # This defines how base classes are searched to locate an attribute or method name.
 # The MRO works its way up the inheritance hierarchy; this means that subclass
@@ -1664,6 +1696,7 @@ multiple inheritance
 bool.__mro__
 # (<class 'bool'>, <class 'int'>, <class 'object'>)
 
+# type of inehritance 
 # distinguish interface inheritance from implementation inheritance
 # inheritance of interface creates a subtype, implying a "is-a" relationship
 # inheritance of implementation avoids code duplication by reuse 
@@ -1716,8 +1749,6 @@ class Friend(Contact, AddressHolder):
     def __init__(self, phone='', **kwargs):
         super().__init__(**kwargs)
         self.phone = phone
-
-
 
 
 ##################################################
@@ -1826,6 +1857,28 @@ attribute access
 # no attribute, it must raise an AttributeError exception.
 # The __delattr__() method deletes an attribute.
 
+# if your class defines __getattr__,that method is called every time an attribute can't be found in an object's instance dictionary
+class LazyDB(object):
+    def __init__(self):
+        self.exists = 5
+    
+    def __getattr__(self, name):
+        value = 'Value for %s' % name 
+        setattr(self, name, value)
+        return value 
+
+# if accessing a missing property, this __getattr mutates the instance dictionary __dict__
+data = LazyDB()
+print('Before:', data.__dict__)
+print('foo', data.foo)
+print('after', data.__dict__)
+
+# The exists attribute is present in the instance dictionary, so __getattr__ is never
+# called for it. The foo attribute is not in the instance dictionary initially, so
+# __getattr__ is called the first time. But the call to __getattr__ for foo also does
+# a setattr, which populates foo in the instance dictionary. This is why the second time
+# I access foo there isn’t a call to __getattr__.
+
 
 
 '''
@@ -1902,6 +1955,53 @@ class Circle:
     def perimeter(self):
         return 2 * math.pi * self.radius 
 
+
+# don't just implement plain getter and setter methods 
+# if you need special behavior when an attribute is set, can migrate to the @property decorator and setter attribute 
+
+class VoltageResistance(Resistor):
+    def __init__(self, ohms):
+        super().__init__(ohms)
+        self._voltage = 0
+        @property
+        def voltage(self):
+            return self._voltage
+       
+        @voltage.setter
+        def voltage(self, voltage):
+            self._voltage = voltage
+            self.current = self._voltage / self.ohms
+        # Now, assigning the voltage property will run the voltage setter method, updating the
+        # current property of the object to match.
+
+# setter can be used for validation as well 
+class BoundedResistance(Resistor):
+    def __init__(self, ohms):
+        super().__init__(ohms)
+    
+    @property
+    def ohms(self):
+        return self._ohms
+    
+    @ohms.setter
+    def ohms(self, ohms):
+        if ohms <= 0:
+            raise ValueError('%f ohms must be >0' % ohms)
+            self._ohms = ohms 
+
+# make parent class attribute immutable 
+class FixedResistance(Resistor):
+    @property
+    def ohms(self):
+        return self._ohms
+    
+    @ohms.setter
+    def ohms(self, ohms):
+        if hasattr(self, '_ohms'):
+            raise AttributeError("can't set attribute")
+        self._ohms = ohms 
+
+# defining descriptor class 
 
 
 ##################################################
@@ -2099,7 +2199,8 @@ metaclass
 '''
 # A metaclass builds a class. Once a class object has been built, the class object is used to build instances
 
-# type() function is used to create class objects. Also used to reveal class of an object
+# metaclass is defined by inheriting from type 
+# a metaclass receives the content of associated class statements in its __new__ method
 
 
 # use metaclass to control instance creation 
@@ -2137,6 +2238,29 @@ class Singleton(type):
 class Spam(metaclass=Singleton):
     def __init__(self):
         print('Creating Spam')
+
+# Example - validate subclasses with metaclass
+# receives the contents of associated class statements in its __new__ method. 
+# Here you can modify class information before type is actually constructed
+
+class Meta(type):
+    def __new__(meta, name, bases, class_dict):
+        print((meta, name, bases, class_dict))
+        return type.__new__(meta, name, bases, class_dict)
+
+class MyClass(object, metaclass=Meta):
+    stuff = 123
+
+    def foo(self):
+        pass 
+
+# Metaclasses let you run registration code automatically each time your base class is subclassed in a program.
+# Using metaclasses for class registration avoids errors by ensuring that you never
+# miss a registration call.
+
+# descriptors and metaclasses make a powerful combination
+
+
 
 
 ##################################################
@@ -2247,6 +2371,28 @@ class EmailableContact(Contact, MailSender):
 
 # e = EmailableContact("John Smith", "jsmith@example.net")
 # e.send_mail("Hello, test e-mail here")
+
+# using the contextmanager decorator 
+# make objects/functions capable of use in with statements by using the contextlib built in modle 
+# example - elevate the log level of a function temporarily by using a context manager
+@contextmanager 
+def debug_logging(level):
+    logger = logging.getLogger()
+    old_level = logger.getEffectiveLevel()
+    logger.setLevel(level)
+    try:
+        yield logger 
+    finally:
+        logger.setLevel(old_level)
+
+# The yield expression is the point at which the with block’s contents will execute. Any
+# exceptions that happen in the with block will be re-raised by the yield expression for
+# you to catch in the helper function
+
+# usage 
+with log_level(logging.DEBUG, 'my-log') as logger:
+    logger.debug('This is my message')
+    logging.debug('This will not print')
 
 
 '''

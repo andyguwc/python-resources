@@ -1,7 +1,8 @@
-##################################################
-# Iteration
-##################################################
 
+##################################################
+# Loops 
+##################################################
+# for loop
 for name in ['a','b','c']:
     print(name)
 
@@ -58,6 +59,30 @@ for name in student_names:
         print("found him"+name)
     print("currently testing"+name)
 
+
+# two approach to break out of the loop if found item
+#  - return early 
+def coprime(a, b):
+    for i in range(2, min(a,b)+1):
+        if a % i == 0 and  b % i == 0:
+            return False 
+    return True 
+
+#  - have a result variable indicating if found and break out of the loop if found
+def coprime2(a, b):
+    is_coprime = True
+    for i in range(2, min(a,b)+1):
+        if a % i == 0 and b % i == 0:
+            is_coprime = False 
+            break 
+    return is_coprime 
+
+
+##################################################
+# Iteration
+##################################################
+
+
 # using iterator by next
 with open('/etc/passwd') as f:
     while True:
@@ -65,6 +90,7 @@ with open('/etc/passwd') as f:
         if line is None:
             break
         print(line, end='')
+
 
 '''
 delegating iterator to __iter__()
@@ -126,6 +152,21 @@ Cartesian Product
 [(x,y) for x in range(5) for y in range(3)]
 
 tshirts = [(color, size) for color in colors for size in sizes]
+
+
+'''
+multiple levels
+'''
+matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+flat = [x for row in matrix for x in row]
+print(flat)
+# >>> [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# if you want to square the value in each cell of a two-dimensional matrix.
+squared = [[x**2 for x in row] for row in matrix]
+print(squared)
+# >>> [[1, 4, 9], [16, 25, 36], [49, 64, 81]]
+
 
 
 '''
@@ -232,6 +273,27 @@ iterable = ['a','b','c']
 iterator = iter(iterable)
 next(iterator) # prints 'a'
 next(iterator) # prints 'b'
+
+# best practice use yield results instead of append to list 
+
+def index_word_iter(text):
+    if text:
+        yield 0 
+    for index, letter in enumerate(text):
+        if letter == '':
+            yield index+1 
+# the iterator returned by the call can be converted to list 
+result = list(index_word_iter(text_data))
+
+# bad implementation using list 
+def index_words(text):
+    result = []
+    if text:
+        result.append(0)
+    for index, letter in enumerate(text):
+        if letter == ‘ ‘:
+            result.append(index + 1)
+    return result
 
 # stateful iterator functions
 

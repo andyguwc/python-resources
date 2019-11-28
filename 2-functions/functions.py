@@ -111,13 +111,29 @@ callable(is_event)
 '''
 args, kwargs (extended arguments)
 '''
+# * returns tuple
+# ** returns dictionary 
+
 def hypervolume(length, *lengths): # accept a number of arguments with a lower bound
     v = length
     for item in lengths:
         v*=length
     return v
 
+# You can use the items from a sequence as the positional arguments for a function
+# with the * operator.
+# Using the * operator with a generator may cause your program to run out of
+# memory and crash.
+# Adding new positional parameters to functions that accept *args can introduce
+# hard-to-find bugs.
+
+
 # keyword arguments
+# benefits
+# make the caller clearer to reader
+# have default values specified
+# backwards compatible 
+
 def function_name(arg1, arg2=8):
     # arg1 is positional argument, and arg2 is keyword argument, and 8 is default value
     pass
@@ -127,11 +143,6 @@ def extended(*args, **kwargs):
 
     # kwargs a dictionary
     pass
-
-# forwarding arguments
-# pull args into another function
-def trace(f, *args, **kwargs):
-    pass 
 
 # function that accepts any uber of positional arguments
 # rest is a tuple of all the extra positional arguments passed
@@ -157,6 +168,7 @@ class Options:
 
 
 
+
 '''
 default args
 '''
@@ -166,6 +178,20 @@ def spam(a, b=None):
         b = []
 
 # the values assigned as a default are bound only once at the time of function definition.
+def decode(data, default={}):
+    try:
+        return json.loads(data)
+    except ValueError:
+        return default 
+
+# foo and bar are equal to the default parameter
+# and the default parameter is evaluated only once so foo=bar 
+foo = decode(‘bad data’)
+foo[‘stuff’] = 5
+bar = decode(‘also bad’)
+bar[‘meep’] = 1
+print(‘Foo:’, foo)
+print(‘Bar:’, bar)
 
 
 
@@ -421,5 +447,33 @@ def clip(text:str, max_len:'int > 0'=80) -> str:
 
 
 
+##################################################
+# Function Hooks
+##################################################
+
+# Many of Python’s built-in APIs allow you to customize behavior by passing in a function.
+# These hooks are used by APIs to call back your code while they execute. For example, the
+# list type’s sort method takes an optional key argument that’s used to determine each
+# index’s value for sorting
+
+names = [‘Socrates’, ‘Archimedes’, ‘Plato’, ‘Aristotle’]
+names.sort(key=lambda x: len(x))
+print(names)
+
+# similarly, we can customize the behavior of the defaultdict class 
+# This data structure allows you to supply a function that will be called each time a missing key is accessed.
+# The function must return the default value the missing key should have in the dictionary.
+
+def log_missing():
+    print('key added')
+    return 0 
+
+current = {‘green’: 12, ‘blue’: 3}
+increments = [
+    (‘red’, 5),
+    (‘blue’, 17),
+    (‘orange’, 9),
+] 
+result = defaultdict(log_missing, current)
 
 

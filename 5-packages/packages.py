@@ -57,6 +57,8 @@ sys.path.extend(['path1','path2'])
 # another way is to use PYTHONPATH environment variable 
 # $ export PYTHONPATH=not_searched
 
+
+
 ##################################################
 # Implementing Packages  
 ##################################################
@@ -89,8 +91,9 @@ from pprint import pprint
 pprint(locals())
 __all__ = ['bz2_opener', 'gzip_opener'] # list of strings for the names in module
 
-
-# example 
+# only the attributes in foo.__all__ will be imported from foo
+from foo import *
+# if __all__ isn't present in foo, then only public attributes, without _, are imported
 
 # A package is a collection of modules in a folder. The name of the package is the name of the folder. All we need to
 # do to tell Python that a folder is a package is place a (normally empty) file in the folder
