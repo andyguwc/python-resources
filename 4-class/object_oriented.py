@@ -220,10 +220,11 @@ def card(rank, suit):
     else: 
         # note never use a catchall else, leave the else to raise exceptions
         raise Exception("rank out of range")
+
 # example applying the factory function to build a deck 
 deck = [card(rank, suit)
-        for rank in range(1,14)
-            for suit in (Club, Diamond, Heart, Spade)]
+    for rank in range(1,14)
+        for suit in (Club, Diamond, Heart, Spade)]
 
 
 '''
@@ -249,6 +250,7 @@ class ValidPlayer:
         self.table= table
 
 
+
 '''
 Composite Objects
 '''
@@ -259,20 +261,63 @@ Composite Objects
 
 # Wrapping a collection class (Facade design pattern)
 # contains an internal collection (list object), the pop() method delegates to the wrapped list object
-# Generally, a Facade design pattern or wrapper class contains methods that are simply delegated to the underlying implementation class.
+# Here the pop methods delegates to the wrapped list object
 class Deck:
     def __init__(self):
-        self._cards = [card(r+1, s) for r in range(13) for s in (Club,Diamond, Heart, Spade)]
+        self._cards = [card(r+1,s) for r in range(12) for s in (Club, Diamond, Hear, Spade)]
         random.shuffle(self._cards)
+    
     def pop(self):
         return self._cards.pop()
 
+
 # Extending a collection class 
 # in this case we don't have to reimplement the pop() method, we can inherit it 
+# disadvantage too many functions we don't need
 class Deck(list):
     def __init__(self):
         super().__init__(card(r+1, s) for r in range(13) for s in (Club,Diamond, Heart, Spade))
         random.shuffle(self)
+
+
+# taking in variable number of inputs 
+class Hand:
+    def __init__(self, dealer_card, *cards):
+        self.dealer_card = dealer_card
+        self.cards = list(cards)
+    
+    def hard_total(self):
+        return sum(c.hard for c in self.cards)
+    
+    def soft_total(self):
+        return sum(c.soft for c in self.cards)
+
+
+# wrapping in a list and implement __getitem__ 
+# with __getitem__ several things like for loop and slicing works 
+class StatsList:
+    def __init_-(self):
+        self._list = list() # wrap a list 
+        self.sum0 = 0 
+        self.sum1 = 0
+    
+    def append(self, value):
+        self._list.append(value) # delegate to the internal list 
+        self.sum0 +=1 
+        self.sum1 += value 
+
+    # implement __getitem__
+    def __getitem__(self, index):
+        return self._list.__getitem__(index)
+    
+    @property
+    def mean(self):
+        return self.sum1/self.sum0 
+
+# the for loop works 
+statslist = StatsList()
+for x in statslist:
+    print(x) 
 
 
 
@@ -489,8 +534,6 @@ if __name__ == "__main__":
 ##################################################
 #  Decorators / Wrapping 
 ##################################################
-
-
 
 # A decorator is a callable that takes another function as argument (the decorated function).
 # The decorator may perform some processing with the decorated function, and returns it or replaces it with another function or callable object.
@@ -1134,6 +1177,25 @@ class MediaLoader(metaclass=abc.ABCMeta):
         return NotImplemented
 
 
+# abstract superclass - raise an exception for methods that must be implemented by a subclass 
+class BettingStrategy:
+    # the subclass must overwrite the subclass
+    def bet(self):
+        raise NotImplementedError("No bet method")
+    
+    def record_win(self):
+        pass 
+
+    def record_loss(self):
+        pass 
+
+class Flat(BettingStrategy):
+    def bet(self):
+        return 1 
+
+
+
+
 ##################################################
 #  Closures 
 ##################################################
@@ -1338,7 +1400,7 @@ Weak References
 
 
 ##################################################
-#  Object Representations
+#  Object Representations (repr)
 ##################################################
 
 '''
@@ -1387,6 +1449,15 @@ class Vector2d:
     def __bool__(self):
         return bool(abs(self))
 
+
+def __repr__(self):
+    return "{__class__.__name__}(suit={suit!r}, rank={rank!r}". \
+                format(__class__=self.__class__, **self.__dict__)
+
+def __str__(self):
+    return "{rank}{suit}".format(**self.__dict__)
+
+
 ''' 
 format
 '''
@@ -1404,7 +1475,7 @@ from datatime import datetime
 now = datetime.now()
 format(now, '%H:%M:%S')
 "It's now {:%I:%M %p}".format(now)
-
+"{0:06.4f}" # 06.4f is the format specification that applies to item 0 of the argument list to be formatted 
 
 # def format 
 def __format__(self, fmt_spec=''):
@@ -1429,6 +1500,10 @@ class Vector2d:
     def __iter__(self):
         return (i for i in (self.x, self.y))
     
+# nested format
+for hand, count in statistics.items():
+    print("{hand}{count:{width}d}".format(hand=hand, count=count,width=wiwdth))
+
 '''
 Saving Space with __slots__ class attribute
 '''
@@ -1440,6 +1515,7 @@ class Vector2d:
     __slots__ = ('__x', '__y')
     typecode = 'd'
     # methods follow 
+
 
 
 
@@ -1507,6 +1583,28 @@ isinstance('hello', str)
 
 # issubclass()
 # determines if one type is a subclass of another
+
+
+# superclass and subclass can access attributes from each other 
+# typical polymorphic design. Each subclass provides a unique
+# implementation of the _points() method. All the subclasses have identical methods and attributes. 
+# Objects of these three subclasses can be used interchangeably in an application
+
+class Card: 
+    def __init__(self, rank, suit):
+        self.rank = rank 
+        self.suit = suit 
+        self.hard, self.soft = self._points()
+
+class NumberCard(Card):
+    def _points(self):
+        return int(self.rank), int(self.rank)
+
+class AceCard(Card):
+    def _points(self):
+        return 1, 11
+
+
 
 
 '''
@@ -1830,6 +1928,21 @@ p.x # calls Point.x.__get__(p, Point)
 # outside Python, a descriptor class can handle encoding and decoding data or fetching
 # the data from external sources.
 
+# example descriptor which logs something when it's accessed
+
+class Verbose_attribute():
+    def __get__(self, obj, type=None) -> object:
+        print("accessing the attribute to get the value")
+        return 42
+    
+    def __set__(self, obj, value) -> None:
+        print("accessing the attribute to get the value")
+        raise AttributeError("can't change the value")
+
+class Foo():
+    attribute1 = Verbose_attribute()
+
+
 '''
 Timeit module for testing performance
 '''
@@ -1845,8 +1958,9 @@ attribute access
 '''
 # it's not required to provide all attributes in the __init__() method 
 # optional attributes imply an informal subclass relationship 
-
+# although it's better to have attributes added or deleted more clearly by creating a subclass 
 # special methods for attribute access
+
 # __getattr__(), __setattr__(), and __delattr__()
 
 # The __setattr__() method will create and set attributes.
@@ -1856,6 +1970,30 @@ attribute access
 # __getattr__() is given a chance to return a meaningful value. If there is
 # no attribute, it must raise an AttributeError exception.
 # The __delattr__() method deletes an attribute.
+
+# __getattribute__()
+# An even lower level attribute processing is the __getattribute__() method.
+# The default implementation attempts to locate the value as an existing attribute
+# in the internal __dict__ (or __slots__). If the attribute is not found, it calls __getattr__() as a fallback.
+
+# example using __getattribute__() to concecal the internal names (with _) from the __dict__
+class BlackJackCard:
+    def __init__(self, rank, suit):
+        super().__setattr__( 'rank', rank )
+        super().__setattr__( 'suit', suit )
+
+    def __setattr__( self, name, value ):
+        if name in self.__dict__:
+            raise AttributeError( "Cannot set {name}".format(name=name) )
+
+        raise AttributeError( "'{__class__.__name__}' has no attribute'{name}'". \
+            format( __class__= self.__class__, name= name ))
+
+    def __getattribute__( self, name ):
+        if name.startswith('_'): 
+            raise AttributeError
+        return object.__getattribute__( self, name )
+
 
 # if your class defines __getattr__,that method is called every time an attribute can't be found in an object's instance dictionary
 class LazyDB(object):
@@ -1898,6 +2036,7 @@ properties
 # the implementation changes. We can make a similar claim for getter/setter method
 # functions. However, getter/setter method functions involve extra syntax that isn't
 # very helpful nor informative.
+
 
 '''
 getter, setter and deleter properties
@@ -2001,7 +2140,105 @@ class FixedResistance(Resistor):
             raise AttributeError("can't set attribute")
         self._ohms = ohms 
 
-# defining descriptor class 
+'''
+creating properties - eager vs. lazy
+'''
+# eager calculation: when we set a value via property, other attributes are also computed 
+# lazy calculation: calculations are deferred until requested via a property 
+
+class Hand_Lazy(Hand):
+    def __init__(self, dealer_card, *cards):
+        self.dealer_card = dealer_card
+        self._cards = list(cards)
+    
+    @property
+    def total(self):
+        delta_soft = max(c.soft-c.hard for c in self._cards)
+        hard_total = sum(c.hard for c in self._cards)
+        if hard_total+ delta_soft <=21: 
+            return hard_total+delta_soft
+        return hard_total 
+   
+    @property
+    def card(self):
+        return self._cards 
+   
+    @card.setter
+    # doesn't trigger re-compute of the total
+    def card(self, aCard):
+        self._cards.append(aCard)
+    
+    @card.deleter
+    def card(self):
+        self._cards.pop(-1)
+
+# setter and deleter properties enable use to add a card to the hand with statement like 
+    h.card = d.pop()
+
+
+# total is an attribute that's computed eagerly as each card is added 
+class Hand_Eager(Hand):
+    def __init__(self, dealer_card, *cards):
+        self.dealer_card = dealer_card
+        self.total = 0
+        self._delta_soft = 0
+        self._hard_total = 0
+        self._cards = list()
+        for c in cards:
+            self.card = c
+    
+    @property
+    def card(self):
+        return self._cards
+
+    # Each time a card is added, the total attribute is updated.
+    @card.setter
+    def card(self, aCard):
+        self._cards.append(aCard)
+        self._delta_soft = max(aCard.soft - aCard.hard. self._delta_soft)
+        self._hard_total += aCard.hard
+        self._set_total()
+    
+    def _set_total(self):
+        if self._hard_total+self._delta_soft <= 21:
+            self.total= self._hard_total+self._delta_soft
+        else:
+            self.total= self._hard_total
+
+
+# another example of eager evaluation when extending a collections class
+# calculate sum each time you modify an item 
+
+class StatsList(list):
+    def __init__(self, *args, **kwargs):
+        self.sum0 = 0 # len
+        self.sum1 = 1 # sum
+        self.sum2 = 0 # squared
+        super().__init__(*args, **kwargs)
+        for x in self:
+            self._new(x)
+    
+    def _new(self, value):
+        sum0 += 1
+        sum1 += value
+        sum2 += value*value
+    
+    def _rmv(self, value):
+        self.sum0 -=1 
+        self.sum1 -= value 
+        self.sum2 -= value*value 
+    
+    def insert(self, index, value):
+        super().insert(index, value)
+        self._new(value)
+    
+    def pop(self, index=0):
+        value = super().pop(index)
+        self._rmv(value)
+        return value 
+    
+
+
 
 
 ##################################################
@@ -2164,6 +2401,16 @@ class Noisy:
 # back to the parent. If a Player class has multiple hands, it might be helpful for a
 # Hand object to contain a reference to the owning Player class.
 
+import weakref
+class Parent:
+    def __init__(self, *children):
+        self.children = list(children)
+        for child in self.children:
+            child.parent = weakref.ref(self)
+    def __del__(self):
+        print("Removing {__class__.__name__} {id:d}".format(__class__=self.__class__, id = id(self)))
+
+
 
 
 ##################################################
@@ -2304,6 +2551,13 @@ def func(*args, **kwargs):
 ##################################################
 # Mixins 
 ##################################################
+
+# when defining a class, the following sources of attributes and methods 
+# the class statement 
+# the decorators applied to the class definition
+# the mixin classes with the base class that is given last 
+
+
 
 '''
 cross cutting scenarios

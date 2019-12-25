@@ -37,6 +37,65 @@
 # >>> isinstance(abs, collections.abc.Callable)
 # True
 
+# example callable 
+# define as a subclass of abc.Callable
+# then define the __call__ method 
+# create an instance of the class 
+
+import collections.abc 
+class Power(collections.abc.Callable):
+    def __call__(self, x, n):
+        p = 1
+        for i in range(n):
+            p *=x 
+        return p 
+
+power = Power() # power became like a function
+pow(2, 0)
+
+
+# another example
+# martingale - double up on each loss strategy 
+
+class BettingMartingale(BettingStrategy):
+    def __init__(self):
+        self._win = 0 
+        self._loss = 0
+        self.stage = 1
+    
+    @property 
+    def win(self):
+        return self._win 
+    
+    @win.setter 
+    def win(self, value):
+        self._win = value 
+        self.stage = 1 
+    
+    @property 
+    def loss(self):
+        return self._loss 
+    
+    @loss.setter 
+    def loss(self, value):
+        self._loss = value 
+        self.stage *= 2 
+    
+    def __call__(self):
+        return self.stage 
+
+# >>> bet= BettingMartingale()
+# >>> bet()
+# 1
+# >>> bet.win += 1
+# >>> bet()
+# 1
+# >>> bet.loss += 1
+# >>> bet()
+# 2
+
+
+
 '''
 LRU Memoization Decorator
 '''
@@ -54,11 +113,20 @@ def pow(x, n):
         t = pow(x, n//2)
         return t*t 
 
-
 '''
 callable API
 '''
 # the idea behind a callable object is to have an API that's focused on a single method
+
+# The first is the API of the object. If there's a reason for the object to have a
+# function-like interface, then a callable object is a sensible design approach.
+# Using collections.abc.Callable assures that the callable API is built
+# correctly, and it informs anyone reading the code what the intent of the class is.
+
+# The second is the statefulness of the function. Ordinary functions in Python
+# have no hysteresis—there's no saved state. A callable object, however, can
+# easily save a state. The memoization design pattern makes good use of
+# stateful callable objects
 
 
 ##################################################
@@ -146,11 +214,11 @@ fundamental base classes
 higher level composite structures
 '''
 
-# • The Sequence and MutableSequence classes build on the basics and fold in
+# The Sequence and MutableSequence classes build on the basics and fold in
 # methods such as index(), count(), reverse(), extend(), and remove().
-# • The Mapping and MutableMapping classes fold in methods such as keys(),
+# The Mapping and MutableMapping classes fold in methods such as keys(),
 # items(), values(), and get(), among others.
-# • The Set and MutableSet classes fold in comparison and arithmetic operators
+# The Set and MutableSet classes fold in comparison and arithmetic operators
 # to perform set operation
 
 
@@ -172,11 +240,15 @@ def __contains__(self, item):
     index = bisect_left(self._items, item)
     return (index != len(self._items) and (self._items[index] == item))
 
-
-
 # another example modify the meaning of contains
 def __contains__(self, rank):
     returna any(c.rank==rank for c in hand.cards)
+# so instead of doing
+any(c.rank == 'A' for c in hand.cards)
+# we can do 
+'A' in hand.cards
+
+
 
 '''
 Size
@@ -469,6 +541,55 @@ def __eq__(self, other):
 __hash__ = None 
 
 
+# mixed class comparison example 
+# full implementation of a class with comparisons
+
+class Hand:
+    def __init__(self, dealer_card, *cards):
+        self.dealer_card = dealer_card
+        self.cards = list(cards)
+    
+    def __str__(self):
+        return ", ".join(map(str, self.cards))
+
+    def __repr__(self):
+        return "{__class__.__name__}({dealer_card!r}, {_cards_str})".format(
+            __class__=self.__class__,
+            _cards_str_=", ".join(map(repr, self.cards)),
+            **self.__dict__)
+    
+    def __eq__(self, other):
+    # mixed class comparison check for instance type
+        if isinstance(other, int):
+            return self.total() == other 
+        
+        try: 
+            return (self.cards == other.cards
+                and self.dealer_card == other.dealer_card)
+        except AttributeError:
+            return NotImplemented 
+    
+    def __lt__(self, other):
+        if isinstance(other, int):
+            return self.total() < other 
+        try:
+            return self.total() < other.total()
+        except AttributeError:
+            return NotImplemented 
+    
+    def __le__(self, other):
+        if isinstance(other, int):
+            return self.total() <= other 
+        try:
+            return self.total() <= other.total()
+        except AttributeError:
+            return NotImplemented 
+    
+    __hash__ = None 
+    def total(self):
+        pass 
+
+    
 
 '''
 __bool__() method

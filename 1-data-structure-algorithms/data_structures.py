@@ -616,6 +616,18 @@ if __name__ == '___main__':
             print(line, end='')
             print('-'*20)
 
+# Define a class to inherit deque
+
+from collections import deque
+class Deck(deque):
+    def __init__(self, size=1):
+        super().__init__()
+        for d in range(size):
+            cards = [card(r,s) for r in range(10) for s in Suits] 
+            super().extend(cards)
+        random.shuffle(self)
+
+
 '''
 numpy
 '''
@@ -687,7 +699,19 @@ Card = collections.namedtuple('Card', ['rank', 'suit'])
 # - a class name and 
 # - a list of field names, which can be given as an iterable of strings or as a single spacedelimited string.
 
+# namedtuple is helpful for cases we need to name a fixed set of attributes
 City = namedtuple('City', 'name country population coordinates')
+
+BlackjackCard = namedtuple('BlackjackCard', 'rank, suit, hard, soft')
+# subclass a namedtuple class 
+class AceCard(BlackjackCard):
+    __slots__ = ()
+    # making __slots__() empty ensures that the subclass has no __dict__ and we can't add any new attributes
+
+    # override the __new__() so we can construct instances with only two values 
+    def __new__(self, rank, suit):
+        return super().__new__(AceCard, 'A', suit, 1, 11)
+    
 
 # Data must be passed as positional arguments to the constructor (in contrast, the
 # tuple constructor takes a single iterable).
@@ -902,6 +926,8 @@ json.dumps(d)
 # An OrderedDict internally maintains a doubly linked list that orders the keys according
 # to insertion order. When a new item is first inserted, it is placed at the end of this list.
 # Subsequent reassignment of an existing key doesn’t change the order
+
+
 
 
 '''

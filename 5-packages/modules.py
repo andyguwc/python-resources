@@ -267,7 +267,15 @@ main.run()
 #  Virtual Environment
 ##################################################
 
+# https://docs.python-guide.org/dev/virtualenvs/
+# virtualenvwrapper 
 
+# make sure environment variables work 
+# https://stackoverflow.com/questions/9554087/setting-an-environment-variable-in-virtualenv
+# nano $VIRTUAL_ENV/bin/postactivate
+
+# add paths to virtualenv
+# https://stackoverflow.com/questions/10738919/how-do-i-add-a-path-to-pythonpath-in-virtualenv
 '''
 pyvenv
 '''
