@@ -28,6 +28,27 @@ serializaiton
 # load(file) will load an object from the given file, returning the constructed object
 # loads(string) load an object from string representation, returning the constructed object 
 
+# defining classes to support persistence 
+
+class Post:
+    def __init__(self, date, title, rst_text, tags):
+        self.date = date
+        self.title = title 
+        self.rst_text = rst_text 
+        self.tags = tags 
+    
+    def as_dict(self):
+        return dict(
+            date = str(self.date),
+            title=self.title,
+            underline= "-"*len(self.title),
+            rst_text= self.rst_text,
+            tag_text= " ".join(self.tags),
+        )
+
+
+
+
 
 ##################################################
 # JSON
@@ -105,6 +126,18 @@ def blog_encode(object):
         return json.JSONEncoder.default(o)
 
 
+# then we can encode as follows
+travel = Blog("travel")
+
+travel.append(
+    Post(
+        ...
+    )
+)
+
+text = json.dumps(travel, indent=4, default=blog_encode) 
+
+
 class Contact:
     def __init__(self, first, last):
         self.first = first 
@@ -153,8 +186,11 @@ def blog_decode(some_dict):
     else:
         return some_dict
 
-# writing json to a file 
+# do the decoding
+blog_data = json.loads(text, object_hook=blog_decode)
 
+
+# writing json to a file 
 with open("temp.json", "w", encoding="UTF-8") as target:
     json.dump( travel3, target, separators=(',', ':'), default=blog_j2_encode)
 

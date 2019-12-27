@@ -207,9 +207,7 @@ f = d1(d2(f))
 Parameterized Decorators
 '''
 
-'''
-Decorator that takes arguments
-'''
+# Decorator that takes arguments
 from functools import wraps 
 import logging 
 
@@ -260,9 +258,7 @@ def debug_named(log_name):
     return concrete_decorator
 
 
-'''
-Example: enforcing type checking
-'''
+# Example: enforcing type checking
 # optionally enforce type checking of funciton arguments 
 @typeassert(int, int)
 def add(x, y):
@@ -343,5 +339,41 @@ class Spam:
         while n > 0:
             n -=1 
         
+'''
+class decorators
+'''
+
+# loggers for each class 
+
+def logged(class_):
+    class_.loggger = logging.getLogger(class.__qualname__)
+    return class_ 
+
+@logged 
+class SomeClass:
+    def __init__(self):
+        self.logger.info("new thing")
+    
+    def method(self, *args):
+        self.logger.info("method %r", args)
+
+# example like functools.total_ordering 
+# can also add method functions to a class 
+# two steps: creating the method function, and then inserting it into the class definition
+
+def memento(class_):
+    def memento(self):
+        return "{0.__class__.__qualname__}({0!r})".format(self)
+    class_.memento = memento
+    return class_ 
+
+@memento
+class SomeClass:
+    def __init__(self, value):
+        self.value = value 
+
+    def __repr__(self):
+        return "{0.value}".format(self)
+
 
 
