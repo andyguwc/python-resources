@@ -1,4 +1,12 @@
 ##################################################
+#  Bash Script
+##################################################
+
+# http://tldp.org/LDP/abs/html/options.html
+
+
+
+##################################################
 #  Python Package Management with pip
 ##################################################
 
@@ -39,70 +47,6 @@
 
 # install all packages listed in requirements.txt
 # $ pip install -r requirements.txt
-
-
-
-
-
-##################################################
-#  Isolated Development Environments with Virtualenv
-##################################################
-
-# virtual env
-# create isolated dependencies 
-# good practice to create a virtual env everytime you starts
-# don't install python packages globally - always work inside virtualenv
-
-
-# $ sudo pip install virtualenv 
-
-# make a virtual environments 
-# $ mkdir .virtualenvs 
-# $ cd .virtualenvs
-
-# create projects with virtualenv myproject 
-# $ virtualenv amaze 
-
-# activate . myproject/bin/activate
-# $ . amaze/bin/activate
-
-# then should be in the environment and can install dependencies for that environment
-# $ pip install pylint
-
-# $ which python
-# /Users/tianyougu/.virtualenvs/amaze/bin/python
-
-# $ deactivate
-
-
-# Virtualenv vs. Projects 
-# keep virtual environments separate from your projets 
-# projects:
-#   - contain source code
-#   - under version control 
-
-# to switch projects, use below which switches both the dev environment and the project directory 
-# $ workon anotherproject 
-
-# list all current projects
-# $ workon 
-
-dev/
-  project1/
-.virtualenvs/
-  project1/
-
-# setting up virtualenv wrapper 
-# $ pip install virtualenvwrapper 
-# $ nano ~/.profile
-
-# the wrapper knows where the project is and knows the 
-# makes new virtual environment variable 
-# $ mlvirtualenv 
-
-
-# project from scratch 
-# $ mkproject sample 
 
 
 ##################################################

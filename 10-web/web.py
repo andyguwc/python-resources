@@ -198,6 +198,17 @@ s.headers.update({'x-test': 'true'})
 s.get('http://example.org', headers={'x-test-2': 'value'})
 
 
+headers = {'x-test': 'true'}
+auth = ('user', 'pass')
+
+
+with requests.session(auth=auth, headers=headers) as c:
+
+    # both 'x-test' and 'x-test2' are sent
+    c.get('http://httpbin.org/headers', headers={'x-test2': 'true'})
+Any dictionaries that you pass to a request method will be merged with the session-level values that are set. The method-level parameters override session parameters.
+
+
 
 '''
 sample hook wrapper 
