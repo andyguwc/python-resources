@@ -187,7 +187,7 @@ with conn as s:
 
 
 ##################################################
-# Collections
+# Collections Protocols
 ##################################################
 
 
@@ -226,23 +226,29 @@ higher level composite structures
 Container
 '''
 
-# iteraration is often implifict. If a collection has no contain method, the iteration does a sequential scan
-
+# iteration is often implicit. 
+# If a collection has no contain method, the iteration does a sequential scan
 
 # memebership testing using in and not in 
 __contains__(item)
 
-def __contains__(self, item):
-    return item in self._items 
+class SortedSet:
+    def __init__(self, items=None):
+        self._items = sorted(items) if items is not None else []
+
+    def __contains__(self, item):
+        return item in self._items 
 
 # if it's sorted already then faster implementation
 def __contains__(self, item):
     index = bisect_left(self._items, item)
     return (index != len(self._items) and (self._items[index] == item))
 
+
 # another example modify the meaning of contains
 def __contains__(self, rank):
     returna any(c.rank==rank for c in hand.cards)
+
 # so instead of doing
 any(c.rank == 'A' for c in hand.cards)
 # we can do 
@@ -254,24 +260,26 @@ any(c.rank == 'A' for c in hand.cards)
 Size
 '''
 # determine number of elements with len(s)
-__len__()
 def __len__(self):
     return len(self._items) # calling len on the underlying list 
+
 
 '''
 Iterable
 '''
+# iterable protocol which returns an iterator with __iter__()
 # can produce iterator with iter(s)
+# iterable can be used in the for loop
 for item in iterable:
     do_something(item)
 
-__iter__()
 def __iter__(self):
     return iter(self._items)
     # or use below
-    # for item in self._items:
-    #   yield item
 
+def __iter__(self):
+    for item in self._items:
+        yield item
 
 # if __iter__ is not implemented, but __getitem__ is implemented, Python creates
 # an interator that attempts to fetch items in order, starting from index 0
@@ -289,133 +297,31 @@ isinstance(f, abc.Iterable) # True
 
 
 '''
-Iterable vs.Iterator
-'''
-
-# python obtain iterators from iterables 
-
-# iterables have an __iter__ method that instantiates a new iterator every time.
-# Iterators implement a __next__ method that returns individual items, and an __iter__
-# method that returns self.
-
-s = 'ABC' # str 'ABC' is the iterable here
-for char in s: # iterator behind the scenes
-    print(char)
-
-s = 'ABC'
-it = iter(s) # build an iterator it from the iterable
-while True: 
-    try:
-        print(next(it)) # call next on the iterator to obtain the next item 
-    except StopIteration:
-        del it
-        break 
-
-# classic iterator 
-# iterator pattern
-import re 
-import reprlib 
-
-RE_WORD = re.compile('\w+')
-class Sentence: 
-    def __init__(self, text):
-        self.text = text
-        self.words = RE_WORLD.findall(text)
-
-    def __repr__(self):
-        return 'Sentence(%s)' % reprlib.repr(self.text)    
-    
-    # Sentence is iterable because it implements the __iter__ special method
-    # which builds and returns a SentenceIterator
-    def __iter__(self):
-        return SentenceIterator(self.words)
-
-class SentenceIterator:
-    def __init__(self, words):
-        self.words = words # holds a reference to the list of words
-        self.index = 0 
-    
-    def __next__(self): 
-        try:
-            word = self.words[self.index]
-        except IndexError: # if no word at self.index, raise StopIteration
-            raise StopIteration()
-        self.index+=1
-        return word 
-    
-    def __iter__(self): #implement the self.__iter__
-        return self 
-
-
-# alternative implementation
-# use the yield (generator function) to replace the SentenceIterator class 
-import re 
-import reprlib 
-
-RE_WORD = re.compile('\w+')
-
-
-class Sentence: 
-    def __init__(self, text):
-        self.text = text 
-        self.words = RE_WORD.findall(text)
-
-    def __repr__(self):
-        return 'Sentence(%s)' % reprlib.repr(self.text)
-    
-    def __iter__(self):
-        for word in self.words: 
-            yield word 
-        return 
-
-
-# another example 
-# loop through each of the words in a string and output them with the first letter capitalized 
-class CapitalIterable:
-    def __init__(self, string):
-        self.string = string 
-
-    def __iter__(self):
-        return CapitalIterator(self.string)
-    
-class CapitalIterator:
-    def __init__(self, string):
-        self.words = [w.capitalize() for w in string.split()]
-        self.index = 0 
-    
-    def __next__(self):
-        if self.index = len(self.words):
-            raise StopIteration()
-    
-        word = self.words[self.index]
-        self.index += 1
-        return word 
-    
-    def __iter__(self):
-        return self 
-
-# example utilizing the iterable 
-iterable = CapitalIterable('the quick brown fox')
-iterator = iter(iterable)
-while True:
-    try:
-        print(next(iterator))
-    except StopIteration:
-        break 
-
-
-'''
 Sequence
 '''
-# implies container, sized, and iterable 
 
+# retrieve elements by index 
+item = seq[index] # no special methods
+
+# retrive slices by slicing 
+item = seq[start:stop]
+
+# further more 
+# return first matching index of item or raise error 
+index = seq.index(item)
+# count items
+num = seq.count(item)
+
+# concatenation with + operator and repetition with * operator 
+
+# implies container, sized, and iterable 
+# index can be a slice 
 def __getitem__(self, index):
     result = self._items[index]
     return SortedSet(result) if isinstance(index, slice) else result 
 
 
 # example object - collection of cards 
-
 Card = collections.namedtuple('Card', ['rank', 'suit'])
 
 class FrenchDeck:
@@ -440,14 +346,6 @@ deck[1] # calls __getitem__ method
 from random import choice
 choice(deck) # picks a random card
 
-# retrieve elements by index 
-item = seq[index] # no special methods
-# find items by value
-index = seq.index(item)
-# count items
-num = seq.count(item)
-# reversed sequence
-r = reversed(seq)
 
 # iteration is often implicit, the in operator does a sequential scan if no __contains__ method implemented
 Card('Q', 'hearts') in deck
@@ -463,23 +361,8 @@ def spades_high(card):
 for card in sorted(deck, key=spades_high):
     print(card)
 
-# implement equality and inequality
-def __eq__(self, rhs):
-    if not isinstance(rhs, SortedSet):
-        return NotImplemented
-    return self._items == rhs._items
-# inequality
-__ne__(self, rhs)
-
-SortedSet([1,2,3]) == SortedSet([1,2,3]) # return False 
-SortedSet([1,2,3]) is SortedSet([1,2,3]) # return False 
-
-# index is automatic for any subclasses of collections.abc
-# define SortedSet as class from Sequence
-from collections.abc import Sequence
-class SortedSet(Sequence):
-    pass 
-# count is also automatically implemented 
+# reversed sequence
+r = reversed(seq) # special method __reversed__() fallback to __getitem__() and __len__()
 
 # overwriting index
 def index(self, item):
@@ -489,13 +372,35 @@ def index(self, item):
     raise ValueError("{} not found".format(repr(item)))
 
 # concatenationg + 
+from itertools import chain 
+
 def __add__(self, rhs):
     return SortedSet(chain(self._items, rhs._items))
 
 # repetition with * operator
 def __mul__(self, rhs):
     return self if rhs >0 else SortedSet()
-    
+
+
+'''
+equality and inequality
+'''
+
+# implement equality and inequality
+# without implementing this, two objects with the same component can be different 
+def __eq__(self, rhs):
+    if not isinstance(rhs, SortedSet):
+        return NotImplemented # return NotImplemented object instead of raising the error
+    return self._items == rhs._items
+
+# can overwrite the inequality method 
+def __ne__(self, rhs):
+    if not isinstance(rhs, SortedSet):
+        return NotImplemented
+    return self._items != rhs._items
+
+SortedSet([1,2,3]) == SortedSet([1,2,3]) # return False 
+SortedSet([1,2,3]) is SortedSet([1,2,3]) # return False 
 
 
 
@@ -506,8 +411,8 @@ __contains__
 __iter__
 __len__
 
-__le__() # subset
-__ge__() # superset
+__le__() # <= subset
+__ge__() # >= superset
 
 # mutable set 
 # implement add() and discard()

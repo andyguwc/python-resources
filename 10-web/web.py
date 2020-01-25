@@ -1,4 +1,52 @@
 
+
+##################################################
+# Web Frameworks 
+##################################################
+
+# Broadly speaking, a web framework consists of a set of libraries and a main handler
+# within which you can build custom code to implement a web application (i.e., an
+# interactive website providing a client interface to code running on a server). Most
+# web frameworks include patterns and utilities to accomplish at least the following:
+
+# URL routing
+# - Match an incoming HTTP request to a particular Python function (or callable).
+
+# Handling Request and Response objects
+# - Encapsulate the information received from or sent to a user’s browser.
+
+# Templating
+# - Inject Python variables into HTML templates or other output, allowing programmers
+# to separate an application’s logic (in Python) from the layout (in the template).
+
+# Development web service for debugging
+# - Run a miniature HTTP server on development machines to enable rapid development;
+# often automatically reloading server-side code when files are updated.
+
+'''
+Django vs. Flask
+'''
+# Django is a “batteries included” web application framework and is an excellent choice
+# for creating content-oriented websites. By providing many utilities and patterns out
+# of the box, Django aims to make it possible to build complex, database-backed web
+# applications quickly while encouraging best practices in code that uses it.
+
+# Flask is a microframework for Python, and is an excellent choice for building smaller
+# applications, APIs, and web services. Rather than aiming to provide everything you
+# could possibly need, Flask implements the most commonly used core components of
+# a web application framework, like URL routing, HTTP request and response objects,
+# and templates.
+
+# If you use Flask, it is up to you to choose other components for your application, if
+# any. For example, database access or form generation/validation are not built into
+# Flask. This is great, because many web applications don’t need those features. If yours
+# do, there are many available extensions, such as SQLAlchemy for a database, or
+# pyMongo for MongoDB and WTForms for forms
+
+# https://flask.palletsprojects.com/en/1.1.x/tutorial/
+
+
+
 ##################################################
 # Requests
 ##################################################
@@ -384,3 +432,28 @@ req = request.Request(url, querystring.encode('ascii'), headers=headers)
 # make a request and read the response 
 u = request.urlopen(req)
 resp = u.read()
+
+
+
+
+##################################################
+# Web Servers
+##################################################
+
+# Nginx
+# Nginx (pronounced “engine-x”) is a web server and reverse proxy11 for HTTP,
+# SMTP, and other protocols. It is known for its high performance, relative simplicity,
+# and compatibility with many application servers (like WSGI servers). It also
+# includes handy features like load balancing,12 basic authentication, streaming,
+# and others. Designed to serve high-load websites, Nginx is gradually becoming
+# quite popular.
+
+# WSGI servers
+# Gunicorn (Green Unicorn)
+# Gunicorn is the recommended choice for new Python web applications—a pure-
+# Python WSGI server used to serve Python applications. Unlike other Python web
+# servers, it has a thoughtful user interface and is extremely easy to use and configure.
+# Gunicorn has sane and reasonable defaults for configurations. However,
+# some other servers, like uWSGI, are tremendously more customizable (but therefore
+# are much more difficult to effectively use).
+

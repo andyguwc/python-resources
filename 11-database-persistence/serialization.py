@@ -1,15 +1,23 @@
 
 ##################################################
-# Persistence and Serialization
+# Serialization
 ##################################################
 
-# A persistent object is one that has been written to some storage medium. The object can be retrieved from storage and used in a Python application. Perhaps the object was represented in JSON and written to the filesystem. Perhaps an object-relational mapping (ORM) layer has represented the object as rows in SQL tables to store the object in a database
+# A persistent object is one that has been written to some storage medium. 
+# The object can be retrieved from storage and used in a Python application. 
+# Perhaps the object was represented in JSON and written to the filesystem. 
+# Perhaps an object-relational mapping (ORM) layer has represented the object as rows in SQL tables to store the object in a database
 
 # We'll need to separate persistence from other features such as the core processing of our application and the presentation of data to users.
 
 '''
 serializaiton
 '''
+# Data serialization is the concept of converting structured data into a format that
+# allows it to be shared or stored—retaining the information necessary to reconstruct
+# the object in memory at the receiving end of the transmission (or upon read from
+# storage).
+
 # To make a Python object persistent, we must convert it to bytes and write the bytes to a file. 
 # We'll call this serialization; it is also called marshaling, deflating or encoding
 
@@ -45,9 +53,6 @@ class Post:
             rst_text= self.rst_text,
             tag_text= " ".join(self.tags),
         )
-
-
-
 
 
 ##################################################
@@ -236,6 +241,14 @@ with open("travel_blog.p", "wb") as target:
 
 with open("travel_blog.p", "rb") as source:
     copy = pickle.load(source)
+
+
+sample_dict = { 'Alice': 89, 'Bob': 72, 'Charles': 87 }
+# use dumps to convert the object to a serialized string 
+serial_data = pickle.dumps(sample_dict)
+
+# use loads to de-serialize an object 
+received_data = pickle.loads(serial_data)
 
 
 # designing a class for reliable pickle processin

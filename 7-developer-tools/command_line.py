@@ -1,5 +1,5 @@
 ##################################################
-#  Command Line 
+#  Command Line & User Interactions
 ##################################################
 
 
@@ -28,6 +28,10 @@ os interface
 '''
 arguments and options
 '''
+# command is the name of the executable being invoked
+# arguments come after the command (also referred to as parameters or subcommands)
+# options begin with one dash for single characters or with two dashes for words 
+
 # options come first, preceded by - or --
 # example of option without arguments -v or --v
 # example of option with arguments -m module 
@@ -50,7 +54,8 @@ parser = argparse.ArgumentParser( description="Simulate Blackjack" )
 config= parser.parse_args()
 
 # default to False, sometimes can do default to None
-parser.add_argument('-v', '--verbose', action='store_true', default=False)
+# the action='store_true' indicates the option is intended as a flag that if present on the command line, stored as True in the parser's dictionary
+parser.add_argument('-v', '--verbose', action='store_true', help='if verbose', default=False)
 
 # use action of 'store_const' with additional const= arguments. This allows us to store values beyond simple True/False
 parser.add_argument('--debug', action='store_const', const=logging.DEBUG, default=logging.INFO, dest="logging_level")
@@ -66,6 +71,7 @@ parser.add_argument( "-b", "--bet", action="store", default="Flat",
 # store an integer value that follows the option, the long name stake will be the value in the options object
 parser.add_argument( "-s", "--stake", action="store", default=50, type=int )
 
+
 # positional arguments 
 # We define positional arguments using a name with no "-" decoration. In the
 # case where we have a fixed number of positional arguments, we'll add them appropriately to the parser:
@@ -74,7 +80,8 @@ parser.add_argument( "output_filename", action="store" )
 
 
 '''
-integrating command line options and environment variables
+integrating command line options 
+and environment variables
 '''
 
 # explicitly setting the value when defining command line options

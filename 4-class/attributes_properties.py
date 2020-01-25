@@ -387,3 +387,5 @@ Timeit module for testing performance
 '''
 timeit.timeit("f()", """def f(): pass""")
 
+timeit.timeit(setup="from __main__ import resolve", stmt="resolve('python.org", number=1)
+

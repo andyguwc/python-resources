@@ -3,21 +3,34 @@
 ##################################################
 
 '''
-Calling a method on a Parent class 
+initialize
 '''
+# subclasses will want to initialize base classes
+# base class initializer will only be called automatically if subclass initializer is undefined
+# use super() to call base class __init__()
+
+
+'''
+super()
+'''
+# given a MRO and class C, super() gives you an object which resolves methods using only 
+# part of the MRO which comes after C
+
+# instance method
+# super() is same as super(class-of-method, self)
+
+# class method 
+# super() is same as super(class-of-method, class) which is typically method of the base class
+
 
 # use the super() function 
-
 # specify just the differences in the new inherited class
-# class variable sounds starts out with the string "Meow" instead of the string "mrrp", and there is a new method chasing_rats
 
 class HighSchoolStudent(Student):
     school_name = 'new high school'
 
     def get_name(self):
         original_value = super().get_name()
-
-
 
 # class SubClass(BaseClass)
 # base class __init__() is not called if overwritten, unless define init as super().__init__()
@@ -50,6 +63,7 @@ class SortedList(SimpleList):
         self.sort()
     
     def add(self, item):
+        # calling super here 
         super().add(item)
         self.sort()
     
@@ -64,6 +78,9 @@ isinstance('hello', str)
 # determines if one type is a subclass of another
 
 
+'''
+cross reference attributes between super and sub class 
+'''
 # superclass and subclass can access attributes from each other 
 # typical polymorphic design. Each subclass provides a unique
 # implementation of the _points() method. All the subclasses have identical methods and attributes. 
@@ -82,8 +99,6 @@ class NumberCard(Card):
 class AceCard(Card):
     def _points(self):
         return 1, 11
-
-
 
 
 '''
@@ -227,12 +242,13 @@ class Flat(BettingStrategy):
 # subclass must overrride the basic bet() method 
 
 
-'''
-multiple inheritance
-'''
+##################################################
+#  Multiple Inheritance 
+##################################################
+
 # We can use multiple inheritance in a disciplined way to create cross-cutting aspects. 
 # We'll consider a base class plus mixin class definitions to introduce features. Often, we'll use the mixin classes to build cross-cutting aspects.
-
+# if a class has multiple base classes and defines no intializer, then only the initializer of the first base class is automatically called
 
 # define class with more than one base class 
 class SubClass(Base1, Base2):
@@ -240,20 +256,6 @@ class SubClass(Base1, Base2):
 # subclass inherit methods of all bases 
 # if a class defines no intializer, then only the init from the first base class is called
 # __bases__ a tuple of base classes 
-# method resolution order 
-SortedList.__mro__ # to print out the method resolution order 
-
-# super()
-# given a method resolution order and a class C, super gives you an object which resolves method using only the part which comes after C
-# super() returns a proxy object which routes method calls
-super(base-class, derived-class) 
-# instance bound proxy
-super(class, instance-of-class)
-
-# object model
-# the ultimate base class of every class object 
-NoBaseClass.__bases__
-dir(object) # outputs ['__class__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__']
 
 # best practice
 # use multiple inheritance only for mix-in utility 
@@ -263,7 +265,9 @@ dir(object) # outputs ['__class__', '__delattr__', '__dir__', '__doc__', '__eq__
 # own instance attributes nor require their __init__ constructor to be called.
 
 
-# MRO 
+'''
+method resolution order 
+'''
 # An object's class will define a Method Resolution Order (MRO).
 # This defines how base classes are searched to locate an attribute or method name.
 # The MRO works its way up the inheritance hierarchy; this means that subclass
@@ -273,33 +277,13 @@ dir(object) # outputs ['__class__', '__delattr__', '__dir__', '__doc__', '__eq__
 bool.__mro__
 # (<class 'bool'>, <class 'int'>, <class 'object'>)
 
-# type of inehritance 
+# type of inheritance 
 # distinguish interface inheritance from implementation inheritance
 # inheritance of interface creates a subtype, implying a "is-a" relationship
 # inheritance of implementation avoids code duplication by reuse 
 
 # making interfaces explicit with ABCs
 # if a class is designed to define an interface, it should be an explicit ABC (i.e. subclass abc.ABC)
-
-# use Mixins for code reuse 
-# a mixin does not define a new type, it merely bundles methods for reuse
-# a mixin should never be instantiated, and concrete classes should not inherit only from mixins
-
-# Every class has an interface: the set public attributes (methods or data attributes) implemented or inherited
-# by the class. This includes special methods, like __getitem__ or __add__.
-
-class Foo:
-    def __getitem__(self, pos):
-        return range(0,30,10)[pos]
-
-# There is no method __iter__ yet Foo instances are iterable because—as a fallback—
-# when Python sees a __getitem__ method, it tries to iterate over the object by calling
-# that method with integer indexes starting with 0. Because Python is smart enough to
-# iterate over Foo instances, it can also make the in operator work even if Foo has no
-# __contains__ method: it does a full scan to check if an item is present.
-
-# deals with multiple init needed
-# pass in the **kwargs to manage different sets of arguments
 
 # We've changed all arguments to keyword arguments by giving them an empty
 # string as a default value. We've also ensured that a **kwargs parameter is included
@@ -335,8 +319,6 @@ class Friend(Contact, AddressHolder):
 # the class statement 
 # the decorators applied to the class definition
 # the mixin classes with the base class that is given last 
-
-
 
 '''
 cross cutting scenarios

@@ -1,25 +1,73 @@
 
 ##################################################
+# Properly Installing Python
+##################################################
+# Python that ships with OS X is good for learning not stable for releases
+# Need Cpython release 
+
+# First install Homebrew
+$ BREW_URI=https://raw.githubusercontent.com/Homebrew/install/master/install
+$ ruby -e "$(curl -fsSL ${BREW_URI})"
+
+# Then insert the homebres directory at the top of the PATH environment variable (~/.profile or ~/.bash_profile)
+export PATH=/usr/local/bin:/usr/local/sbin:$PATH
+
+# Then isntall Python along with pip and setuptools
+$ brew install python3
+
+# Upgrade Pip
+$ pip install --upgrade pip
+
+
+'''
+pyenv
+'''
+# managed multiple python versions 
+# https://realpython.com/intro-to-pyenv/
+# https://github.com/pyenv/pyenv
+
+$ brew install pyenv 
+
+# System python comes installed on the operating systems 
+# $ which python
+# /usr/bin/python
+
+# install python version 
+$ pyenv install 3.6.8 
+
+# choose python version
+$ pyenv gloabl 3.6.8
+$ pyenv versions 
+
+# remove python 
+$ ls ~/.pyenv/versions/
+$ rm -rf ~/.pyenv/versions/2.7.15
+
+
+
+##################################################
 # Virtual Env
 ##################################################
 
 # virtual env
-# create isolated dependencies 
+# create isolated dependencies
+# it creates a folder containing all the necesary executables to use the packages that a Python project would need
 # good practice to create a virtual env everytime you starts
 # don't install python packages globally - always work inside virtualenv
 # https://realpython.com/python-virtual-environments-a-primer/
 
+
 '''
 virtualenv 
 '''
-# $ sudo pip install virtualenv 
+# $ sudo pip3 install virtualenv 
 # $ mkdir sample && cd sample
 # $ python3 -m virtualenv venv 
 # $ python3 -m venv venv (a better approach to use the venv from standar lib)
 # $ source venv/bin/activate 
 # $ deactivate
 
-# This create the following 
+# This created the following 
 # ├── bin
 # │   ├── activate
 # │   ├── activate.csh
@@ -52,6 +100,7 @@ virtualenvwrapper
 '''
 # wrapper around virtualenv which better organizes the virtual environments
 # and makes it easier to switch between environments
+# downside is the user must acquire these scripts to completely duplicate the environment on another machine
 
 # https://python-guide-kr.readthedocs.io/ko/latest/dev/virtualenvs.html
 # https://virtualenvwrapper.readthedocs.io/en/latest/
@@ -75,12 +124,20 @@ virtualenvwrapper
 # $ echo $PROJECT_HOME
 
 # project from scratch 
-# $ mkproject sample 
+# $ mkproject sample (simplifies creating the directory and then mkvirtualenv sample)
 # $ workon sample 
 
 # other commands 
 # $ mkvirtualenv
 # $ deactivate
+# $ rmvirtualenv sample
+
+'''
+add a path to virtualenv
+'''
+# if already using virtualenvwrapper 
+# add2virtualenv directory1 directory2 …
+# https://stackoverflow.com/questions/10738919/how-do-i-add-a-path-to-pythonpath-in-virtualenv
 
 
 '''
@@ -118,4 +175,3 @@ setting an environment varible in virtualenv
 # another approach using python-dotenv
 # to get environment variables from .env
 # https://pybit.es/persistent-environment-variables.html
-

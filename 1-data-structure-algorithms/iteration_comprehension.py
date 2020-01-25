@@ -235,6 +235,12 @@ list(map(factorial, range(6)))
 list(map(factorial, filter(lambda n: n%2, range(6))))
 [factorial(n) for n in range(6) if n%2]
 
+# reduce 
+# repeatedly apply a function to the elements of a sequence, reducing them to a single value 
+from functools import reduce 
+import operator 
+reduce(operator.add, [1,2,3,4,5])
+
 # Anonymous Functions 
 
  
@@ -249,7 +255,7 @@ Iterators and Generators
 
 # iterable - an object which implements the __iter__() method (which returns an iterator)
 # an iterator is an object with a next() method and a done() method 
-
+# all iterators are iterables which generally just return themselves with __iter__()
 # generator creates iterator using functions
 
 # iter() create an iterator
@@ -274,26 +280,121 @@ iterator = iter(iterable)
 next(iterator) # prints 'a'
 next(iterator) # prints 'b'
 
-# best practice use yield results instead of append to list 
+'''
+Iterable vs.Iterator
+'''
 
-def index_word_iter(text):
-    if text:
-        yield 0 
-    for index, letter in enumerate(text):
-        if letter == '':
-            yield index+1 
-# the iterator returned by the call can be converted to list 
-result = list(index_word_iter(text_data))
+# python obtain iterators from iterables 
 
-# bad implementation using list 
-def index_words(text):
-    result = []
-    if text:
-        result.append(0)
-    for index, letter in enumerate(text):
-        if letter == ‘ ‘:
-            result.append(index + 1)
-    return result
+# iterables have an __iter__ method that instantiates a new iterator every time.
+# Iterators implement a __next__ method that returns individual items, and an __iter__
+# method that returns self.
+
+s = 'ABC' # str 'ABC' is the iterable here
+for char in s: # iterator behind the scenes
+    print(char)
+
+s = 'ABC'
+it = iter(s) # build an iterator it from the iterable
+while True: 
+    try:
+        print(next(it)) # call next on the iterator to obtain the next item 
+    except StopIteration:
+        del it
+        break 
+
+# classic iterator 
+# iterator pattern
+import re 
+import reprlib 
+
+RE_WORD = re.compile('\w+')
+class Sentence: 
+    def __init__(self, text):
+        self.text = text
+        self.words = RE_WORLD.findall(text)
+
+    def __repr__(self):
+        return 'Sentence(%s)' % reprlib.repr(self.text)    
+    
+    # Sentence is iterable because it implements the __iter__ special method
+    # which builds and returns a SentenceIterator
+    def __iter__(self):
+        return SentenceIterator(self.words)
+
+class SentenceIterator:
+    def __init__(self, words):
+        self.words = words # holds a reference to the list of words
+        self.index = 0 
+    
+    def __next__(self): 
+        try:
+            word = self.words[self.index]
+        except IndexError: # if no word at self.index, raise StopIteration
+            raise StopIteration()
+        self.index+=1
+        return word 
+    
+    def __iter__(self): #implement the self.__iter__
+        return self 
+
+
+# alternative implementation
+# use the yield (generator function) to replace the SentenceIterator class 
+import re 
+import reprlib 
+
+RE_WORD = re.compile('\w+')
+
+
+class Sentence: 
+    def __init__(self, text):
+        self.text = text 
+        self.words = RE_WORD.findall(text)
+
+    def __repr__(self):
+        return 'Sentence(%s)' % reprlib.repr(self.text)
+    
+    def __iter__(self):
+        for word in self.words: 
+            yield word 
+        return 
+
+
+# another example 
+# loop through each of the words in a string and output them with the first letter capitalized 
+class CapitalIterable:
+    def __init__(self, string):
+        self.string = string 
+
+    def __iter__(self):
+        return CapitalIterator(self.string)
+    
+class CapitalIterator:
+    def __init__(self, string):
+        self.words = [w.capitalize() for w in string.split()]
+        self.index = 0 
+    
+    def __next__(self):
+        if self.index = len(self.words):
+            raise StopIteration()
+    
+        word = self.words[self.index]
+        self.index += 1
+        return word 
+    
+    def __iter__(self):
+        return self 
+
+# example utilizing the iterable 
+iterable = CapitalIterable('the quick brown fox')
+iterator = iter(iterable)
+while True:
+    try:
+        print(next(iterator))
+    except StopIteration:
+        break 
+
 
 # stateful iterator functions
 
@@ -312,7 +413,11 @@ def run_distinct():
     for item in distinct(items):
         print(item)
 
+'''
+__getitem__()
+'''
 # alternative, __getitem__ which works for consecutive integers
+
 class AlternateIterable:
     def __init__(self):
         self.data=[1,2,3]
@@ -332,7 +437,10 @@ class Sensor:
 sensor = Sensor()
 timestamps = iter(datetime.datetime.now, None)
 
-# iterating in reverse 
+'''
+iterating in reverse 
+'''
+
 a = [1,2,3,4]
 for x in reversed(a):
     print(x)
@@ -360,6 +468,7 @@ class Countdown:
         while n <= self.start:
             yield n 
             n += 1
+
 '''
 Stacking Iterators 
 '''
@@ -421,6 +530,29 @@ for line in pylines:
 ''' 
 yield 
 '''
+
+# best practice use yield results instead of append to list 
+
+def index_word_iter(text):
+    if text:
+        yield 0 
+    for index, letter in enumerate(text):
+        if letter == '':
+            yield index+1 
+# the iterator returned by the call can be converted to list 
+result = list(index_word_iter(text_data))
+
+# bad implementation using list 
+def index_words(text):
+    result = []
+    if text:
+        result.append(0)
+    for index, letter in enumerate(text):
+        if letter == ‘ ‘:
+            result.append(index + 1)
+    return result
+
+
 # the presence of the yield statement turns a function into a generator 
 # customize an iteration pattern 
 def frange(start, stop, increment):
@@ -444,14 +576,7 @@ for x in flatten(items):
     print(x)
 
 # yield from flatten(x) is the same as for i in flatten(x): yield i 
-
-
-
-'''
-customized iterator protocol
-'''
-# Python iterator protocl requires __iter__() to return a special iterator object that implements a __next__() operation
-# and implements a StopIteration exception to signal completion 
+n 
 
 '''
 slice of an iterator 

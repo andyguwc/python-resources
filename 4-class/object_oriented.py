@@ -464,22 +464,26 @@ if __name__ == "__main__":
 
 
 
-
 ##################################################
 #  Class Method vs. Static Method
 ##################################################
 
 # instance vs. class vs. static methods 
 # https://realpython.com/instance-class-and-static-methods-demystified/
+# static method 
+#  - no access needed to either class or instance objects 
+#  - an implementation detail 
+# class method 
+#  - require access to the class object to call other class methods or constructor 
 
 # class method
 # Instead of accepting a self parameter, class methods take a cls parameter that points to the class—and not the object instance—when the method is called.
 # classmethod changes the way the method is called, so it receives the class itself as the first argument, instead of an instance. Its most common use is for alternative constructors
 
+
 '''
 Class Method
 '''
-
 
 @classmethod
 def frombytes(cls, octets):
@@ -487,6 +491,10 @@ def frombytes(cls, octets):
     memv = memoryview(octets[1:]).cast(typecode)
     return cls(*memv)
 
+
+# can use classmethod for factory methods
+# create multiple functions similar behavior like constructors
+# without need to change the __init__
 
 class Pizza:
     def __init__(self, ingredients):
@@ -504,7 +512,6 @@ class Pizza:
         return cls(['mozzarella', 'tomatoes', 'ham'])
 
 
-# can use classmethod for factory methods
 # >>> Pizza.margherita()
 # Pizza(['mozzarella', 'tomatoes'])
 
@@ -613,33 +620,6 @@ def make_averager():
 
 
 ##################################################
-#  Local vs. Global Variables (Scope)
-##################################################
-
-# Python does not require you to declare variables,
-# but assumes that a variable assigned in the body of a function is local.
-
-'''
-nonlocal
-'''
-# The nonlocal declaration was introduced in Python 3. It lets you
-# flag a variable as a free variable even when it is assigned a new value within the function.
-# If a new value is assigned to a nonlocal variable, the binding stored in the closure is
-# changed.
-
-def make_averager():
-    count = 0
-    total = 0
-
-    def averager(new_value):
-        nonlocal count, total 
-        count +=1
-        total +=new_value 
-        return total/count
-    return averager 
-
-
-##################################################
 #  Idioms
 ##################################################
 
@@ -657,7 +637,6 @@ Variables Assigment
 # side first: that’s where the object is created or retrieved. After
 # that, the variable on the left is bound to the object, like a label
 # stuck to it. Just forget about the boxes.
-
 
 
 '''

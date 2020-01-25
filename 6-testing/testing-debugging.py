@@ -90,7 +90,6 @@ class Deck2(list):
 Basic Unittest
 '''
 
-
 # test a function 
 import unittest
 def func(x):
@@ -124,6 +123,10 @@ if __name__ == "__main__":
 # python 6-testing/test.py
 # pytest 6-testing/test.py
 # python3 -m unittest 6-testing/test.py
+
+# python -m unittest test_example
+# python3 -m unittest test_example.MyTest
+
 
 # We can have as many test methods on one TestCase class as we like; as long as
 # the method name begins with test, the test runner will execute each one as a
@@ -593,6 +596,11 @@ magic mock
 # @patch is the same thing as using the MagicMock class. 
 # It sets the mocked method as a MagicMock instance for the duration of the unit test method, 
 # then set’s back the method to reference it’s original definition when the unit test method completes.
+
+from unittest.mock import MagicMock
+instance = ProductionClass()
+instance.method = MagicMock(return_value=3)
+
 
 '''
 import / local scope
@@ -1073,226 +1081,6 @@ def factorial(n):
     return n*factorial(n-1)
 
 
-##################################################
-# Exceptions
-##################################################
-
-'''
-raise
-'''
-# exception error: syntatically correct python code results in an error
-# use raise to throw an error when a certain condition occurs 
-x = 10 
-if x > 5: 
-    raise Exception('x should to exeed 5. Value of x was: {}'.format(x))
-
-
-'''
-try except else finally 
-'''
-# try: This is the only mandatory clause in a try statement. The code in this block is the first thing that Python runs in a try statement.
-# except: If Python runs into an exception while running the try block, it will jump to the except block that handles that exception.
-# else: If Python runs into no exceptions while running the try block, it will run the code in this block after running the try block.
-# finally: Before Python leaves this try statement, it will run the code in this finally block under any conditions, even if it's ending the program. 
-
-try:
-    # run this code
-    linux_interaction()
-except AssertionError as error: 
-    # execute this when there is an exception 
-    print(error)
-else:
-    # no exceptions. run this
-    print('Executing the else clause')
-finally:
-    # always run this code 
-    print('Cleaning up, irrespective of any exceptions.')
-
-
-# accessing error mesages
-try:
-    # some code
-except Exception as e:
-    # some code
-    print("Exception occured: {}".format(e))
-
-
-# example handling 
-try:
-    choice = randome.choice(some_exceptions)
-    print("raising {}".format(choice))
-    if choice:
-        raise choice("An error")
-except ValueError:
-    print("Caught a ValueError")
-except TypeError:
-    print("Caught a TypeError")
-except Exception as e:
-    print("Caught some other error: %s" %(e.__class__.__name__))
-
-else: 
-    print("this code is called if no exception")
-finally:
-    print("this cleanup code is always called")
-
-
-def load_json_key(data, key):
-    try:
-        result_dict = json.loads(data) # May raise ValueError
-    except ValueError as e:
-        raise KeyError from e
-    else:
-        return result_dict[key]
-
-
-# raise ValueError so when other functions use it can write except statement
-# better than the alternative of returning None
-def divide(a,b):
-    try:
-        return a/b
-    except ZeroDivisionError as e: 
-        raise ValueError('Invalid Inputs') from e 
-
-# using the ValueError returned above 
-try:
-    result = divide(x, y)
-except ValueError: 
-    print('Invalid inputs')
-else:
-    print('Result is %.1f' % result)
-
-
-'''
-continue
-'''
-
-# continue 
-# always specify an exception type
-while True:
-    try:
-        #
-    except ValueError: 
-        continue # this just ignores the error and continues
-
-# standard exception hierarchy
-# IndexError
-# KeyError
-# IndexError and KeyError are subclasses of LookupError
-
-
-'''
-multiple exceptions
-'''
-
-# If you can handle different exceptions all using a single block of code, they can be
-# grouped together in a tuple like this
-
-# example: remove_url() will be called if any of the listed exceptions occurs
-try:
-    client_obj.get_url(url)
-except (URLError, ValueError, SocketTimeout):
-    client_obj.remove_url(url)
-
-# if need to handle other exceptions differently 
-try:
-    client_obj.get_url(url)
-except (URLError, ValueError):
-    client_obj.remove_url(url)
-except SocketTimeout:
-    client_obj.handle_url_timeout(url)    
-
-
-'''
-custom exceptions
-'''
-# just define new exceptions as classes which inherit from Exception 
-
-class NetworkError(Exception):
-    pass
-class HostnameError(NetworkError):
-    pass
-
-
-
-
-# Example
-
-# note - make sure you call Exception.__init__() with all of the passed arguments
-
-class TriangleError(Exception):
-    def __init__(self, text, sides):
-        super().__init__(text)
-        self._sides = tuple(sides)
-    
-    @property
-    def sides(self):
-        return self._sides
-    
-    def __str__(self):
-        return "'{}' for sides {}".format(self.args[0], self._sides)
-    
-    def __repr__(self):
-        return "TriangleError({!r},{!r}".format(self.args[0], self._sides)
-
-
-def triangle_area(a,b,c):
-    sides = sorted((a,b,c))
-    if sides[2] > sides[0] + sides[1]:
-        raise TriangleError("Illegal Triangle", sides)
-    p = (a+b+c)/2
-    a = math.sqrt(p*(p-a)*(p-b)*(p-c))
-    return a
-
-
-'''
-chaining exceptions
-'''
-
-# chaining exceptions
-# implicit chaining - during handling of one exception, another one occurred. Implented using the __context__
-# explicit chaining 
-
-# tracebacks
-# records of the function stacks 
-__traceback__ 
-def main():
-    try:
-        inclination(0,5)
-    except InclinationError as e:
-        print(e.__traceback__)
-        traceback.print(e.__traceback__)
-        s = traceback.format_tb(e.__traceback__)
-        print(s)
-
-# assertions for monitoring program invariants (should always be true)
-assert condition , message # optional error string to print if condition is False
-
-def func():
-    if:
-        # 
-    elif:
-        #
-    else:
-        assert False, "This should never happen"
-
-# class invariants
-
-# assertions are for checking function implementations
-# shouldn't use it for validating client inputs, instead should just raise errors
-# use assertions for checking preconditions and postconditions
-assert(all(len(line)<=line_length for line in result.splitlines())
-
-
-# minimize upfront testing 
-
-# The following is often what's done:
-try:
-    found = value in some_argument
-except TypeError:
-    if not isinstance(some_argument, collections.abc.Container):
-        warnings.warn( "{0!r} not a Container".format(some_argument) )
-    raise
-
 
 
 ################################################
@@ -1309,57 +1097,46 @@ def apply_discount(product, discount):
     return price
 
 
+################################################
+# Continuous Integration
+################################################
 
-##################################################
-#  Environment
-##################################################
+# Continuous Integration is a software development practice where members of a team
+# integrate their work frequently, usually each person integrates at least daily—leading to
+# multiple integrations per day. Each integration is verified by an automated build
+# (including test) to detect integration errors as quickly as possible. Many teams find that
+# this approach leads to significantly reduced integration problems and allows a team to
+# develop cohesive software more rapidly.
 
-# handle multiple environments
-import sys
+'''
+Travis-CI
+'''
+# Travis-CI is a distributed CI server which builds tests for open source projects for
+# free. It provides multiple workers that run Python tests and seamlessly integrates with
+# GitHub. You can even have it comment on your pull requests2 whether this particular
+# set of changes breaks the build or not.
 
-class Win32Database(object):
-  # …
-class PosixDatabase(object):
-  # …
-if sys.platform.startswith(‘win32’):
-  Database = Win32Database
-else:
-  Database = PosixDatabase
+# To get started, add a .travis.yml file to your repository with this example content:
+# language: python
+# python:
+# - "2.6"
+# - "2.7"
+# - "3.3"
+# - "3.4"
+# script: python tests/test_all_of_the_units.py
+# branches:
+# only:
+# - master
 
 
-##################################################
-#  PDB
-##################################################
-# import the pdb built-in module and run set_trace function
-def complex_function(a, b, c):
-    # ...
-    import pdb; pdb.set_trace()
-    # as soon as this runs, the program will pause execution
-    # the terminal will turn into an interactive shell
+'''
+Jenkins
+'''
+# Jenkins CI is an extensible continuous integration engine and currently the most popular
+# CI engine. It works on Windows, Linux, and OS X and plugs in to “every Source
+# Code Management (SCM) tool that exists.” Jenkins is a Java servlet (the Java equivalent
+# of a Python WSGI application) that ships with its own servlet container, so you
+# can run it directly using java --jar jenkins.war.
 
-# At the (Pdb) prompt, you can type in the name of local variables to see their values
-# printed out. You can see a list of all local variables by calling the locals built-in
-# function. You can import modules, inspect global state, construct new objects, run the
-# help built-in function, and even modify parts of the program—whatever you need to do
-# to aid in your debugging. In addition, the debugger has three commands that make
-# inspecting the running program easier.
-# bt: Print the traceback of the current execution call stack. This lets you figure out
-# where you are in your program and how you arrived at the pdb.set_trace
-# trigger point.
-# up: Move your scope up the function call stack to the caller of the current function.
-# This allows you to inspect the local variables in higher levels of the call stack.
-# down: Move your scope back down the function call stack one level.
-# Once you’re done inspecting the current state, you can use debugger commands to resume
-# the program’s execution under precise control.
-# step: Run the program until the next line of execution in the program, then return
-# control back to the debugger. If the next line of execution includes calling a
-# function, the debugger will stop in the function that was called.
-# next: Run the program until the next line of execution in the current function, then
-# return control back to the debugger. If the next line of execution includes calling a
-# function, the debugger will not stop until the called function has returned.
-# return: Run the program until the current function returns, then return control
-# back to the debugger.
-# continue: Continue running the program until the next breakpoint (or
-# set_trace is called again).
 
 

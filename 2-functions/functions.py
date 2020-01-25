@@ -12,6 +12,7 @@ Function as Object
 #  - passed as an argument to a function
 #  - returned as the result of a function 
 
+
 # Create and test a function, then read its __doc__ and check its type
 def factorial(n):
     '''returns n!'''
@@ -43,67 +44,6 @@ def f(x, y =3, z=initial):
 # This means that if you perform a mutation operation on one of the original sublists, the copied version will also change.
 
 
-
-##################################################
-# Callable Objects 
-##################################################
-
-# The call operator (i.e., ()) may be applied to other objects beyond user-defined functions.
-# To determine whether an object is callable, use the callable() built-in function.
-# callable instances
-
-# following callable types 
-#  - user defined functions, def and lambda 
-#  - built in functions
-#  - built in methods 
-#  - methods, functions define in the body of a class 
-#  - classes: when invoked, class runs its __new__ method to create an isntance, then __init__ to initialize it 
-#  - class instances: if a class defines a __call__ method then instances can be invoked as functions
-#  - generator functions: functions or methods that use the yield keyword. When called, generator functions return a generator object
-
-__call__() # call method
-
-
-##################################################
-# High-Order Functions
-##################################################
-
-# A function that takes a function as argument or returns a function as the result is a
-# higher-order function.
-
-# example: map, filter, reduce, apply
-list(map(fact, range(6)))
-
-[fact(n) for n in range(6)]
-
-# example: sorted function which take an optional key argument 
-# pass the len function as the key
-sorted(fruits, key=len)
-# any one-argument function can be used with a key 
-def reverse(word):
-    return word[::-1]
-sorted(fruits, key=reverse)
-
-
-
-
-##################################################
-# Lambda Functions
-##################################################
-
-# lambda functions
-# same as anonymous functions
-sorted(scientists, key=lambda name: name,split()[-1]) # creating a callable function using lambda
-
-# using callable() to detect callable 
-def is_event(x):
-    return x % 2 == 0
-callable(is_event)
-
-# the inputs to lambda expression is a free variable that get bound at runtime not definition time
-
-
-
 ##################################################
 # Arguments 
 ##################################################
@@ -111,6 +51,15 @@ callable(is_event)
 '''
 args, kwargs (extended arguments)
 '''
+def func(positional, keyword=value, *args, **kwargs):
+    pass 
+
+# Positional arguments are mandatory and have no default values.
+# Keyword arguments are optional and have default values.
+# An arbitrary argument list is optional and has no default values.
+# An arbitrary keyword argument dictionary is optional and has no default values.
+
+
 # * returns tuple
 # ** returns dictionary 
 
@@ -120,13 +69,9 @@ def hypervolume(length, *lengths): # accept a number of arguments with a lower b
         v*=length
     return v
 
-# You can use the items from a sequence as the positional arguments for a function
-# with the * operator.
-# Using the * operator with a generator may cause your program to run out of
-# memory and crash.
-# Adding new positional parameters to functions that accept *args can introduce
-# hard-to-find bugs.
-
+# You can use the items from a sequence as the positional arguments for a function with the * operator.
+# Using the * operator with a generator may cause your program to run out of memory and crash.
+# Adding new positional parameters to functions that accept *args can introduce hard-to-find bugs.
 
 # keyword arguments
 # benefits
@@ -138,11 +83,28 @@ def function_name(arg1, arg2=8):
     # arg1 is positional argument, and arg2 is keyword argument, and 8 is default value
     pass
 
+# extending 
 def extended(*args, **kwargs): 
     # args is passed as a tuple
-
     # kwargs a dictionary
     pass
+
+def color(red, green, blue, **kwargs):
+    print("r=", red)
+    print("g=", green)
+    print("b=", blue)
+    print(kwargs)
+
+k = {'red':21, 'green': 18, 'alpha': 10, 'blue':9}
+# >>> c
+# r= 21
+# g= 18
+# b= 9
+# {'alpha': 10}
+
+# fowarding arguments
+
+
 
 # function that accepts any uber of positional arguments
 # rest is a tuple of all the extra positional arguments passed
@@ -167,33 +129,38 @@ class Options:
         return self.options[key]
 
 
-
-
 '''
 default args
 '''
-# if default value is supposed to be a mutable container (list, set, ord dict) then use None
+# default values are evaluated at the moment of being imported
+# if default value is supposed to be a mutable container (list, set, ord dict) 
+# then use None
 def spam(a, b=None):
     if be is None:
         b = []
 
 # the values assigned as a default are bound only once at the time of function definition.
-def decode(data, default={}):
-    try:
-        return json.loads(data)
-    except ValueError:
-        return default 
+# not at each time the function is called 
 
-# foo and bar are equal to the default parameter
-# and the default parameter is evaluated only once so foo=bar 
-foo = decode(‘bad data’)
-foo[‘stuff’] = 5
-bar = decode(‘also bad’)
-bar[‘meep’] = 1
-print(‘Foo:’, foo)
-print(‘Bar:’, bar)
+# bad example 
+def append_to(element, to=[]):
+    to.append(element)
+    return to
 
+my_list = append_to(12)
+print(my_list)
+# returns [12]
 
+my_other_list = append_to(42)
+print(my_other_list)
+# returns [12, 42]
+
+# good example
+def append_to(element, to=None):
+    if to is None:
+        to = []
+    to.append(element)
+    return to 
 
 '''
 signature (inspect pacakge)
@@ -208,7 +175,74 @@ for name, param in sig.parameters.items():
 
 
 ##################################################
-# Local Functions 
+# Callable Objects 
+##################################################
+
+# The call operator (i.e., ()) may be applied to other objects beyond user-defined functions.
+# To determine whether an object is callable, use the callable() built-in function.
+# callable instances
+
+# following callable types 
+#  - user defined functions, def and lambda 
+#  - built in functions
+#  - built in methods 
+#  - methods, functions define in the body of a class 
+#  - classes: when invoked, class runs its __new__ method to create an isntance, then __init__ to initialize it 
+#  - class instances: if a class defines a __call__ method then instances can be invoked as functions
+#  - generator functions: functions or methods that use the yield keyword. When called, generator functions return a generator object
+
+__call__() # call method
+
+# classes are also callable, and ClassName() invokes constructor (__init__)
+
+def sequence_class(immutable):
+    return tuple if immutable else list 
+
+seq = sequence_class(immutable=False)
+
+callable(some_object) # checks if something is callable
+
+
+##################################################
+# High-Order Functions
+##################################################
+
+# A function that takes a function as argument or returns a function as the result is a
+# higher-order function.
+
+# example: map, filter, reduce, apply
+list(map(fact, range(6)))
+
+[fact(n) for n in range(6)]
+
+# example: sorted function which take an optional key argument 
+# pass the len function as the key
+sorted(fruits, key=len)
+# any one-argument function can be used with a key 
+def reverse(word):
+    return word[::-1]
+sorted(fruits, key=reverse)
+
+
+
+##################################################
+# Lambda Functions
+##################################################
+
+# lambda functions
+# same as anonymous functions
+sorted(scientists, key=lambda name: name,split()[-1]) # creating a callable function using lambda
+
+# using callable() to detect callable 
+def is_event(x):
+    return x % 2 == 0
+callable(is_event)
+
+# the inputs to lambda expression is a free variable that get bound at runtime not definition time
+
+
+##################################################
+# Local Functions / Namespace 
 ##################################################
 
 # functions defined within the scope of other functions
@@ -224,25 +258,92 @@ def sort_by_last_letter(strings):
 # functions can be treated like any other oject
 # closures - maintain references to objects from earlier scopes 
 
+
 # function factories - functions that return new, specialized functions
 def raise_to(exp):
     def raise_to_exp(x):
         return pow(x, exp)
     return raise_to_exp
 
+
+'local vs. global'
+
 # LEGB
+# first checking local scope, then enclosing scope, then global, finally built-in
 # global keyword - introduces names from the enclosing namespace into the local namespace 
 # nonlocal - introduce names from enclosing namespace into the local namespace
 
+messsage = 'global'
 
+def enclosing():
+    message = 'enclosing'
+    def local():
+        message = 'local'
+
+enclosing()
+print(message) # 'global'
+
+# global
+# if want local functions to modify global variables 
+messsage = 'global'
+
+def enclosing():
+    message = 'enclosing'
+    
+    def local():
+        global message
+        message = 'local'
+
+enclosing()
+print(message) # 'local'
+
+# nonlocal
+# if want to introduce names from the enclosing namespace into the local (i.e. let local change enclosing)
+message = 'global'
+
+def enclosing():
+    message = 'enclosing'
+    
+    def local():
+        nonlocal message
+        message = 'local'
+
+    print('enclosing message', message)
+    local()
+    print('enclosing message', message)
+ 
+enclosing()
+print(message) # 'global'
+enclosing() # enclosing, local
+
+# Python does not require you to declare variables,
+# but assumes that a variable assigned in the body of a function is local.
+
+
+# The nonlocal declaration was introduced in Python 3. It lets you
+# flag a variable as a free variable even when it is assigned a new value within the function.
+# If a new value is assigned to a nonlocal variable, the binding stored in the closure is
+# changed.
+
+def make_averager():
+    count = 0
+    total = 0
+
+    def averager(new_value):
+        nonlocal count, total 
+        count +=1
+        total +=new_value 
+        return total/count
+    return averager 
 
 ##################################################
 # Decorators
 ##################################################
 
 # decorators
-# modify or enhance functions without changing their definition
+# modify or enhance functions without changing their definition (calling code does not need to change)
 # implemented as callables that take and return other callables 
+
 @my_decorator 
 def my_function(x,y): # function object
     return x+y
@@ -475,5 +576,24 @@ increments = [
     (‘orange’, 9),
 ] 
 result = defaultdict(log_missing, current)
+
+
+'''
+unpacking
+'''
+# unpacking
+filename, ext = "my_photo.orig.png".rsplit(".", 1)
+
+# nested unpacking
+a, (b, c) = 1, (2, 3)
+
+# swapping
+a, b = b, a
+
+# arbitrary
+a, *middle, c = [1, 2, 3, 4]
+
+# ignoring
+basename, _, ext = filename.rpartition('.')
 
 

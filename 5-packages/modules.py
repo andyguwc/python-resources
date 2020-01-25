@@ -263,53 +263,14 @@ main= simulation.Simulate_Command()
 main.config= config
 main.run()
 
-##################################################
-#  Virtual Environment
-##################################################
-
-# https://docs.python-guide.org/dev/virtualenvs/
-# virtualenvwrapper 
-
-# make sure environment variables work 
-# https://stackoverflow.com/questions/9554087/setting-an-environment-variable-in-virtualenv
-# nano $VIRTUAL_ENV/bin/postactivate
-
-# add paths to virtualenv
-# https://stackoverflow.com/questions/10738919/how-do-i-add-a-path-to-pythonpath-in-virtualenv
-'''
-pyvenv
-'''
-# The name supplied to pyvenv is the name of a directory that will be created
-pyvenv Spam
 
 '''
-virual environments
+locals() and globals()
 '''
-pip install virtualenv
+# The functions dir(), globals(), and locals() help with quick namespace introspection:
+# - dir(object) returns a list of attributes that are accessible via the object
+# - globals() returns a dictionary of the attributes currently in the global namespace, along with their values.
+# - locals() returns a dictionary of the attributes in the current local namespace (e.g., within a function), along with their values.
 
-virtualenv <env_name>
-virtualenv --python=python2.7 
 
-# executables
-pip install pyinstaller
-pyinstall main.py # which creates the exe file 
-cd ./dist/main 
-./main.exe
-
-pyinstaller --onefile ./main.py
-
-'''
-requirements.txt to reproduce dependencies 
-'''
-# use pip freeze command to save all of your explicit package dependencies into a file
-# (myproject)$ pip3 freeze > requirements.txt
-# (myproject)$ cat requirements.txt
-
-# now if you need to have another virtual environment that matches myproject
-# $ pyenv /tmp/otherproject
-# $ cd /tmp/otherproject
-# source bin/activate
-# (otherproject)$
-# (otherproject)$ pip3 install -r /tmp/myproject/requirements.txt
-# (otherproject)$ pip list
 

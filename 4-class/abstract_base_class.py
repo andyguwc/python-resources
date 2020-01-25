@@ -154,7 +154,12 @@ class MediaLoader(metaclass=abc.ABCMeta):
     @abc.abstractproperty
     def ext(self):
         pass 
-   
+    
+    # also implements an abstract property
+    @property
+    def anotherproerty(self):
+        pass 
+    
     # It is basically saying that any class that supplies concrete implementations of all the 
     # abstract attributes of this ABC should be considered a subclass of MediaLoader. Doesn't need to inherit from the MediaLoader class
     @classmethod 

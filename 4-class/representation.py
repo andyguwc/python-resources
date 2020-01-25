@@ -12,17 +12,14 @@ repr vs. str
 # Return a string representing the object as the developer wants to see it.
 # produces an unambiguous string representation of an object
 # exactness more important - good for debugging and logging 
-# usually the text you would type for recreateing the instance 
-__repr__() 
-
+# usually the text you would type for recreating the instance 
 
 # str()
 # Return a string representing the object as the user wants to see it.
 # intended for clients
 # readable, human-friendly output 
 # if do not define str(), the defaul falls to repr()
-__str__() 
-
+# always write a repr() for your class (default name tells class name and ID which is not helpful)
 
 class Point2D:
     def __init__(self, x, y):

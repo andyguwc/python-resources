@@ -185,3 +185,43 @@ def __eq__(self, other):
     else:
         return NotImplemented 
 
+
+
+'''
+[:] bracket operator overloading
+'''
+# https://github.com/jazzband/tablib/blob/f61b8d8926535953da95cdd61fd584c4f644f8e7/src/tablib/core.py#L109-L233
+def __getitem__(self, key):
+    if isinstance(key, str):
+        if key in self.headers:
+            pos = self.headers.index(key)  # get 'key' index from each data
+            return [row[pos] for row in self._data]
+        else:
+            raise KeyError
+    else:
+        _results = self._data[key]
+        if isinstance(_results, Row):
+            return _results.tuple
+        else:
+            return [result.tuple for result in _results]
+
+def __setitem__(self, key, value):
+    self._validate(value)
+    self._data[key] = Row(value)
+
+def __delitem__(self, key):
+    if isinstance(key, str):
+
+        if key in self.headers:
+
+            pos = self.headers.index(key)
+            del self.headers[pos]
+
+            for i, row in enumerate(self._data):
+
+                del row[pos]
+                self._data[i] = row
+        else:
+            raise KeyError
+    else:
+        del self._data[key]

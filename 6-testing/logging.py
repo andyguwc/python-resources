@@ -72,6 +72,16 @@ def __init__(self, player_name):
 
 
 '''
+what to log
+'''
+# Diagnostic logging
+# - Diagnostic logging records events related to the application’s operation. If a user calls in to report an error, for example, the logs can be searched for context.
+
+# Audit logging
+# - Audit logging records events for business analysis. A user’s transactions (such as a clickstream) can be extracted and combined with other user details (such as eventual purchases) for reports or to optimize a business goal.
+
+
+'''
 YAML config
 '''
 import logging.config 

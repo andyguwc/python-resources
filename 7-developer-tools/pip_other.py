@@ -48,6 +48,8 @@
 # install all packages listed in requirements.txt
 # $ pip install -r requirements.txt
 
+# Dependencies specified in requirements.txt are intended to set the entire Python environment. To set dependencies when distributing a library, it
+# is better to use the install_requires keyword argument to the setup() function in a setup.py file.
 
 ##################################################
 #  Check Code Quality with Pylint
@@ -112,7 +114,6 @@ r # return (out of this level)
 
 # docstrings and standards
 # becomes the __doc__ special attribute 
-""" """
 # for methods specify the return value 
 
 # Sphinx to generate HTML docs

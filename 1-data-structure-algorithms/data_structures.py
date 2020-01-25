@@ -42,25 +42,52 @@ Datetime
 '''
 
 # datetime module 
-# includes date and time 
+
+# date
 import datetime
 datetime.date(2014,1,6)
-datetime.date(year=2014,month=1, day=6)
-datetime.date.today()
+datetime.date(year=2014, month=1, day=6)
+datetime.datetime.now() # local time from the machine
+datetime.datetime.utcnow() # utc time 
 
+d = datetime.date.today()
+d.month
+d.day 
+d.isoformat()
+
+# strftime()
+# string-format-time 
 "the date is {:%A %d %B %Y}".format(d) # day, date, month, year
 
+# time
 datetime.time(hour=23, minute=59, second=59, microsecond=9999)
 d = datetime.date.today()
 t = datetime.time(8,15)
 datetime.datetime.combine(d,t)
 
+# datetime
+# composite of date and time 
+
 # timedelta
+# duration - represent differences between timestamps
 a = datetime.datetime(year=2004, month=1, day=8, hour=12, minute=22)
 b = datetime.datetime(year=2010, month=2, day=6, hour=10, minute=20)
-a - b # outputs datetime.timedelta 
+d = a - b # outputs datetime.timedelta 
+d.total_seconds() # output number of seconds
+datetime.date.today() + datetime.timedelta(weeks=3) # in three weeks time 
+# timedelta constructor
+# instances store only days, seconds, microseconds
+# while constructor accepsts almost everything from microseconds to weeks 
 
+
+# timezone (optional)
+# tzinfo object
 datetime.timezone 
+cet = datetime.timezone(datetime.timedelta(hours=1), "CET")
+departure = datetime.datetime(year=2014, month=1, day=7, hour=11, minute=30, tzinfo=cet)
+arrival = datetie.datetime(year=2014, month=1, day=8, hour=10, minute=30, tzinfo=datetime.timezon.utc)
+str(arrival - departure) 
+
 
 ##################################################
 # List

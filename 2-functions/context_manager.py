@@ -2,13 +2,13 @@
 # Context Manager
 ##################################################
 # an object designed to be used in a with statement
+
 with context-manager:
-    context-manager.begin()
-    body
-    context-manager.end()
+    enter()
+    body 
+    exit()
 
 # a context manager ensures that resources are properly and automatically managed
-
 with open('important_data.txt', 'w') as f:
     f.write('The secret password is 12345')
 
@@ -17,31 +17,48 @@ with open('important_data.txt', 'w') as f:
 
 # context manager protocol
 __enter__(self)
+# if __enter__ throws an exception, then never execute the following
+# common for __enter__ to return itself
+# for example, file.__enter__() returns the file object itself 
 
-__exit__(self,
-        exc_type,
-        exc_val,
-        exc_tb)
+# __exit__ can do different things depending on how the with block terminates
+# exception type, exception object, exception traceback
+__exit__(self, exc_type, exc_val, exc_tb)
+# __exit__() called when with statement body exits
+# __exit__() can check type for None to see if an exception was thrown 
 
-with expression as x: # expression must support __enter__ and __exit__
-    body 
+# by default, __exit__() propagates exceptions thrown from the with-block
+# if __exit__() returns False, the exception is propagated
 
 # naive implementation of a context manager 
 class LoggingContextManager:
     def __enter__(self):
         return self
+    
     def __exit__(self, exc_type, exc_val, exc_tb):
-        return 
+        if exc_type is None: 
+            print('normal exit detected')
+        else:
+            print('exception detected - type={}, value={}, traceback={}').format(
+                exc_type, exc_val, exc_tb)) 
 
-# common for __enter__ to return itself
-# for example, file.__enter__() returns the file object itself 
-
-# __exit__() called when with statement body exits
-__exit__(self, exc_type, exc_val, exc_tb) # exception type, exception object, exception traceback
-# propagates exceptions thrown from the with-block
-
-# contextlib
+'''
+contextlib
+'''
 # standard library module for working with context managers
+# provides additional tools that help turn functions into context maangers
+
+# enforce the call of an object's close() method 
+
+from contextlib import closing 
+with closing(open("outfile.txt", "w")) as output:
+    output.write("abc")
+
+# because __enter__() and __exit__() are defined for the object that handles file I/O we can use the with directly
+with open("outfile.txt", "w") as output: 
+    pass 
+
+
 # contextlib.contextmanager is a decorator you can use to create new context managers
 # Essentially the contextlib.contextmanager decorator wraps the function in a class that implements the __enter__ and __exit__ methods
 
@@ -53,7 +70,7 @@ __exit__(self, exc_type, exc_val, exc_tb) # exception type, exception object, ex
 @contextlib.contextmanager
 def my_context_manager():
     # Enter
-    try:
+    try: # like __enter__()
         yield [value] # like __enter__()'s return statement
         # normal exit
     except:
@@ -81,7 +98,6 @@ def start_transaction(connection):
     tx.commit()
 
 
-
 ##################################################
 # Introspection
 ##################################################
@@ -90,17 +106,23 @@ def start_transaction(connection):
 
 # repr(int) returning class type integers
 # type is a subclass of object and object's type is type 
+# better to use isinstance(i, int) rather than directly call the type
 
-# instropsecting objects
-# dir(i) returns list of attribute names 
-# getattr(i, 'denominator')
+'''
+instropsecting objects
+'''
+# dir(i) returns list of attribute names and method names
+# getattr(i, 'denominator') returns the same value as i.denominator
 # hasattr(i, 'bit_length) i has attribute bit_length
 
 # introspecting scopes
-# globals() 
-# locals() returns same dictionary as globals() 
+# globals() represents the global namespace 
+# locals() returns similar dictionary as globals() 
 
-# inspect module
+
+'''
+inspect module
+'''
 # import inspect
 # import sorted_set
 # inspect.getmembers(sorted_set.SortedSet, inspect.isfunction)
