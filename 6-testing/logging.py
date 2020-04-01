@@ -2,14 +2,26 @@
 # Logging 
 ################################################
 
-# separate secruity, audit and debugging into separate logs 
+# https://www.loggly.com/ultimate-guide/python-logging-basics/
+# https://docs.python.org/3/howto/logging-cookbook.html
+# https://docs.python-guide.org/writing/logging/
 
 '''
-logging
+logging basics
 '''
-# first get a logging.Logger instance with the logging.getLogger() function
-# then create messages with Logger. 
-# methods such as warn(), info(), debug(), error() and fatal()
+# To emit a log message, a caller first requests a named logger. 
+# The name can be used by the application to configure different rules for different loggers. 
+# This logger then can be used to emit simply-formatted messages at different log levels (DEBUG, INFO, ERROR, etc.), 
+# which again can be used by the application to handle messages of higher priority different than those of a lower priority. 
+# While it might sound complicated, it can be as simple as this:
+
+import logging
+logging.basicConfig(level=logging.INFO) 
+log = logging.getLogger("my-logger")
+log.info("Hello, world")
+
+# Internally, the message is turned into a LogRecord object and routed to a Handler object registered for this logger. 
+# The handler will then use a Formatter to turn the LogRecord into a string and emit that string.
 
 # In addition to a name, Logger can be configured with a list of handlers that
 # determines where the messages are written and a list of Filters to determine which
@@ -22,6 +34,7 @@ logging
 # Logger names are .-separated strings, the Logger names can parallel class or module
 # names; our application's hierarchy of component definitions will have a parallel
 # hierarchy of loggers.
+
 
 import logging
 class Player:
@@ -45,6 +58,10 @@ class Player:
 '''
 config the loggers 
 '''
+# https://www.machinelearningplus.com/python/python-logging-guide/
+
+# In general, a configuration consists of adding a Formatter and a Handler to the root logger. 
+# Because this is so common, the logging module provides a utility function called basicConfig that handles a majority of use cases.
 # - the logger needs to be associated with a handler that produces output
 # - the handler needs a logging level that will pass our logging messages 
 import logging 
@@ -52,16 +69,65 @@ import sys
 # permits a few parameters to create a logging.handlers.StreamHandler to create the output 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
+
+# configure formatter and handler 
+import logging 
+
+# get or create a logger (if same name then the same logger)
+logger = logging.getLogger(__name__)
+
+# set log level 
+logger.setLevel(logging.WARNING)
+
+# define the handler and set formatter 
+file_handler = logging.FileHander('logfile.log')
+formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s')
+file_handler.setFormatter(formatter)
+
+# add file handler to logger 
+logger.addHandler(file_handler)
+
+# logs 
+logger.debug('A debug message')
+logger.error('An error message'
+
+)
+
+# example sending to syslog
+import logging
+import logging.handlers
+import os
+ 
+class SyslogBOMFormatter(logging.Formatter):
+    def format(self, record):
+        result = super().format(record)
+        return "ufeff" + result
+ 
+handler = logging.handlers.SysLogHandler('/dev/log')
+formatter = SyslogBOMFormatter(logging.BASIC_FORMAT)
+handler.setFormatter(formatter)
+root = logging.getLogger()
+root.setLevel(os.environ.get("LOGLEVEL", "INFO"))
+root.addHandler(handler)
+ 
+try:
+    exit(main())
+except Exception:
+    logging.exception("Exception in main()")
+    exit(1)
+
+
 '''
 naming the loggers
 '''
 #  - module name 
-
 import logging 
-logger.logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
+
 
 # - object instances 
 # create logger in the __init__() method. Logger will be unique to the instance 
+import logging
 def __init__(self, player_name):
     self.name = player_name
     self.logger = logging.getLogger("{}{}".format(
@@ -69,6 +135,16 @@ def __init__(self, player_name):
 
 # - class names 
 # using __class__.__qualname__ as the Logger name and assign Logger to the class as a whole
+
+
+'''
+levels of logging 
+'''
+# DEBUG: Detailed information, for diagnosing problems. Value=10.
+# INFO: Confirm things are working as expected. Value=20.
+# WARNING: Something unexpected happened, or indicative of some problem. But the software is still working as expected. Value=30.
+# ERROR: More serious problem, the software is not able to perform some function. Value=40
+# CRITICAL: A serious error, the program itself may be unable to continue running. Value=50
 
 
 '''

@@ -276,3 +276,39 @@ class Table:
             self.deck = Deck()
             return self.get_hand()
 
+
+'''
+retry
+'''
+
+def fetch_streams_with_retry(plugin, interval, count):
+    """Attempts to fetch streams repeatedly
+       until some are returned or limit hit."""
+
+    try:
+        streams = fetch_streams(plugin)
+    except PluginError as err:
+        log.error(u"{0}".format(err))
+        streams = None
+
+    if not streams:
+        log.info("Waiting for streams, retrying every {0} "
+                 "second(s)".format(interval))
+    attempts = 0
+
+    while not streams:
+        sleep(interval)
+
+        try:
+            streams = fetch_streams(plugin)
+        except FatalPluginError:
+            raise
+        except PluginError as err:
+            log.error(u"{0}".format(err))
+
+        if count > 0:
+            attempts += 1
+            if attempts >= count:
+                break
+
+    return streams

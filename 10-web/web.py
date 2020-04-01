@@ -254,7 +254,7 @@ with requests.session(auth=auth, headers=headers) as c:
 
     # both 'x-test' and 'x-test2' are sent
     c.get('http://httpbin.org/headers', headers={'x-test2': 'true'})
-Any dictionaries that you pass to a request method will be merged with the session-level values that are set. The method-level parameters override session parameters.
+# Any dictionaries that you pass to a request method will be merged with the session-level values that are set. The method-level parameters override session parameters.
 
 
 
@@ -266,6 +266,89 @@ sample hook wrapper
 '''
 retry 
 '''
+
+# practical example 
+# define a retry exception which request function will raise if certain status_codes are met 
+# the request with retry will retry multiple times, each time calling the request if retry exception is raised
+class RetryException(Exception):
+    pass
+
+
+class ExampleAPIWrapper():
+    # ...
+    def __init__(self):
+        pass 
+    
+    def _request(
+        self,
+        method,
+        path,
+        data=None,
+        base_url=None,
+        api_version=None
+    ):
+        base_url = base_url or self._base_url
+        version = api_version if api_version else self._api_version
+        url = base_url + '/' + version + path
+        headers = {}
+        if self._oauth:
+            headers['Authorization'] = 'Bearer ' + self._oauth
+        else:
+            headers['APCA-API-KEY-ID'] = self._key_id
+            headers['APCA-API-SECRET-KEY'] = self._secret_key
+        opts = {
+            'headers': headers,
+            # Since we allow users to set endpoint URL via env var,
+            # human error to put non-SSL endpoint could exploit
+            # uncanny issues in non-GET request redirecting http->https.
+            # It's better to fail early if the URL isn't right.
+            'allow_redirects': False,
+        }
+        if method.upper() == 'GET':
+            opts['params'] = data
+        else:
+            opts['json'] = data
+
+        retry = self._retry
+        if retry < 0:
+            retry = 0
+        while retry >= 0:
+            try:
+                return self._one_request(method, url, opts, retry)
+            except RetryException:
+                retry_wait = self._retry_wait
+                logger.warning(
+                    'sleep {} seconds and retrying {} '
+                    '{} more time(s)...'.format(
+                        retry_wait, url, retry))
+                time.sleep(retry_wait)
+                retry -= 1
+                continue
+
+    def _one_request(self, method, url, opts, retry):
+        '''
+        Perform one request, possibly raising RetryException in the case
+        the response is 429. Otherwise, if error text contain "code" string,
+        then it decodes to json object and returns APIError.
+        Returns the body json in the 200 status.
+        '''
+        retry_codes = self._retry_codes
+        resp = self._session.request(method, url, **opts)
+        try:
+            resp.raise_for_status()
+        except HTTPError as http_error:
+            # retry if we hit Rate Limit
+            if resp.status_code in retry_codes and retry > 0:
+                raise RetryException()
+            if 'code' in resp.text:
+                error = resp.json()
+                if 'code' in error:
+                    raise APIError(error, http_error)
+            else:
+                raise
+        if resp.text != '':
+            return resp.json()
+        return None
 
 
 '''
@@ -354,6 +437,57 @@ with open(filename, 'wb') as fd:
 
 with open('massive-body', 'rb') as f: 
     requests.post('http://some.url/streamed', data=f)
+
+
+
+'''
+Custom Authentication
+'''
+# Requests allows you to use specify your own authentication mechanism.
+# Any callable which is passed as the auth argument to a request method will have the opportunity to modify the request before it is dispatched.
+# Authentication implementations are subclasses of requests.auth.AuthBase, and are easy to define. Requests provides two common authentication scheme implementations in requests.auth: HTTPBasicAuth and HTTPDigestAuth.
+# Let’s pretend that we have a web service that will only respond if the X-Pizza header is set to a password value. Unlikely, but just go with it.
+
+from requests.auth import AuthBase
+
+class PizzaAuth(AuthBase):
+    """Attaches HTTP Pizza Authentication to the given Request object."""
+    def __init__(self, username):
+        # setup any auth-related data here
+        self.username = username
+
+    def __call__(self, r):
+        # modify and return the request
+        r.headers['X-Pizza'] = self.username
+        return r
+# Then, we can make a request using our Pizza Auth:
+
+# >>> requests.get('http://pizzabin.org/admin', auth=PizzaAuth('kenneth'))
+# <Response [200]>
+
+# Practical Example https://github.com/gtalarico/airtable-python-wrapper/blob/e85e61b5872a9d8adcf1f1f6348eb1381fa448cc/airtable/auth.py#L25
+class AirtableAuth(requests.auth.AuthBase):
+    def __init__(self, api_key=None):
+        """
+        Authentication used by Airtable Class
+        Args:
+            api_key (``str``): Airtable API Key. Optional.
+                If not set, it will look for
+                enviroment variable ``AIRTABLE_API_KEY``
+        """
+        try:
+            self.api_key = api_key or os.environ["AIRTABLE_API_KEY"]
+        except KeyError:
+            raise KeyError(
+                "Api Key not found. Pass api_key as a kwarg \
+                            or set an env var AIRTABLE_API_KEY with your key"
+            )
+
+    def __call__(self, request):
+        auth_token = {"Authorization": "Bearer {}".format(self.api_key)}
+        request.headers.update(auth_token)
+        return request
+
 
 
 

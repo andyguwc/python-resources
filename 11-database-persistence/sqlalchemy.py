@@ -6,6 +6,7 @@
 # https://docs.sqlalchemy.org/en/13/orm/tutorial.html
 # https://towardsdatascience.com/sqlalchemy-python-tutorial-79a577141a91
 # https://www.compose.com/articles/using-postgresql-through-sqlalchemy/
+# https://github.com/oreillymedia/essential-sqlalchemy-2e
 
 
 '''
@@ -295,7 +296,6 @@ class User(db.Model):
 # https://www.pythonsheets.com/notes/python-sqlalchemy.html
 # https://towardsdatascience.com/sqlalchemy-python-tutorial-79a577141a91
 
-
 # set a DB URL
 from sqlalchemy.engine.url import URL
 
@@ -383,6 +383,25 @@ db.get_results(sql, name=name)
 # SQLAlchemy Core 
 ##################################################
 
+# https://www.youtube.com/watch?v=0PSdzUxRYpA
+# Core vs. ORM 
+# ORM domain model - representing models 
+# Core - shcema centric, referencing things as Table
+
+# metadata is connection between the table structure and pythonic object
+# metadata.create_all(engine) bind the metadata to the engine, looks at the database 
+# and makes sure table in metadata is in the database
+
+# actor.columns.items() to access columns in a table 
+
+# can see the printed sql 
+
+# dialect system
+
+# dynamic table introspection 
+
+
+
 '''
 connecting
 '''
@@ -443,7 +462,7 @@ insert expressions
 '''
 # Insert construct represents an INSERT statement, created relative to its target table
 ins = users.insert().values(name='jack', fullname='Jack Jones')
-str(ins) # returns below
+str(ins) # print the sql stmt executed
 'INSERT INTO users (name, fullname) VALUES (:name, :fullname)'
 # Above, while the values method limited the VALUES clause to just two columns, 
 # the actual data we placed in values didn’t get rendered into the string; instead we got named bind parameters. 
@@ -467,6 +486,16 @@ conn.execute(addresses.insert(), [
     {'user_id': 2, 'email_address' : 'wendy@aol.com'},
 ])
 
+
+'''
+update
+'''
+stmt = actors.update().where(actors.c.name=='test').values(name='abc')
+result = conn.execute(stmt)
+result.rowcount
+
+
+
 '''
 select 
 '''
@@ -487,6 +516,7 @@ result.close()
 # While the cursor and connection resources referenced by the ResultProxy will be respectively closed 
 # and returned to the connection pool when the object is garbage collected, 
 # it’s better to make it explicit as some database APIs are very picky about such things:
+
 
 
 '''
@@ -542,4 +572,37 @@ update_dict = {
 on_duplicate_key_stmt = insert_stmt.on_duplicate_key_update(**update_dict)
 self.session.execute(on_duplicate_key_stmt)
 self.session.commit()
+
+
+
+
+##################################################
+# SQLAlchemy Session / Transactions
+##################################################
+
+# The SQLAlchemy Session - In Depth
+# https://www.youtube.com/watch?v=uAtaKr5HOdA
+# https://www.sqlalchemy.org/library.html#talks
+
+# ACID
+# Atomic 
+# - can revert back to previsou transaction
+# Consistency
+# - Transations used for relational databases 
+# - Provides consistency with constraints like NOT NULL, primary key and foreign key constraints
+# Record persistence 
+# - user.save() starts a insert transaction (autocommit)
+# - can also explicitly start a transaction
+
+
+# Sessions
+# Explicit transaction always present
+# The session maintains a cached set of transactions state, consisting of rows
+# A row is only present in the Session if it was selected or inserted in the span of that transaction
+# Objects, when associated with a Session, are proxies for rows, represented uniquely on primary key identity
+# Changes to objects are pushed out to rows before each query, and at transaction end, using unit of work 
+
+# Unit of work lazily flushes only those rows/columns that have changed, ordering to maintain consistency
+
+# https://github.com/oreillymedia/essential-sqlalchemy-2e/blob/master/ch02.ipynb
 

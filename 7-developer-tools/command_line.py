@@ -40,12 +40,16 @@ arguments and options
 '''
 argparse
 '''
+# https://realpython.com/command-line-interfaces-python-argparse/
+
 
 # Steps 
 # - create ArgumentParser 
 # - define command line options and arguments. Done by adding arguments with the ArgumentParser.add_argument() method
 # - parse the sys.argv command line to create a namespace object that detaisls the options, option arguments and overall command line arguments
 # - use the resulting namespace object ot configure the application and process the arguments
+
+# After you execute .parse_args(), what you get is a Namespace object that contains a simple property for each input argument received from the command line.
 
 parser = argparse.ArgumentParser( description="Simulate Blackjack" )
 
@@ -77,6 +81,26 @@ parser.add_argument( "-s", "--stake", action="store", default=50, type=int )
 # case where we have a fixed number of positional arguments, we'll add them appropriately to the parser:
 parser.add_argument( "input_filename", action="store" )
 parser.add_argument( "output_filename", action="store" )
+
+
+'''
+actions
+'''
+When you add an optional argument to your command line interface, you can also define what kind of action to take when the argument is specified. 
+This means that you usually need to specify how to store the value to the Namespace object you will get when .parse_args() is executed.
+
+There are several actions that are already defined and ready to be used. Let’s analyze them in detail:
+
+store stores the input value to the Namespace object. (This is the default action.)
+store_const stores a constant value when the corresponding optional arguments are specified.
+store_true stores the Boolean value True when the corresponding optional argument is specified and stores a False elsewhere.
+store_false stores the Boolean value False when the corresponding optional argument is specified and stores True elsewhere.
+append stores a list, appending a value to the list each time the option is provided.
+append_const stores a list appending a constant value to the list each time the option is provided.
+count stores an int that is equal to the times the option has been provided.
+help shows a help text and exits.
+version shows the version of the program and exits.
+
 
 
 '''

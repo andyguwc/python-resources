@@ -418,3 +418,253 @@ else:
 pip install
 '''
 # pip install git+https://github.com/gleitz/howdoi.git#egg=howdoi
+
+
+##################################################
+# Setuptools
+##################################################
+
+# https://setuptools.readthedocs.io/en/latest/setuptools.html#installing-setuptools
+# example https://github.com/jakubroztocil/httpie
+
+# Basic Use
+# For basic use of setuptools, just import things from setuptools instead of the distutils. Here’s a minimal setup script using setuptools:
+
+from setuptools import setup, find_packages
+setup(
+    name="HelloWorld",
+    version="0.1",
+    packages=find_packages(),
+)
+
+# Dependencies
+setup(
+    name="Project",
+    ...
+    install_requires=[
+        "enum34;python_version<'3.4'",
+        "pywin32 >= 1.0;platform_system=='Windows'"
+    ]
+)
+
+# Automatic Script Creation
+# https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
+
+setup(
+    # other arguments here...
+    entry_points={
+        "console_scripts": [
+            "foo = my_package.some_module:main_func",
+            "bar = other_module:some_func",
+        ],
+        "gui_scripts": [
+            "baz = my_package_gui:start_func",
+        ]
+    }
+)
+
+# invoke via myproject or python -m myproject
+
+# can be achieved by create a __main__.py file which contains a main() function that takes no arguments, 
+# and also a special passage to determine code to run:
+# https://chriswarrick.com/blog/2014/09/15/python-apps-the-right-way-entry_points-and-scripts/
+
+import sys
+
+def main(args=None):
+    """The main routine."""
+    if args is None:
+        args = sys.argv[1:]
+
+    print("This is the main routine.")
+    print("It should do something interesting.")
+
+    # Do argument parsing here (eg. with argparse) and anything else
+    # you want your project to do.
+
+if __name__ == "__main__":
+    main()
+
+# then ajust setup.py accordingly
+from setuptools import setup
+
+setup(name='my_project',
+      version='0.1.0',
+      packages=['my_project'],
+      entry_points={
+          'console_scripts': [
+              'my_project = my_project.__main__:main'
+          ]
+      },
+)
+
+
+
+# guide on installation
+
+# latest release
+# Current user
+pip install --upgrade --user streamlink
+# System wide
+sudo pip install --upgrade streamlink
+
+# development version (pip)
+# Current user
+pip install --upgrade --user git+https://github.com/streamlink/streamlink.git
+# System wide
+sudo pip install --upgrade git+https://github.com/streamlink/streamlink.git
+
+# development version (git)
+# Current user
+git clone https://github.com/streamlink/streamlink.git
+cd streamlink
+python setup.py install --user
+
+# System wide
+git clone https://github.com/streamlink/streamlink.git
+cd streamlink
+sudo python setup.py install
+
+
+
+
+# https://streamlink.github.io/install.html#source-code
+
+Virtual environment
+Another method of installing Streamlink in a non-system-wide way is using virtualenv, which creates a user owned Python environment instead.
+
+# Create a new environment
+virtualenv ~/myenv
+
+# Activate the environment
+source ~/myenv/bin/activate
+
+# Install Streamlink in the environment
+pip install --upgrade streamlink
+
+# Use Streamlink in the environment
+streamlink ...
+
+# Deactivate the environment
+deactivate
+
+# Use Streamlink without activating the environment
+~/myenv/bin/streamlink ...
+
+
+##################################################
+# Complex Examples
+##################################################
+
+# more complex example https://github.com/jakubroztocil/httpie/blob/master/setup.py
+
+# This is purely the result of trial and error.
+
+import sys
+import codecs
+
+from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
+
+import httpie
+
+
+class PyTest(TestCommand):
+    # `$ python setup.py test' simply installs minimal requirements
+    # and runs the tests with no fancy stuff like parallel execution.
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = [
+            '--doctest-modules', '--verbose',
+            './httpie', './tests'
+        ]
+        self.test_suite = True
+
+    def run_tests(self):
+        import pytest
+        sys.exit(pytest.main(self.test_args))
+
+
+tests_require = [
+    # Pytest needs to come last.
+    # https://bitbucket.org/pypa/setuptools/issue/196/
+    'pytest-httpbin',
+    'pytest',
+    'mock',
+]
+
+
+install_requires = [
+    'requests>=2.22.0',
+    'Pygments>=2.5.2',
+]
+
+
+# Conditional dependencies:
+
+# sdist
+if 'bdist_wheel' not in sys.argv:
+    try:
+        # noinspection PyUnresolvedReferences
+        import argparse
+    except ImportError:
+        install_requires.append('argparse>=1.2.1')
+
+    if 'win32' in str(sys.platform).lower():
+        # Terminal colors for Windows
+        install_requires.append('colorama>=0.2.4')
+
+
+# bdist_wheel
+extras_require = {
+    # https://wheel.readthedocs.io/en/latest/#defining-conditional-dependencies
+    'python_version == "3.0" or python_version == "3.1"': ['argparse>=1.2.1'],
+    ':sys_platform == "win32"': ['colorama>=0.2.4'],
+}
+
+
+def long_description():
+    with codecs.open('README.rst', encoding='utf8') as f:
+        return f.read()
+
+
+setup(
+    name='httpie',
+    version=httpie.__version__,
+    description=httpie.__doc__.strip(),
+    long_description=long_description(),
+    url='https://httpie.org/',
+    download_url='https://github.com/jakubroztocil/httpie',
+    author=httpie.__author__,
+    author_email='jakub@roztocil.co',
+    license=httpie.__licence__,
+    packages=find_packages(),
+    entry_points={
+        'console_scripts': [
+            'http = httpie.__main__:main', # the main function of httpie.__main__.py
+            'https = httpie.__main__:main',
+        ],
+    },
+    extras_require=extras_require,
+    install_requires=install_requires,
+    tests_require=tests_require,
+    cmdclass={'test': PyTest},
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: BSD License',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Software Development',
+        'Topic :: System :: Networking',
+        'Topic :: Terminals',
+        'Topic :: Text Processing',
+        'Topic :: Utilities'
+    ],
+)
+
