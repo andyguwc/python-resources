@@ -11,13 +11,43 @@ x = 10
 if x > 5: 
     raise Exception('x should to exeed 5. Value of x was: {}'.format(x))
 
+
+def delete_product(product_id, user):
+    if not user.is_admin():
+        raise AuthError('Must be admin to delete')
+    if not store.has_product(product_id):
+        raise ValueError('Unknown product_id')
+
+    stre.get_product(product_id).delete()
+
+
 '''
 type of errors
 '''
-IndexError
-KeyError 
-ValueError
+
+IndexError # unknown index for iteration type
+KeyError # missing key in a mapping type
+ValueError 
 ZeroDivisionError
+
+BaseException
+    SystemExit
+    KeyboardInterrupt
+    Exception
+        StopIteration
+        AssertionError
+
+
+'''
+exception payloads
+'''
+try:
+    median([])
+except ValueError as e:
+    # print out the payload
+    print('Payload', e.args)
+    print(str(e))
+
 
 '''
 try except else finally 
@@ -32,13 +62,21 @@ try:
     linux_interaction()
 except AssertionError as error: 
     # execute this when there is an exception 
-    print(error)
+    print(str(error))
 else:
     # no exceptions. run this
     print('Executing the else clause')
 finally:
     # always run this code 
     print('Cleaning up, irrespective of any exceptions.')
+
+try:
+    f = open(filename, 'r')
+except OSError:
+    print("file could not be opened for read")
+else:
+    print("number of lines", sum(1 for line in f))
+    f.close()
 
 
 # accessing error mesages
@@ -155,18 +193,48 @@ except SocketTimeout:
 '''
 custom exceptions
 '''
+# always define an exception
 # just define new exceptions as classes which inherit from Exception 
+# Generally, you’ll want to either derive your custom exceptions from the root Exception
+# class or the other built-in Python exceptions like ValueError or
+# TypeError—whicever feels appropriate.
 
 class NetworkError(Exception):
     pass
+
 class HostnameError(NetworkError):
     pass
+
+class NameTooShortError(ValueError):
+    pass 
+
+# Now we have a “self-documenting” NameTooShortError exception
+# type that extends the built-in ValueError class.
+def validate(name):
+    if len(name) < 10: 
+        raise NameTooShortError(name)
+
+# can define a base validation error so only need one catch 
+# instead of lots of if else statements
+
+class BaseValidationError(ValueError):
+    pass 
+
+class NameTooShortError(BaseValidationError):
+    pass 
+
+class NameTooLongError(BaseValidationError):
+    pass 
+
+try:
+    validate(name)
+except BaseValidationError as err: 
+    handle_validate_err(err)
 
 
 # Example
 
 # note - make sure you call Exception.__init__() with all of the passed arguments
-
 class TriangleError(Exception):
     def __init__(self, text, sides):
         super().__init__(text) # message forwarded to base class for storage
@@ -203,6 +271,15 @@ chaining exceptions
 # tracebacks
 # records of the function stacks 
 __traceback__ 
+
+import traceback 
+
+def inclination(dx, dy):
+    try:
+        dx + dy
+    except ZeroDivisionError as e:
+        raise InclinationError('Some custom error') from e
+
 def main():
     try:
         inclination(0,5)
@@ -312,3 +389,17 @@ def fetch_streams_with_retry(plugin, interval, count):
                 break
 
     return streams
+
+
+'''
+assertions
+'''
+def modules_three(n):
+    r = n % 3
+    if r == 0:
+        print("multiple of 3")
+    elif r == 1:
+        print("Remainder 1")
+    else:
+        assert r == 2, "Remainder is not 2"
+        print("Remainder 2")

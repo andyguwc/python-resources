@@ -22,9 +22,20 @@ packages vs. modules
 # - packages are generally directories while modules are generally files 
 # - package is a directory containing __init__.py
 
-type(urllib) # urllib is a package
-type(urllib.request) # request is a normal module 
-from urllib import request # the submodule knows it's from the package 
+import urllib
+type(urllib)
+# <class 'module'>
+
+from urllib import request
+type(urllib.request)
+# <class 'module'>
+
+# the submodule knows it's from the package 
+from urllib import request 
+import urllib.request
+
+# directories
+urllib.__path__
 
 
 # A file modu.py in the directory pack/ is imported with the statement import pack.modu. 
@@ -42,7 +53,7 @@ from urllib import request # the submodule knows it's from the package
 ##################################################
 
 # A package is a directory containing __init__.py
-# 1. first create root directory (needs to be on python.path)
+# 1. first create root directory (needs to be in sys.path)
 # 2. then create __init__.py this file can be empty and its own presence suffices this to a package
 
 # A package is a collection of modules in a folder. The name of the package is the name of the folder. All we need to
@@ -66,14 +77,16 @@ parent_directory/
 ##################################################
 
 '''
-locating modules
+locating modules (sys.path & PYTHONPATH)
 '''
 #  - python checks sys.path (list of directories python searches for modules)
 #  - searched in order in import
 #  - first match provides module
 #  - importError when there is no match 
 
-# '' searches for modules in the current directory
+sys.path[0] # '' searches for modules in the current directory
+
+# manually manipulate sys.path
 import sys
 sys.path.append('not_searched') # add new entry using append method, now modules in this directory can be imported
 sys.path.extend(['path1','path2'])
@@ -81,10 +94,16 @@ sys.path.extend(['path1','path2'])
 # another way is to use PYTHONPATH environment variable 
 # PYTHONPATH is environment variable listing paths added to sys.path
 # $ export PYTHONPATH=not_searched
+# this will make sys.path including the not_searched directory
 
 '''
 absolute vs. relative imports 
 '''
+# best avoiding relative imports
+reader/
+    __init__.py
+    reader.py
+
 # absolute imports
 from reader.reader import Reader
 
@@ -92,10 +111,13 @@ from reader.reader import Reader
 # generally avoid it 
 from .reader import Reader # imports which use a relative path to modules in the same package 
 
+from ..a import A # parent directory
+from .b import B # same directory
+
 '''
 __all__ (from modu import *)
 '''
-# control the behavior: from module import*
+# control the behavior: from module import *
 # limiting what names to export in a module when people use import *
 from pprint import pprint 
 pprint(locals())
@@ -158,7 +180,8 @@ executable directories
 
 # executable zip file
 # zip file containing an etry point for execution 
-
+cd reader 
+zip -r ../reader.zip *
 
 ##################################################
 # Layout / Project Structure 
@@ -170,13 +193,14 @@ project_name/ # project root - not the package
     README.rst # overview documentation
     docs/ # project documentation 
     src/ # actual package/production code; the /src directory ensures tat you develop against installed versions of your packages
-        package_name/
+    package_name/
+        __init__.py 
+        more_source.py 
+        subpackage1/
             __init__.py 
-            more_source.py 
-            subpackage1/
-                __init__.py 
-    tests/ # all tests for the project; separating tests from production code 
-        test_code.py 
+        tests/ # all tests for the project; separating tests from production code 
+            __init__.py
+            test_code.py 
     setup.py 
 
 # Implementing extensions / plugins with namespace packages 

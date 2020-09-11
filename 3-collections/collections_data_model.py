@@ -255,7 +255,6 @@ any(c.rank == 'A' for c in hand.cards)
 'A' in hand.cards
 
 
-
 '''
 Size
 '''

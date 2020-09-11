@@ -1,0 +1,342 @@
+[MainThread, 2020-09-09 19:59:09,810, INFO] START make_thumbnails
+[Thread-1, 2020-09-09 19:59:09,813, INFO] beginning image downloads
+[Thread-1, 2020-09-09 19:59:09,813, INFO] download image at URL https://dl.dropboxusercontent.com/s/2fu69d8lfesbhru/pexels-photo-48603.jpeg
+[Thread-2, 2020-09-09 19:59:09,815, INFO] beginning image resizing
+[Thread-1, 2020-09-09 19:59:10,426, INFO] download image at URL https://dl.dropboxusercontent.com/s/zch88m6sb8a7bm1/pexels-photo-134392.jpeg
+[Thread-2, 2020-09-09 19:59:10,426, INFO] resizing image pexels-photo-48603.jpeg
+[Thread-2, 2020-09-09 19:59:10,727, INFO] done resizing image pexels-photo-48603.jpeg
+[Thread-1, 2020-09-09 19:59:11,052, INFO] download image at URL https://dl.dropboxusercontent.com/s/lsr6dxw5m2ep5qt/pexels-photo-135130.jpeg
+[Thread-2, 2020-09-09 19:59:11,076, INFO] resizing image pexels-photo-134392.jpeg
+[Thread-2, 2020-09-09 19:59:11,615, INFO] done resizing image pexels-photo-134392.jpeg
+[Thread-1, 2020-09-09 19:59:11,664, INFO] download image at URL https://dl.dropboxusercontent.com/s/6xinfm0lcnbirb9/pexels-photo-167300.jpeg
+[Thread-2, 2020-09-09 19:59:11,665, INFO] resizing image pexels-photo-135130.jpeg
+[Thread-1, 2020-09-09 19:59:12,294, INFO] download image at URL https://dl.dropboxusercontent.com/s/2dp2hli32h9p0y6/pexels-photo-167921.jpeg
+[Thread-2, 2020-09-09 19:59:12,512, INFO] done resizing image pexels-photo-135130.jpeg
+[Thread-2, 2020-09-09 19:59:12,513, INFO] resizing image pexels-photo-167300.jpeg
+[Thread-1, 2020-09-09 19:59:12,930, INFO] download image at URL https://dl.dropboxusercontent.com/s/fjb1m3grcrceqo2/pexels-photo-173125.jpeg
+[Thread-2, 2020-09-09 19:59:13,168, INFO] done resizing image pexels-photo-167300.jpeg
+[Thread-2, 2020-09-09 19:59:13,169, INFO] resizing image pexels-photo-167921.jpeg
+[Thread-1, 2020-09-09 19:59:13,497, INFO] download image at URL https://dl.dropboxusercontent.com/s/56u8p4oplagc4bp/pexels-photo-185934.jpeg
+[Thread-1, 2020-09-09 19:59:14,040, INFO] download image at URL https://dl.dropboxusercontent.com/s/2s1x7wz4sdvxssr/pexels-photo-192454.jpeg
+[Thread-2, 2020-09-09 19:59:14,221, INFO] done resizing image pexels-photo-167921.jpeg
+[Thread-2, 2020-09-09 19:59:14,221, INFO] resizing image pexels-photo-173125.jpeg
+[Thread-2, 2020-09-09 19:59:14,432, INFO] done resizing image pexels-photo-173125.jpeg
+[Thread-2, 2020-09-09 19:59:14,433, INFO] resizing image pexels-photo-185934.jpeg
+[Thread-2, 2020-09-09 19:59:14,480, INFO] done resizing image pexels-photo-185934.jpeg
+[Thread-1, 2020-09-09 19:59:14,845, INFO] download image at URL https://dl.dropboxusercontent.com/s/1gjphqnllzm10hh/pexels-photo-193038.jpeg
+[Thread-2, 2020-09-09 19:59:14,846, INFO] resizing image pexels-photo-192454.jpeg
+[Thread-2, 2020-09-09 19:59:15,415, INFO] done resizing image pexels-photo-192454.jpeg
+[Thread-1, 2020-09-09 19:59:15,602, INFO] download image at URL https://dl.dropboxusercontent.com/s/pcjz40c8pxpy057/pexels-photo-193043.jpeg
+[Thread-2, 2020-09-09 19:59:15,629, INFO] resizing image pexels-photo-193038.jpeg
+[Thread-2, 2020-09-09 19:59:16,215, INFO] done resizing image pexels-photo-193038.jpeg
+[Thread-1, 2020-09-09 19:59:16,249, INFO] download image at URL https://dl.dropboxusercontent.com/s/hokdfk7y8zmwe96/pexels-photo-207962.jpeg
+[Thread-2, 2020-09-09 19:59:16,281, INFO] resizing image pexels-photo-193043.jpeg
+[Thread-1, 2020-09-09 19:59:16,882, INFO] download image at URL https://dl.dropboxusercontent.com/s/k2tk2co7r18juy7/pexels-photo-247917.jpeg
+[Thread-1, 2020-09-09 19:59:17,473, INFO] download image at URL https://dl.dropboxusercontent.com/s/m4xjekvqk4rksbx/pexels-photo-247932.jpeg
+[Thread-2, 2020-09-09 19:59:17,637, INFO] done resizing image pexels-photo-193043.jpeg
+[Thread-2, 2020-09-09 19:59:17,638, INFO] resizing image pexels-photo-207962.jpeg
+[Thread-2, 2020-09-09 19:59:17,856, INFO] done resizing image pexels-photo-207962.jpeg
+[Thread-2, 2020-09-09 19:59:17,856, INFO] resizing image pexels-photo-247917.jpeg
+[Thread-1, 2020-09-09 19:59:18,101, INFO] download image at URL https://dl.dropboxusercontent.com/s/znmswtwhcdbpc10/pexels-photo-265186.jpeg
+[Thread-2, 2020-09-09 19:59:18,617, INFO] done resizing image pexels-photo-247917.jpeg
+[Thread-2, 2020-09-09 19:59:18,617, INFO] resizing image pexels-photo-247932.jpeg
+[Thread-1, 2020-09-09 19:59:18,767, INFO] download image at URL https://dl.dropboxusercontent.com/s/jgb6n4esquhh4gu/pexels-photo-302899.jpeg
+[Thread-1, 2020-09-09 19:59:19,386, INFO] download image at URL https://dl.dropboxusercontent.com/s/rjuggi2ubc1b3bk/pexels-photo-317156.jpeg
+[Thread-2, 2020-09-09 19:59:19,523, INFO] done resizing image pexels-photo-247932.jpeg
+[Thread-2, 2020-09-09 19:59:19,524, INFO] resizing image pexels-photo-265186.jpeg
+[Thread-2, 2020-09-09 19:59:19,805, INFO] done resizing image pexels-photo-265186.jpeg
+[Thread-2, 2020-09-09 19:59:19,805, INFO] resizing image pexels-photo-302899.jpeg
+[Thread-1, 2020-09-09 19:59:19,966, INFO] download image at URL https://dl.dropboxusercontent.com/s/cpaog2nwplilrz9/pexels-photo-317383.jpeg
+[Thread-1, 2020-09-09 19:59:20,761, INFO] download image at URL https://dl.dropboxusercontent.com/s/16x2b6ruk18gji5/pexels-photo-320007.jpeg
+[Thread-2, 2020-09-09 19:59:20,944, INFO] done resizing image pexels-photo-302899.jpeg
+[Thread-2, 2020-09-09 19:59:20,945, INFO] resizing image pexels-photo-317156.jpeg
+[Thread-1, 2020-09-09 19:59:21,296, INFO] download image at URL https://dl.dropboxusercontent.com/s/xqzqzjkcwl52en0/pexels-photo-322207.jpeg
+[Thread-1, 2020-09-09 19:59:21,944, INFO] download image at URL https://dl.dropboxusercontent.com/s/frclthpd7t8exma/pexels-photo-323503.jpeg
+[Thread-2, 2020-09-09 19:59:22,135, INFO] done resizing image pexels-photo-317156.jpeg
+[Thread-2, 2020-09-09 19:59:22,136, INFO] resizing image pexels-photo-317383.jpeg
+[Thread-1, 2020-09-09 19:59:22,504, INFO] download image at URL https://dl.dropboxusercontent.com/s/7ixez07vnc3jeyg/pexels-photo-324030.jpeg
+[Thread-1, 2020-09-09 19:59:23,080, INFO] download image at URL https://dl.dropboxusercontent.com/s/1xlgrfy861nyhox/pexels-photo-324655.jpeg
+[Thread-1, 2020-09-09 19:59:23,833, INFO] download image at URL https://dl.dropboxusercontent.com/s/v1b03d940lop05d/pexels-photo-324658.jpeg
+[Thread-2, 2020-09-09 19:59:23,946, INFO] done resizing image pexels-photo-317383.jpeg
+[Thread-2, 2020-09-09 19:59:23,946, INFO] resizing image pexels-photo-320007.jpeg
+[Thread-2, 2020-09-09 19:59:24,196, INFO] done resizing image pexels-photo-320007.jpeg
+[Thread-2, 2020-09-09 19:59:24,196, INFO] resizing image pexels-photo-322207.jpeg
+[Thread-1, 2020-09-09 19:59:24,385, INFO] download image at URL https://dl.dropboxusercontent.com/s/ehrm5clkucbhvi4/pexels-photo-325520.jpeg
+[Thread-2, 2020-09-09 19:59:24,808, INFO] done resizing image pexels-photo-322207.jpeg
+[Thread-2, 2020-09-09 19:59:24,808, INFO] resizing image pexels-photo-323503.jpeg
+[Thread-1, 2020-09-09 19:59:24,942, INFO] download image at URL https://dl.dropboxusercontent.com/s/l7ga4ea98hfl49b/pexels-photo-333529.jpeg
+[Thread-2, 2020-09-09 19:59:25,363, INFO] done resizing image pexels-photo-323503.jpeg
+[Thread-2, 2020-09-09 19:59:25,363, INFO] resizing image pexels-photo-324030.jpeg
+[Thread-1, 2020-09-09 19:59:25,692, INFO] download image at URL https://dl.dropboxusercontent.com/s/rleff9tx000k19j/pexels-photo-341520.jpeg
+[Thread-2, 2020-09-09 19:59:25,911, INFO] done resizing image pexels-photo-324030.jpeg
+[Thread-2, 2020-09-09 19:59:25,912, INFO] resizing image pexels-photo-324655.jpeg
+[Thread-1, 2020-09-09 19:59:26,261, INFO] downloaded 26 images in 16.447581999 seconds
+[Thread-2, 2020-09-09 19:59:26,455, INFO] done resizing image pexels-photo-324655.jpeg
+[Thread-2, 2020-09-09 19:59:26,455, INFO] resizing image pexels-photo-324658.jpeg
+[Thread-2, 2020-09-09 19:59:27,041, INFO] done resizing image pexels-photo-324658.jpeg
+[Thread-2, 2020-09-09 19:59:27,042, INFO] resizing image pexels-photo-325520.jpeg
+[Thread-2, 2020-09-09 19:59:27,667, INFO] done resizing image pexels-photo-325520.jpeg
+[Thread-2, 2020-09-09 19:59:27,667, INFO] resizing image pexels-photo-333529.jpeg
+[Thread-2, 2020-09-09 19:59:28,115, INFO] done resizing image pexels-photo-333529.jpeg
+[Thread-2, 2020-09-09 19:59:28,115, INFO] resizing image pexels-photo-341520.jpeg
+[Thread-2, 2020-09-09 19:59:28,661, INFO] done resizing image pexels-photo-341520.jpeg
+[Thread-2, 2020-09-09 19:59:28,662, INFO] created 26 thumbnails in 18.845636405 seconds
+[MainThread, 2020-09-09 19:59:28,663, INFO] beginning image downloads
+[MainThread, 2020-09-09 19:59:28,663, INFO] download image at URL https://dl.dropboxusercontent.com/s/2fu69d8lfesbhru/pexels-photo-48603.jpeg
+[MainThread, 2020-09-09 19:59:29,293, INFO] download image at URL https://dl.dropboxusercontent.com/s/zch88m6sb8a7bm1/pexels-photo-134392.jpeg
+[MainThread, 2020-09-09 19:59:29,770, INFO] download image at URL https://dl.dropboxusercontent.com/s/lsr6dxw5m2ep5qt/pexels-photo-135130.jpeg
+[MainThread, 2020-09-09 19:59:30,317, INFO] download image at URL https://dl.dropboxusercontent.com/s/6xinfm0lcnbirb9/pexels-photo-167300.jpeg
+[MainThread, 2020-09-09 19:59:30,885, INFO] download image at URL https://dl.dropboxusercontent.com/s/2dp2hli32h9p0y6/pexels-photo-167921.jpeg
+[MainThread, 2020-09-09 19:59:31,417, INFO] download image at URL https://dl.dropboxusercontent.com/s/fjb1m3grcrceqo2/pexels-photo-173125.jpeg
+[MainThread, 2020-09-09 19:59:31,908, INFO] download image at URL https://dl.dropboxusercontent.com/s/56u8p4oplagc4bp/pexels-photo-185934.jpeg
+[MainThread, 2020-09-09 19:59:32,354, INFO] download image at URL https://dl.dropboxusercontent.com/s/2s1x7wz4sdvxssr/pexels-photo-192454.jpeg
+[MainThread, 2020-09-09 19:59:32,854, INFO] download image at URL https://dl.dropboxusercontent.com/s/1gjphqnllzm10hh/pexels-photo-193038.jpeg
+[MainThread, 2020-09-09 19:59:33,585, INFO] download image at URL https://dl.dropboxusercontent.com/s/pcjz40c8pxpy057/pexels-photo-193043.jpeg
+[MainThread, 2020-09-09 19:59:34,141, INFO] download image at URL https://dl.dropboxusercontent.com/s/hokdfk7y8zmwe96/pexels-photo-207962.jpeg
+[MainThread, 2020-09-09 19:59:34,699, INFO] download image at URL https://dl.dropboxusercontent.com/s/k2tk2co7r18juy7/pexels-photo-247917.jpeg
+[MainThread, 2020-09-09 19:59:35,189, INFO] download image at URL https://dl.dropboxusercontent.com/s/m4xjekvqk4rksbx/pexels-photo-247932.jpeg
+[MainThread, 2020-09-09 19:59:35,721, INFO] download image at URL https://dl.dropboxusercontent.com/s/znmswtwhcdbpc10/pexels-photo-265186.jpeg
+[MainThread, 2020-09-09 19:59:36,260, INFO] download image at URL https://dl.dropboxusercontent.com/s/jgb6n4esquhh4gu/pexels-photo-302899.jpeg
+[MainThread, 2020-09-09 19:59:36,925, INFO] download image at URL https://dl.dropboxusercontent.com/s/rjuggi2ubc1b3bk/pexels-photo-317156.jpeg
+[MainThread, 2020-09-09 19:59:37,431, INFO] download image at URL https://dl.dropboxusercontent.com/s/cpaog2nwplilrz9/pexels-photo-317383.jpeg
+[MainThread, 2020-09-09 19:59:37,960, INFO] download image at URL https://dl.dropboxusercontent.com/s/16x2b6ruk18gji5/pexels-photo-320007.jpeg
+[MainThread, 2020-09-09 19:59:38,422, INFO] download image at URL https://dl.dropboxusercontent.com/s/xqzqzjkcwl52en0/pexels-photo-322207.jpeg
+[MainThread, 2020-09-09 19:59:38,936, INFO] download image at URL https://dl.dropboxusercontent.com/s/frclthpd7t8exma/pexels-photo-323503.jpeg
+[MainThread, 2020-09-09 19:59:39,446, INFO] download image at URL https://dl.dropboxusercontent.com/s/7ixez07vnc3jeyg/pexels-photo-324030.jpeg
+[MainThread, 2020-09-09 19:59:39,925, INFO] download image at URL https://dl.dropboxusercontent.com/s/1xlgrfy861nyhox/pexels-photo-324655.jpeg
+[MainThread, 2020-09-09 19:59:40,435, INFO] download image at URL https://dl.dropboxusercontent.com/s/v1b03d940lop05d/pexels-photo-324658.jpeg
+[MainThread, 2020-09-09 19:59:40,957, INFO] download image at URL https://dl.dropboxusercontent.com/s/ehrm5clkucbhvi4/pexels-photo-325520.jpeg
+[MainThread, 2020-09-09 19:59:41,466, INFO] download image at URL https://dl.dropboxusercontent.com/s/l7ga4ea98hfl49b/pexels-photo-333529.jpeg
+[MainThread, 2020-09-09 19:59:41,966, INFO] download image at URL https://dl.dropboxusercontent.com/s/rleff9tx000k19j/pexels-photo-341520.jpeg
+[MainThread, 2020-09-09 19:59:42,539, INFO] downloaded 26 images in 13.875531153 seconds
+[MainThread, 2020-09-09 19:59:42,540, INFO] END make_thumbnails in 32.726876987 seconds
+[MainThread, 2020-09-09 20:08:05,464, INFO] START make_thumbnails
+[Thread-5, 2020-09-09 20:08:05,469, INFO] beginning image resizing
+[Thread-5, 2020-09-09 20:08:06,162, INFO] resizing image pexels-photo-134392.jpeg
+[Thread-5, 2020-09-09 20:08:06,666, INFO] done resizing image pexels-photo-134392.jpeg
+[Thread-5, 2020-09-09 20:08:06,666, INFO] resizing image pexels-photo-48603.jpeg
+[Thread-5, 2020-09-09 20:08:06,941, INFO] done resizing image pexels-photo-48603.jpeg
+[Thread-5, 2020-09-09 20:08:06,942, INFO] resizing image pexels-photo-135130.jpeg
+[Thread-5, 2020-09-09 20:08:07,203, INFO] done resizing image pexels-photo-135130.jpeg
+[Thread-5, 2020-09-09 20:08:07,204, INFO] resizing image pexels-photo-167300.jpeg
+[Thread-5, 2020-09-09 20:08:07,701, INFO] done resizing image pexels-photo-167300.jpeg
+[Thread-5, 2020-09-09 20:08:07,702, INFO] resizing image pexels-photo-167921.jpeg
+[Thread-5, 2020-09-09 20:08:08,251, INFO] done resizing image pexels-photo-167921.jpeg
+[Thread-5, 2020-09-09 20:08:08,252, INFO] resizing image pexels-photo-185934.jpeg
+[Thread-5, 2020-09-09 20:08:08,311, INFO] done resizing image pexels-photo-185934.jpeg
+[Thread-5, 2020-09-09 20:08:08,311, INFO] resizing image pexels-photo-173125.jpeg
+[Thread-5, 2020-09-09 20:08:08,542, INFO] done resizing image pexels-photo-173125.jpeg
+[Thread-5, 2020-09-09 20:08:08,543, INFO] resizing image pexels-photo-192454.jpeg
+[Thread-5, 2020-09-09 20:08:09,562, INFO] done resizing image pexels-photo-192454.jpeg
+[Thread-5, 2020-09-09 20:08:09,562, INFO] resizing image pexels-photo-193038.jpeg
+[Thread-5, 2020-09-09 20:08:10,134, INFO] done resizing image pexels-photo-193038.jpeg
+[Thread-5, 2020-09-09 20:08:10,134, INFO] resizing image pexels-photo-207962.jpeg
+[Thread-5, 2020-09-09 20:08:10,188, INFO] done resizing image pexels-photo-207962.jpeg
+[Thread-5, 2020-09-09 20:08:10,189, INFO] resizing image pexels-photo-247917.jpeg
+[Thread-5, 2020-09-09 20:08:10,418, INFO] done resizing image pexels-photo-247917.jpeg
+[Thread-5, 2020-09-09 20:08:10,418, INFO] resizing image pexels-photo-193043.jpeg
+[Thread-5, 2020-09-09 20:08:11,155, INFO] done resizing image pexels-photo-193043.jpeg
+[Thread-5, 2020-09-09 20:08:11,155, INFO] resizing image pexels-photo-247932.jpeg
+[Thread-5, 2020-09-09 20:08:11,512, INFO] done resizing image pexels-photo-247932.jpeg
+[Thread-5, 2020-09-09 20:08:11,512, INFO] resizing image pexels-photo-265186.jpeg
+[Thread-5, 2020-09-09 20:08:11,675, INFO] done resizing image pexels-photo-265186.jpeg
+[Thread-5, 2020-09-09 20:08:11,675, INFO] resizing image pexels-photo-302899.jpeg
+[Thread-5, 2020-09-09 20:08:12,279, INFO] done resizing image pexels-photo-302899.jpeg
+[Thread-5, 2020-09-09 20:08:12,279, INFO] resizing image pexels-photo-317156.jpeg
+[Thread-5, 2020-09-09 20:08:12,681, INFO] done resizing image pexels-photo-317156.jpeg
+[Thread-5, 2020-09-09 20:08:12,681, INFO] resizing image pexels-photo-320007.jpeg
+[Thread-5, 2020-09-09 20:08:12,890, INFO] done resizing image pexels-photo-320007.jpeg
+[Thread-5, 2020-09-09 20:08:12,890, INFO] resizing image pexels-photo-323503.jpeg
+[Thread-5, 2020-09-09 20:08:13,201, INFO] done resizing image pexels-photo-323503.jpeg
+[Thread-5, 2020-09-09 20:08:13,201, INFO] resizing image pexels-photo-322207.jpeg
+[Thread-5, 2020-09-09 20:08:13,708, INFO] done resizing image pexels-photo-322207.jpeg
+[Thread-5, 2020-09-09 20:08:13,708, INFO] resizing image pexels-photo-317383.jpeg
+[Thread-5, 2020-09-09 20:08:15,255, INFO] done resizing image pexels-photo-317383.jpeg
+[Thread-5, 2020-09-09 20:08:15,256, INFO] resizing image pexels-photo-324030.jpeg
+[Thread-5, 2020-09-09 20:08:15,728, INFO] done resizing image pexels-photo-324030.jpeg
+[Thread-5, 2020-09-09 20:08:15,729, INFO] resizing image pexels-photo-324655.jpeg
+[Thread-5, 2020-09-09 20:08:15,989, INFO] done resizing image pexels-photo-324655.jpeg
+[Thread-5, 2020-09-09 20:08:15,989, INFO] resizing image pexels-photo-324658.jpeg
+[Thread-5, 2020-09-09 20:08:16,292, INFO] done resizing image pexels-photo-324658.jpeg
+[Thread-5, 2020-09-09 20:08:16,292, INFO] resizing image pexels-photo-333529.jpeg
+[Thread-5, 2020-09-09 20:08:16,502, INFO] done resizing image pexels-photo-333529.jpeg
+[Thread-5, 2020-09-09 20:08:16,502, INFO] resizing image pexels-photo-325520.jpeg
+[Thread-5, 2020-09-09 20:08:16,743, INFO] done resizing image pexels-photo-325520.jpeg
+[Thread-5, 2020-09-09 20:08:16,743, INFO] resizing image pexels-photo-341520.jpeg
+[Thread-5, 2020-09-09 20:08:17,001, INFO] done resizing image pexels-photo-341520.jpeg
+[Thread-5, 2020-09-09 20:08:17,001, INFO] created 26 thumbnails in 11.5309052 seconds
+[MainThread, 2020-09-09 20:08:17,003, INFO] END make_thumbnails in 11.537157954 seconds
+[MainThread, 2020-09-09 21:29:40,688, INFO] START make_thumbnails
+[Thread-5, 2020-09-09 21:29:40,699, INFO] beginning image resizing
+[Thread-5, 2020-09-09 21:29:41,651, INFO] resizing image pexels-photo-134392.jpeg
+[Thread-5, 2020-09-09 21:29:42,446, INFO] done resizing image pexels-photo-134392.jpeg
+[Thread-5, 2020-09-09 21:29:42,447, INFO] resizing image pexels-photo-48603.jpeg
+[Thread-5, 2020-09-09 21:29:42,783, INFO] done resizing image pexels-photo-48603.jpeg
+[Thread-5, 2020-09-09 21:29:42,784, INFO] resizing image pexels-photo-167300.jpeg
+[Thread-5, 2020-09-09 21:29:43,502, INFO] done resizing image pexels-photo-167300.jpeg
+[Thread-5, 2020-09-09 21:29:43,503, INFO] resizing image pexels-photo-135130.jpeg
+[Thread-5, 2020-09-09 21:29:44,099, INFO] done resizing image pexels-photo-135130.jpeg
+[Thread-5, 2020-09-09 21:29:44,099, INFO] resizing image pexels-photo-167921.jpeg
+[Thread-5, 2020-09-09 21:29:45,237, INFO] done resizing image pexels-photo-167921.jpeg
+[Thread-5, 2020-09-09 21:29:45,237, INFO] resizing image pexels-photo-173125.jpeg
+[Thread-5, 2020-09-09 21:29:45,439, INFO] done resizing image pexels-photo-173125.jpeg
+[Thread-5, 2020-09-09 21:29:45,440, INFO] resizing image pexels-photo-185934.jpeg
+[Thread-5, 2020-09-09 21:29:45,534, INFO] done resizing image pexels-photo-185934.jpeg
+[Thread-5, 2020-09-09 21:29:45,534, INFO] resizing image pexels-photo-192454.jpeg
+[Thread-5, 2020-09-09 21:29:45,910, INFO] done resizing image pexels-photo-192454.jpeg
+[Thread-5, 2020-09-09 21:29:45,911, INFO] resizing image pexels-photo-193038.jpeg
+[Thread-5, 2020-09-09 21:29:46,589, INFO] done resizing image pexels-photo-193038.jpeg
+[Thread-5, 2020-09-09 21:29:46,590, INFO] resizing image pexels-photo-193043.jpeg
+[Thread-5, 2020-09-09 21:29:47,252, INFO] done resizing image pexels-photo-193043.jpeg
+[Thread-5, 2020-09-09 21:29:47,252, INFO] resizing image pexels-photo-207962.jpeg
+[Thread-5, 2020-09-09 21:29:47,311, INFO] done resizing image pexels-photo-207962.jpeg
+[Thread-5, 2020-09-09 21:29:47,311, INFO] resizing image pexels-photo-247917.jpeg
+[Thread-5, 2020-09-09 21:29:47,535, INFO] done resizing image pexels-photo-247917.jpeg
+[Thread-5, 2020-09-09 21:29:47,535, INFO] resizing image pexels-photo-247932.jpeg
+[Thread-5, 2020-09-09 21:29:48,060, INFO] done resizing image pexels-photo-247932.jpeg
+[Thread-5, 2020-09-09 21:29:48,060, INFO] resizing image pexels-photo-265186.jpeg
+[Thread-5, 2020-09-09 21:29:48,396, INFO] done resizing image pexels-photo-265186.jpeg
+[Thread-5, 2020-09-09 21:29:48,396, INFO] resizing image pexels-photo-302899.jpeg
+[Thread-5, 2020-09-09 21:29:50,641, INFO] done resizing image pexels-photo-302899.jpeg
+[Thread-5, 2020-09-09 21:29:50,642, INFO] resizing image pexels-photo-317156.jpeg
+[Thread-5, 2020-09-09 21:29:51,744, INFO] done resizing image pexels-photo-317156.jpeg
+[Thread-5, 2020-09-09 21:29:51,744, INFO] resizing image pexels-photo-317383.jpeg
+[Thread-5, 2020-09-09 21:29:52,608, INFO] done resizing image pexels-photo-317383.jpeg
+[Thread-5, 2020-09-09 21:29:52,609, INFO] resizing image pexels-photo-320007.jpeg
+[Thread-5, 2020-09-09 21:29:52,879, INFO] done resizing image pexels-photo-320007.jpeg
+[Thread-5, 2020-09-09 21:29:52,879, INFO] resizing image pexels-photo-323503.jpeg
+[Thread-5, 2020-09-09 21:29:53,647, INFO] done resizing image pexels-photo-323503.jpeg
+[Thread-5, 2020-09-09 21:29:53,647, INFO] resizing image pexels-photo-322207.jpeg
+[Thread-5, 2020-09-09 21:29:54,346, INFO] done resizing image pexels-photo-322207.jpeg
+[Thread-5, 2020-09-09 21:29:54,346, INFO] resizing image pexels-photo-324030.jpeg
+[Thread-5, 2020-09-09 21:29:55,295, INFO] done resizing image pexels-photo-324030.jpeg
+[Thread-5, 2020-09-09 21:29:55,295, INFO] resizing image pexels-photo-324655.jpeg
+[Thread-5, 2020-09-09 21:29:55,616, INFO] done resizing image pexels-photo-324655.jpeg
+[Thread-5, 2020-09-09 21:29:55,616, INFO] resizing image pexels-photo-324658.jpeg
+[Thread-5, 2020-09-09 21:29:56,269, INFO] done resizing image pexels-photo-324658.jpeg
+[Thread-5, 2020-09-09 21:29:56,269, INFO] resizing image pexels-photo-325520.jpeg
+[Thread-5, 2020-09-09 21:29:57,065, INFO] done resizing image pexels-photo-325520.jpeg
+[Thread-5, 2020-09-09 21:29:57,066, INFO] resizing image pexels-photo-333529.jpeg
+[Thread-5, 2020-09-09 21:29:57,789, INFO] done resizing image pexels-photo-333529.jpeg
+[Thread-5, 2020-09-09 21:29:57,789, INFO] resizing image pexels-photo-341520.jpeg
+[Thread-5, 2020-09-09 21:29:58,305, INFO] done resizing image pexels-photo-341520.jpeg
+[Thread-5, 2020-09-09 21:29:58,305, INFO] created 0 thumbnails in 17.605043209999998 seconds
+[MainThread, 2020-09-09 21:29:58,310, INFO] END make_thumbnails in 17.619392843 seconds
+[MainThread, 2020-09-09 21:30:34,271, INFO] START make_thumbnails
+[MainThread, 2020-09-09 21:31:25,789, INFO] START make_thumbnails
+[MainThread, 2020-09-09 21:31:33,636, INFO] resizing image pexels-photo-134392.jpeg
+[MainThread, 2020-09-09 21:31:33,636, INFO] resizing image pexels-photo-185934.jpeg
+[MainThread, 2020-09-09 21:31:33,636, INFO] resizing image pexels-photo-135130.jpeg
+[MainThread, 2020-09-09 21:31:33,637, INFO] resizing image pexels-photo-167921.jpeg
+[MainThread, 2020-09-09 21:31:33,777, INFO] done resizing image pexels-photo-185934.jpeg
+[MainThread, 2020-09-09 21:31:33,778, INFO] resizing image pexels-photo-173125.jpeg
+[MainThread, 2020-09-09 21:31:34,215, INFO] done resizing image pexels-photo-173125.jpeg
+[MainThread, 2020-09-09 21:31:34,248, INFO] resizing image pexels-photo-207962.jpeg
+[MainThread, 2020-09-09 21:31:34,255, INFO] done resizing image pexels-photo-135130.jpeg
+[MainThread, 2020-09-09 21:31:34,266, INFO] resizing image pexels-photo-48603.jpeg
+[MainThread, 2020-09-09 21:31:34,342, INFO] done resizing image pexels-photo-207962.jpeg
+[MainThread, 2020-09-09 21:31:34,343, INFO] resizing image pexels-photo-247917.jpeg
+[MainThread, 2020-09-09 21:31:34,646, INFO] done resizing image pexels-photo-134392.jpeg
+[MainThread, 2020-09-09 21:31:34,649, INFO] resizing image pexels-photo-167300.jpeg
+[MainThread, 2020-09-09 21:31:34,943, INFO] done resizing image pexels-photo-48603.jpeg
+[MainThread, 2020-09-09 21:31:34,945, INFO] resizing image pexels-photo-265186.jpeg
+[MainThread, 2020-09-09 21:31:35,248, INFO] done resizing image pexels-photo-167921.jpeg
+[MainThread, 2020-09-09 21:31:35,250, INFO] resizing image pexels-photo-192454.jpeg
+[MainThread, 2020-09-09 21:31:35,430, INFO] done resizing image pexels-photo-247917.jpeg
+[MainThread, 2020-09-09 21:31:35,432, INFO] resizing image pexels-photo-317156.jpeg
+[MainThread, 2020-09-09 21:31:35,678, INFO] done resizing image pexels-photo-265186.jpeg
+[MainThread, 2020-09-09 21:31:35,687, INFO] resizing image pexels-photo-302899.jpeg
+[MainThread, 2020-09-09 21:31:35,692, INFO] done resizing image pexels-photo-167300.jpeg
+[MainThread, 2020-09-09 21:31:35,696, INFO] resizing image pexels-photo-193038.jpeg
+[MainThread, 2020-09-09 21:31:36,006, INFO] done resizing image pexels-photo-317156.jpeg
+[MainThread, 2020-09-09 21:31:36,009, INFO] resizing image pexels-photo-317383.jpeg
+[MainThread, 2020-09-09 21:31:36,024, INFO] done resizing image pexels-photo-192454.jpeg
+[MainThread, 2020-09-09 21:31:36,027, INFO] resizing image pexels-photo-247932.jpeg
+[MainThread, 2020-09-09 21:31:36,307, INFO] done resizing image pexels-photo-193038.jpeg
+[MainThread, 2020-09-09 21:31:36,310, INFO] resizing image pexels-photo-320007.jpeg
+[MainThread, 2020-09-09 21:31:36,330, INFO] done resizing image pexels-photo-302899.jpeg
+[MainThread, 2020-09-09 21:31:36,333, INFO] resizing image pexels-photo-323503.jpeg
+[MainThread, 2020-09-09 21:31:36,563, INFO] done resizing image pexels-photo-247932.jpeg
+[MainThread, 2020-09-09 21:31:36,566, INFO] resizing image pexels-photo-322207.jpeg
+[MainThread, 2020-09-09 21:31:36,635, INFO] done resizing image pexels-photo-320007.jpeg
+[MainThread, 2020-09-09 21:31:36,637, INFO] resizing image pexels-photo-324655.jpeg
+[MainThread, 2020-09-09 21:31:36,679, INFO] done resizing image pexels-photo-317383.jpeg
+[MainThread, 2020-09-09 21:31:36,701, INFO] resizing image pexels-photo-193043.jpeg
+[MainThread, 2020-09-09 21:31:36,860, INFO] done resizing image pexels-photo-323503.jpeg
+[MainThread, 2020-09-09 21:31:36,863, INFO] resizing image pexels-photo-324030.jpeg
+[MainThread, 2020-09-09 21:31:36,930, INFO] done resizing image pexels-photo-324655.jpeg
+[MainThread, 2020-09-09 21:31:36,932, INFO] resizing image pexels-photo-324658.jpeg
+[MainThread, 2020-09-09 21:31:37,233, INFO] done resizing image pexels-photo-322207.jpeg
+[MainThread, 2020-09-09 21:31:37,235, INFO] resizing image pexels-photo-333529.jpeg
+[MainThread, 2020-09-09 21:31:37,268, INFO] done resizing image pexels-photo-324030.jpeg
+[MainThread, 2020-09-09 21:31:37,272, INFO] done resizing image pexels-photo-193043.jpeg
+[MainThread, 2020-09-09 21:31:37,274, INFO] resizing image pexels-photo-325520.jpeg
+[MainThread, 2020-09-09 21:31:37,372, INFO] done resizing image pexels-photo-324658.jpeg
+[MainThread, 2020-09-09 21:31:37,567, INFO] done resizing image pexels-photo-333529.jpeg
+[MainThread, 2020-09-09 21:31:37,569, INFO] resizing image pexels-photo-341520.jpeg
+[MainThread, 2020-09-09 21:31:37,811, INFO] done resizing image pexels-photo-325520.jpeg
+[MainThread, 2020-09-09 21:31:38,014, INFO] done resizing image pexels-photo-341520.jpeg
+[MainThread, 2020-09-09 21:31:38,063, INFO] END make_thumbnails in 12.270677288 seconds
+[MainThread, 2020-09-09 21:52:50,464, INFO] START make_thumbnails
+[MainThread, 2020-09-09 21:53:53,152, INFO] START make_thumbnails
+[MainThread, 2020-09-09 21:53:53,167, INFO] beginning image resizing
+[MainThread, 2020-09-09 21:53:53,173, INFO] beginning image resizing
+[MainThread, 2020-09-09 21:53:53,180, INFO] beginning image resizing
+[MainThread, 2020-09-09 21:53:53,186, INFO] beginning image resizing
+[MainThread, 2020-09-09 21:53:53,812, INFO] resizing image pexels-photo-135130.jpeg
+[MainThread, 2020-09-09 21:53:53,843, INFO] resizing image pexels-photo-48603.jpeg
+[MainThread, 2020-09-09 21:53:53,949, INFO] resizing image pexels-photo-134392.jpeg
+[MainThread, 2020-09-09 21:53:54,029, INFO] resizing image pexels-photo-167300.jpeg
+[MainThread, 2020-09-09 21:53:54,149, INFO] done resizing image pexels-photo-48603.jpeg
+[MainThread, 2020-09-09 21:53:54,200, INFO] done resizing image pexels-photo-135130.jpeg
+[MainThread, 2020-09-09 21:53:54,318, INFO] resizing image pexels-photo-167921.jpeg
+[MainThread, 2020-09-09 21:53:54,390, INFO] resizing image pexels-photo-173125.jpeg
+[MainThread, 2020-09-09 21:53:54,467, INFO] done resizing image pexels-photo-134392.jpeg
+[MainThread, 2020-09-09 21:53:54,561, INFO] resizing image pexels-photo-185934.jpeg
+[MainThread, 2020-09-09 21:53:54,633, INFO] done resizing image pexels-photo-173125.jpeg
+[MainThread, 2020-09-09 21:53:54,646, INFO] done resizing image pexels-photo-167300.jpeg
+[MainThread, 2020-09-09 21:53:54,732, INFO] done resizing image pexels-photo-185934.jpeg
+[MainThread, 2020-09-09 21:53:54,766, INFO] resizing image pexels-photo-192454.jpeg
+[MainThread, 2020-09-09 21:53:54,946, INFO] resizing image pexels-photo-193038.jpeg
+[MainThread, 2020-09-09 21:53:55,063, INFO] resizing image pexels-photo-207962.jpeg
+[MainThread, 2020-09-09 21:53:55,119, INFO] done resizing image pexels-photo-207962.jpeg
+[MainThread, 2020-09-09 21:53:55,133, INFO] resizing image pexels-photo-193043.jpeg
+[MainThread, 2020-09-09 21:53:55,168, INFO] done resizing image pexels-photo-167921.jpeg
+[MainThread, 2020-09-09 21:53:55,283, INFO] resizing image pexels-photo-247917.jpeg
+[MainThread, 2020-09-09 21:53:55,427, INFO] done resizing image pexels-photo-192454.jpeg
+[MainThread, 2020-09-09 21:53:55,576, INFO] resizing image pexels-photo-247932.jpeg
+[MainThread, 2020-09-09 21:53:55,645, INFO] done resizing image pexels-photo-247917.jpeg
+[MainThread, 2020-09-09 21:53:55,646, INFO] resizing image pexels-photo-302899.jpeg
+[MainThread, 2020-09-09 21:53:55,705, INFO] done resizing image pexels-photo-193038.jpeg
+[MainThread, 2020-09-09 21:53:55,705, INFO] resizing image pexels-photo-265186.jpeg
+[MainThread, 2020-09-09 21:53:56,280, INFO] done resizing image pexels-photo-193043.jpeg
+[MainThread, 2020-09-09 21:53:56,283, INFO] resizing image pexels-photo-317156.jpeg
+[MainThread, 2020-09-09 21:53:56,744, INFO] done resizing image pexels-photo-265186.jpeg
+[MainThread, 2020-09-09 21:53:56,745, INFO] resizing image pexels-photo-320007.jpeg
+[MainThread, 2020-09-09 21:53:56,932, INFO] done resizing image pexels-photo-247932.jpeg
+[MainThread, 2020-09-09 21:53:56,935, INFO] resizing image pexels-photo-317383.jpeg
+[MainThread, 2020-09-09 21:53:57,182, INFO] done resizing image pexels-photo-302899.jpeg
+[MainThread, 2020-09-09 21:53:57,183, INFO] done resizing image pexels-photo-317156.jpeg
+[MainThread, 2020-09-09 21:53:57,183, INFO] resizing image pexels-photo-322207.jpeg
+[MainThread, 2020-09-09 21:53:57,184, INFO] resizing image pexels-photo-323503.jpeg
+[MainThread, 2020-09-09 21:53:57,226, INFO] done resizing image pexels-photo-320007.jpeg
+[MainThread, 2020-09-09 21:53:57,227, INFO] resizing image pexels-photo-324655.jpeg
+[MainThread, 2020-09-09 21:53:57,617, INFO] done resizing image pexels-photo-324655.jpeg
+[MainThread, 2020-09-09 21:53:57,618, INFO] resizing image pexels-photo-324658.jpeg
+[MainThread, 2020-09-09 21:53:57,782, INFO] done resizing image pexels-photo-317383.jpeg
+[MainThread, 2020-09-09 21:53:57,783, INFO] resizing image pexels-photo-325520.jpeg
+[MainThread, 2020-09-09 21:53:57,823, INFO] done resizing image pexels-photo-322207.jpeg
+[MainThread, 2020-09-09 21:53:57,825, INFO] resizing image pexels-photo-333529.jpeg
+[MainThread, 2020-09-09 21:53:57,860, INFO] done resizing image pexels-photo-323503.jpeg
+[MainThread, 2020-09-09 21:53:57,861, INFO] resizing image pexels-photo-341520.jpeg
+[MainThread, 2020-09-09 21:53:58,284, INFO] done resizing image pexels-photo-333529.jpeg
+[MainThread, 2020-09-09 21:53:58,320, INFO] END make_thumbnails in 5.166124516 seconds
+[MainThread, 2020-09-09 21:53:58,320, INFO] resizing image pexels-photo-324030.jpeg
+[MainThread, 2020-09-09 21:53:58,335, INFO] done resizing image pexels-photo-324658.jpeg
+[MainThread, 2020-09-09 21:53:58,336, INFO] created 16 thumbnails in 5.147775627 seconds
+[MainThread, 2020-09-09 21:53:58,388, INFO] done resizing image pexels-photo-325520.jpeg
+[MainThread, 2020-09-09 21:53:58,388, INFO] done resizing image pexels-photo-341520.jpeg
+[MainThread, 2020-09-09 21:53:58,397, INFO] created 16 thumbnails in 5.2148908 seconds
+[MainThread, 2020-09-09 21:53:58,395, INFO] created 16 thumbnails in 5.226124993 seconds
+[MainThread, 2020-09-09 21:53:58,598, INFO] done resizing image pexels-photo-324030.jpeg
+[MainThread, 2020-09-09 21:53:58,600, INFO] created 16 thumbnails in 5.4245946400000005 seconds

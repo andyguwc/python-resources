@@ -59,6 +59,7 @@ class SimpleList:
 # handling the __init__() method to make sure the superclasses are property intialized 
 class SortedList(SimpleList):
     def __init__(self, items=()):
+        # call SimpleList initializer
         super().__init__(items)
         self.sort()
     
@@ -69,13 +70,6 @@ class SortedList(SimpleList):
     
     def __repr__(self):
         return "SortedList({!r})".format(list(self))
-
-# isinstance() determines if an object is of a specified type
-# also returns true if subclass of the type
-isinstance('hello', str)
-
-# issubclass()
-# determines if one type is a subclass of another
 
 
 '''
@@ -164,13 +158,6 @@ class FlacFile:
 
 
 '''
-Subclassing Built-in Types
-'''
-# Subclassing built-in types like dict or list or str directly is errorprone because the built-in methods mostly ignore user-defined overrides. 
-# Instead of subclassing the built-ins, derive your classes from the collections module using UserDict, UserList, and UserString, which are designed to be easily extended.
-
-
-'''
 Delegate Attribute Access
 '''
 # want an instance to delegate attribute access to an internally held instance 
@@ -246,9 +233,6 @@ class Flat(BettingStrategy):
 #  Multiple Inheritance 
 ##################################################
 
-# We can use multiple inheritance in a disciplined way to create cross-cutting aspects. 
-# We'll consider a base class plus mixin class definitions to introduce features. Often, we'll use the mixin classes to build cross-cutting aspects.
-# if a class has multiple base classes and defines no intializer, then only the initializer of the first base class is automatically called
 
 # define class with more than one base class 
 class SubClass(Base1, Base2):
@@ -256,6 +240,10 @@ class SubClass(Base1, Base2):
 # subclass inherit methods of all bases 
 # if a class defines no intializer, then only the init from the first base class is called
 # __bases__ a tuple of base classes 
+
+# We can use multiple inheritance in a disciplined way to create cross-cutting aspects. 
+# We'll consider a base class plus mixin class definitions to introduce features. Often, we'll use the mixin classes to build cross-cutting aspects.
+# if a class has multiple base classes and defines no intializer, then only the initializer of the first base class is automatically called
 
 # best practice
 # use multiple inheritance only for mix-in utility 
@@ -277,7 +265,14 @@ method resolution order
 bool.__mro__
 # (<class 'bool'>, <class 'int'>, <class 'object'>)
 
-# type of inheritance 
+# super()
+# given a MRO and class C, super() gives you an object which resolves methods using only part of the MRO which comes after C
+
+
+'''
+initialization
+'''
+
 # distinguish interface inheritance from implementation inheritance
 # inheritance of interface creates a subtype, implying a "is-a" relationship
 # inheritance of implementation avoids code duplication by reuse 
@@ -298,6 +293,7 @@ class Contact:
         self.email = email
         self.all_contacts.append(self)
 
+
 class AddressHolder:
 def __init__(self, street='', city='', state='', code='',**kwargs):
     super().__init__(**kwargs)
@@ -305,6 +301,7 @@ def __init__(self, street='', city='', state='', code='',**kwargs):
     self.city = city
     self.state = state
     self.code = code
+
 
 class Friend(Contact, AddressHolder):
     def __init__(self, phone='', **kwargs):
@@ -355,6 +352,19 @@ cross cutting scenarios
 '''
 mixin examples
 '''
+# example using MailSender mixin to send emails 
+class MailSender:
+    def send_mail(self, message):
+    print("Sending mail to " + self.email)
+    # Add e-mail logic here
+
+class EmailableContact(Contact, MailSender):
+    pass
+
+# e = EmailableContact("John Smith", "jsmith@example.net")
+# e.send_mail("Hello, test e-mail here")
+
+
 # context manager 
 import contextlib.ContextDecorator 
 
@@ -373,19 +383,6 @@ class TestDeck(ContextDecorator, Deck):
     
     def __exit__(self, exc_type, exc_value, traceback):
         pass 
-
-
-# example using MailSender mixin to send emails 
-class MailSender:
-    def send_mail(self, message):
-    print("Sending mail to " + self.email)
-    # Add e-mail logic here
-
-class EmailableContact(Contact, MailSender):
-    pass
-
-# e = EmailableContact("John Smith", "jsmith@example.net")
-# e.send_mail("Hello, test e-mail here")
 
 # using the contextmanager decorator 
 # make objects/functions capable of use in with statements by using the contextlib built in modle 

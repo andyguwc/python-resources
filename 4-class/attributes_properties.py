@@ -3,14 +3,8 @@
 ##################################################
 
 '''
-attribute access
+__getattr__(), __setattr__(), and __delattr__()
 '''
-# it's not required to provide all attributes in the __init__() method 
-# optional attributes imply an informal subclass relationship 
-# although it's better to have attributes added or deleted more clearly by creating a subclass 
-# special methods for attribute access
-
-# __getattr__(), __setattr__(), and __delattr__()
 
 # The __setattr__() method will create and set attributes.
 # The __getattr__() method will do two things. Firstly, if an attribute
@@ -20,52 +14,22 @@ attribute access
 # no attribute, it must raise an AttributeError exception.
 # The __delattr__() method deletes an attribute.
 
-# __getattribute__()
-# An even lower level attribute processing is the __getattribute__() method.
-# The default implementation attempts to locate the value as an existing attribute
-# in the internal __dict__ (or __slots__). If the attribute is not found, it calls __getattr__() as a fallback.
 
-# example using __getattribute__() to concecal the internal names (with _) from the __dict__
-class BlackJackCard:
-    def __init__(self, rank, suit):
-        super().__setattr__( 'rank', rank )
-        super().__setattr__( 'suit', suit )
+import math 
 
-    def __setattr__( self, name, value ):
-        if name in self.__dict__:
-            raise AttributeError( "Cannot set {name}".format(name=name) )
-
-        raise AttributeError( "'{__class__.__name__}' has no attribute'{name}'". \
-            format( __class__= self.__class__, name= name ))
-
-    def __getattribute__( self, name ):
-        if name.startswith('_'): 
-            raise AttributeError
-        return object.__getattribute__( self, name )
-
-
-# if your class defines __getattr__,that method is called every time an attribute can't be found in an object's instance dictionary
-class LazyDB(object):
-    def __init__(self):
-        self.exists = 5
+class Point: 
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y 
     
-    def __getattr__(self, name):
-        value = 'Value for %s' % name 
-        setattr(self, name, value)
-        return value 
+    def __repr__(self):
+        return 'Point({!r:},{!r:})'.format(self.x, self.y)
+    
+    def distance(self, x, y):
+        return math.hypot(self.x -x, self.y - y)
 
-# if accessing a missing property, this __getattr mutates the instance dictionary __dict__
-data = LazyDB()
-print('Before:', data.__dict__)
-print('foo', data.foo)
-print('after', data.__dict__)
-
-# The exists attribute is present in the instance dictionary, so __getattr__ is never
-# called for it. The foo attribute is not in the instance dictionary initially, so
-# __getattr__ is called the first time. But the call to __getattr__ for foo also does
-# a setattr, which populates foo in the instance dictionary. This is why the second time
-# I access foo there isn’t a call to __getattr__.
-
+p = Point(2,3)
+d = getattr(p, 'distance')(0, 0) # Calls p.distance(0,0)
 
 
 '''
@@ -105,6 +69,7 @@ class Person:
         return self._first_name
 
     # Setter function
+    # additional validations of input
     @first_name.setter 
     def first_name(self, value):
         if not isinstance(value, str):

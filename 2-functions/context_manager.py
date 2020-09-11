@@ -2,11 +2,13 @@
 # Context Manager
 ##################################################
 # an object designed to be used in a with statement
+# a context-manager ensures the resources are properly and automatically managed
 
 with context-manager:
-    enter()
+    # enter and exit are always called no matter how the body block terminates
+    enter() # prepares the context manager
     body 
-    exit()
+    exit() # clean up 
 
 # a context manager ensures that resources are properly and automatically managed
 with open('important_data.txt', 'w') as f:
@@ -15,20 +17,25 @@ with open('important_data.txt', 'w') as f:
 # files are context managers
 # file's exit() code closes the file 
 
-# context manager protocol
+
+'''
+context manager protocol
+'''
 __enter__(self)
 # if __enter__ throws an exception, then never execute the following
+# expression.__enter__() is bound to the as variable
 # common for __enter__ to return itself
 # for example, file.__enter__() returns the file object itself 
 
 # __exit__ can do different things depending on how the with block terminates
+# called when with-statement block exits
 # exception type, exception object, exception traceback
 __exit__(self, exc_type, exc_val, exc_tb)
 # __exit__() called when with statement body exits
 # __exit__() can check type for None to see if an exception was thrown 
 
 # by default, __exit__() propagates exceptions thrown from the with-block
-# if __exit__() returns False, the exception is propagated
+# if __exit__() returns False, the exception is propagated (with statement asks if need to swallow the exception, if false, reraises the exception)
 
 # naive implementation of a context manager 
 class LoggingContextManager:
@@ -41,6 +48,27 @@ class LoggingContextManager:
         else:
             print('exception detected - type={}, value={}, traceback={}').format(
                 exc_type, exc_val, exc_tb)) 
+
+
+with LoggingContextManager() as x:
+    print(x)
+
+
+class ManagedFile:
+    def __init__(self, name):
+        self.name = name 
+
+    def __enter__(self):
+        self.file = open(self.name, 'w')
+        return self.file 
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.file: 
+            self.file.close()
+
+with ManagedFile('hello.txt') as f: 
+    f.write('Hello world')
+
 
 '''
 contextlib
@@ -57,7 +85,6 @@ with closing(open("outfile.txt", "w")) as output:
 # because __enter__() and __exit__() are defined for the object that handles file I/O we can use the with directly
 with open("outfile.txt", "w") as output: 
     pass 
-
 
 # contextlib.contextmanager is a decorator you can use to create new context managers
 # Essentially the contextlib.contextmanager decorator wraps the function in a class that implements the __enter__ and __exit__ methods
@@ -85,45 +112,57 @@ with nest_test('a'), nest_test('b'):
     pass
 
 # example
-@contextlib.contextmanager
-def start_transaction(connection):
-    tx=Transaction(connection)
-    
+@contextmanager
+def session_scope(commit=True):
+    """Provide a transactional scope around a series of operations."""
+    session = Session()
     try:
-        yield tx
+        yield session
+        if commit:
+            session.commit()
     except:
-        tx.rollback()
+        session.rollback()
         raise
-    
-    tx.commit()
+    finally:
+        session.close()
 
 
-##################################################
-# Introspection
-##################################################
+from contextlib import contextmanager
 
-# object types 
+@contextmanager
+def managed_resource(*args, **kwds):
+    # Code to acquire resource, e.g.:
+    resource = acquire_resource(*args, **kwds)
+    try:
+        yield resource
+    finally:
+        # Code to release resource, e.g.:
+        release_resource(resource)
 
-# repr(int) returning class type integers
-# type is a subclass of object and object's type is type 
-# better to use isinstance(i, int) rather than directly call the type
+with managed_resource(timeout=3600) as resource:
+# Resource is released at the end of this block,
+# even if code in the block raises an exception
 
-'''
-instropsecting objects
-'''
-# dir(i) returns list of attribute names and method names
-# getattr(i, 'denominator') returns the same value as i.denominator
-# hasattr(i, 'bit_length) i has attribute bit_length
-
-# introspecting scopes
-# globals() represents the global namespace 
-# locals() returns similar dictionary as globals() 
+# In this case, managed_file() is a generator that first acquires the
+# resource. After that, it temporarily suspends its own execution and
+# yields the resource so it can be used by the caller. When the caller
+# leaves the with context, the generator continues to execute so that any
+# remaining clean-up steps can occur and the resource can get released
+# back to the system.
 
 
-'''
-inspect module
-'''
-# import inspect
-# import sorted_set
-# inspect.getmembers(sorted_set.SortedSet, inspect.isfunction)
+@contextlib.contextmanager 
+def managed_file(name):
+    try:
+        f = open(name, 'w')
+        yield f 
+    finally:
+        f.close()
+
+with managed_file('hello.txt') as f:
+    f.write('hello world')
+
+
+
+
 

@@ -25,8 +25,13 @@ pyenv
 # managed multiple python versions 
 # https://realpython.com/intro-to-pyenv/
 # https://github.com/pyenv/pyenv
+# https://opensource.com/article/20/4/pyenv
 
 $ brew install pyenv 
+
+$ echo 'PATH=$(pyenv root)/shims:$PATH' >> ~/.zshrc
+# or use pyenv init commands
+
 
 # System python comes installed on the operating systems 
 # $ which python
@@ -34,6 +39,8 @@ $ brew install pyenv
 
 # install python version 
 $ pyenv install 3.6.8 
+
+$ pyenv install -v 3.7.2
 
 # choose python version
 $ pyenv gloabl 3.6.8

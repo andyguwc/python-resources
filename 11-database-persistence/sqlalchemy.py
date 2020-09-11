@@ -22,6 +22,12 @@ ORM-friendly classes
 # SQLAlchemy ORM 
 ##################################################
 
+# A proper class for use with the ORM must do four things:
+# • Inherit from the declarative_base object.
+# • Contain __tablename__, which is the table name to be used in the database.
+# • Contain one or more attributes that are Column objects.
+# • Ensure one or more attributes make up a primary key.
+#    - the ORM has to have a way to uniquely identify and associate an instance of the class with a specific record in the underlying database table
 
 '''
 SQLAlchemy Models 
@@ -60,6 +66,16 @@ class Post(Base):
     date = Column(DateTime, index=True)
     blog_id = Column(Integer, ForeignKey('BLOG.id'), index=True)
 
+'''
+constraints
+'''
+
+class Post(Base):
+    __tablename__ = 'somedata'
+    __table_args__ = (ForeignKeyConstraint(['id'], ['other_table.id']),
+                      CheckConstraint(unit_cost>=0,
+                                      name='unit_cost_positive'))
+
 
 '''
 Create Engine
@@ -94,11 +110,13 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+# one to many - one user many addresses
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     name = Column(String)
     addresses = relationship("Address", backref="user")
+    # this back populates the user attribute on the address object
 
 class Address(Base):
     __tablename__ = 'address'
@@ -114,6 +132,18 @@ print(a1.user)
 u1.addresses.append(a1)
 print(u1.addresses)
 print(a1.user)
+
+
+class LineItem(Base):
+    __tablename__ = 'line_items'
+    line_item_id = Column(Integer(), primary_key=True)
+    order_id = Column(Integer(), ForeignKey('orders.order_id'))
+    cookie_id = Column(Integer(), ForeignKey('cookies.cookie_id'))
+    quantity = Column(Integer())
+    extended_cost = Column(Numeric(12, 2))
+    order = relationship("Order", backref=backref('line_items',
+    order_by=line_item_id))
+    cookie = relationship("Cookie", uselist=False) # this establishes a one-to-one relationship
 
 '''
 many to many
@@ -466,6 +496,7 @@ str(ins) # print the sql stmt executed
 'INSERT INTO users (name, fullname) VALUES (:name, :fullname)'
 # Above, while the values method limited the VALUES clause to just two columns, 
 # the actual data we placed in values didn’t get rendered into the string; instead we got named bind parameters. 
+# this prevents sql injection 
 ins.compile().params  
 {'fullname': 'Jack Jones', 'name': 'jack'}
 
@@ -584,6 +615,9 @@ self.session.commit()
 # https://www.youtube.com/watch?v=uAtaKr5HOdA
 # https://www.sqlalchemy.org/library.html#talks
 
+'''
+transactions and sessions 
+'''
 # ACID
 # Atomic 
 # - can revert back to previsou transaction
@@ -606,3 +640,318 @@ self.session.commit()
 
 # https://github.com/oreillymedia/essential-sqlalchemy-2e/blob/master/ch02.ipynb
 
+
+'''
+session commands
+'''
+# The session is the way SQLAlchemy ORM interacts with the database. It wraps a database
+# connection via an engine, and provides an identity map for objects that you load
+# via the session or associate with the session. The identity map is a cache-like data
+# structure that contains a unique list of objects determined by the object’s table and
+# primary key. A session also wraps a transaction, and that transaction will be open
+# until the session is committed or rolled back
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker 
+
+engine = create_engine('sqlite:///:memory:')
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# insert new record
+
+cc_cookie = Cookie(cookie_name='chocolate chip',
+                   cookie_recipe_url='http://some.aweso.me/cookie/recipe.html',
+                   cookie_sku='CC01',
+                   quantity=12,
+                   unit_cost=0.50)
+session.add(cc_cookie)
+session.commit()
+# when commit, the data is actually inserted into the database
+# also updates the cc_cookie with the primary key of the record in the database 
+# behind the scenes, a transaction is started and ended 
+
+
+'''
+session states and exceptions
+'''
+# possible states for session  
+# transient, pending, persistent, detached
+# Transient
+# The instance is not in session, and is not in the database.
+# Pending
+# The instance has been added to the session with add(), but hasn’t been flushed or
+# committed.
+# Persistent
+# The object in session has a corresponding record in the database.
+# Detached
+# The instance is no longer connected to the session, but has a record in the database
+
+# see the session state by using the inspect method 
+from sqlalchemy import inspect
+insp = inspect(cc_cookie)
+
+# MultipleResultsFound and DetachedInstanceError
+
+# MultipleResultsFound occurs when we use the .one query method but get more than one results back 
+session.add(record1)
+session.add(record2)
+session.commit()
+results = session.query(Record).one()
+
+
+# DetachedInstanceError 
+# This exception occurs when we attempt to access an attribute on an instance that
+# needs to be loaded from the database, but the instance we are using is not currently
+# attached to the database.
+
+# Whenever we encounter an exception, we want to issue a rollback()
+
+
+from sqlalchemy.exc import IntegrityError
+def ship_it(order_id):
+    order = session.query(Order).get(order_id)
+    for li in order.line_items:
+        li.cookie.quantity = li.cookie.quantity - li.quantity
+        session.add(li.cookie)
+    order.shipped = True
+    session.add(order)
+    try:
+        session.commit()
+        print("shipped order ID: {}".format(order_id))
+    except IntegrityError as error:
+        print('ERROR: {!s}'.format(error.orig))
+        session.rollback()
+
+
+'''
+flush
+'''
+# A flush is like a commit; however, it doesn’t perform a database commit
+# and end the transaction. Because of this, the record instances are still connected
+# to the session, and can be used to perform additional database tasks without triggering
+# additional database queries.
+
+session.add(record1)
+session.add(record2)
+session.flush()
+print(record1.id)
+print(record2.id)
+
+# another option to use bulk_save_objects method
+# this will do a single insert
+# but the object isn't associated with the session so can't do print(record1.id)
+session.bulk_save_objects([record1, record2])
+session.commit()
+
+
+'''
+data access layer
+'''
+
+from sqlaclchemy.ext.declaractive import declarative_base
+Base = declarative_base()
+
+class DataAccessLayer:
+    def __init__(self):
+        self.engine = None 
+        self.conn_string = 'some conn string'
+    
+    def connect(self):
+        self.engine = create_engine(self.conn_string)
+        Base.metadata.create_all(self.engine)
+        self.Session = sessionaker(bind=self.engine)
+
+dal = DataAccessLayer()
+
+
+'''
+unit testing
+'''
+import unittest
+from db import dal 
+
+class TestApp(unittest.TestCase):
+    cookie_orders = [(1, u'cookiemon', u'111-111-1111')]
+
+    @classmethod 
+    def setUpClass(cls):
+        dal.conn_string = 'sqlite:///:memory:'
+        dal.connect()
+        dal.session = dal.Session()
+        prep_db(dal.session)
+        dal.session.close()
+
+    # add setUp method and tearDown method that ia automatically run after each test 
+    def setUp(self):
+        dal.session = dal.Session()
+
+    def tearDown(self):
+        dal.session.rollback()
+        dal.session.close()
+    
+    def test_orders_by_customer_blank(self):
+        results = get_orders_by_customer('')
+        self.assertEqual(results, [])
+
+# example
+# https://github.com/oreillymedia/essential-sqlalchemy-2e/blob/master/ch09/test_mock_app.py
+
+
+
+##################################################
+# Flask-SQLAlchemy
+##################################################
+
+# pip install flask-sqlalchemy
+# recommended to use the app factory pattern 
+# which assembles an application with the add-ons and configurations (e.g. in app/__init__.py)
+from flask import Flask 
+from flask.ext.sqlalchemy import SQLAlchemy
+
+from config import config 
+
+db = SQLAlchemy() # create an instance 
+
+def create_app(config_name): 
+    # defines the create_app app factory
+    app = Flask(__name__)
+    app.config.from_object(config[config_name])
+
+    db.init_app(app)
+    return app 
+
+# in the config.py fule 
+# defines the Flask settings and the SQLAlchemy connection string 
+
+import os 
+basedir = os.path.abspath(os.path.dirnam(__file__))
+
+class Config: 
+    SECRET_KEY = 'development key'
+    ADMINS = frozenset(['jason@jasonamyers.com', ])
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/dev.db"
+
+class ProductionConfig(Config):
+    SECRET_KEY = 'Prod key'
+    SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/prod.db"
+
+config = {
+    'development': DevelopmentConfig,
+    'production': ProductionConfig,
+    'default': DevelopmentConfig
+}
+
+# with the app factory and the configuration 
+# can define data claases 
+from app import db 
+
+class Cookie(db.Model):
+    __tablename__ = 'cookies'
+    
+    cookie_id = db.Column(db.Integer(), primary_key=True)
+    cookie_name = db.Column(db.String(50), index=True)
+    cookie_recipe_url = db.Column(db.String(255))
+    quantity = db.Column(db.Integer())
+
+# sessions are nested in the db.session object 
+
+# http://www.aosabook.org/en/index.html
+
+'''
+upsert
+'''
+
+# https://docs.sqlalchemy.org/en/13/dialects/postgresql.html#insert-on-conflict-upsert
+
+from sqlalchemy.dialects.postgresql import insert
+
+stmt = insert(my_table).values(user_email='a@b.com', data='inserted data')
+stmt = stmt.on_conflict_do_update(
+    index_elements=[my_table.c.user_email],
+    index_where=my_table.c.user_email.like('%@gmail.com'),
+    set_=dict(data=stmt.excluded.data)
+    )
+conn.execute(stmt)
+
+
+# https://stackoverflow.com/questions/7165998/how-to-do-an-upsert-with-sqlalchemy
+def upsert(session, model, rows):
+    table = model.__table__
+    stmt = postgresql.insert(table)
+    primary_keys = [key.name for key in inspect(table).primary_key]
+    update_dict = {c.name: c for c in stmt.excluded if not c.primary_key}
+
+    if not update_dict:
+        raise ValueError("insert_or_update resulted in an empty update_dict")
+
+    stmt = stmt.on_conflict_do_update(index_elements=primary_keys,
+                                      set_=update_dict)
+
+    seen = set()
+    foreign_keys = {col.name: list(col.foreign_keys)[0].column for col in table.columns if col.foreign_keys}
+    unique_constraints = [c for c in table.constraints if isinstance(c, UniqueConstraint)]
+    def handle_foreignkeys_constraints(row):
+        for c_name, c_value in foreign_keys.items():
+            foreign_obj = row.pop(c_value.table.name, None)
+            row[c_name] = getattr(foreign_obj, c_value.name) if foreign_obj else None
+
+        for const in unique_constraints:
+            unique = tuple([const,] + [row[col.name] for col in const.columns])
+            if unique in seen:
+                return None
+            seen.add(unique)
+
+        return row
+
+    rows = list(filter(None, (handle_foreignkeys_constraints(row) for row in rows)))
+    session.execute(stmt, rows)
+
+
+# full example https://github.com/alphagov/notifications-api/blob/master/app/dao/returned_letters_dao.py
+
+def insert_or_update_returned_letters(references):
+    data = _get_notification_ids_for_references(references)
+    for row in data:
+        table = ReturnedLetter.__table__
+
+        stmt = insert(table).values(
+            reported_at=datetime.utcnow().date(),
+            service_id=row.service_id,
+            notification_id=row.id,
+            created_at=datetime.utcnow()
+        )
+
+        stmt = stmt.on_conflict_do_update(
+            index_elements=[table.c.notification_id],
+            set_={
+                'reported_at': datetime.utcnow().date(),
+                'updated_at': datetime.utcnow()
+            }
+        )
+        db.session.connection().execute(stmt)
+
+
+# full example here 
+# https://gist.github.com/bhtucker/c40578a2fb3ca50b324e42ef9dce58e1
+
+def upsert(session, model, rows, as_of_date_col='report_date', no_update_cols=[]):
+    table = model.__table__
+
+    stmt = insert(table).values(rows)
+
+    update_cols = [c.name for c in table.c
+                   if c not in list(table.primary_key.columns)
+                   and c.name not in no_update_cols]
+
+    on_conflict_stmt = stmt.on_conflict_do_update(
+        index_elements=table.primary_key.columns,
+        set_={k: getattr(stmt.excluded, k) for k in update_cols},
+        index_where=(getattr(model, as_of_date_col) < getattr(stmt.excluded, as_of_date_col))
+        )
+
+    print(compile_query(on_conflict_stmt))
+    session.execute(on_conflict_stmt)

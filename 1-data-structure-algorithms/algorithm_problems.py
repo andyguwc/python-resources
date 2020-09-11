@@ -162,15 +162,26 @@ x = next(mylist, "orange")
 # A major difference between lists and strings is that lists can be modified while strings cannot. 
 # This is referred to as mutability. Lists are mutable; strings are immutable.
 
-# Shallow Copy and Deep Copy
+'''
+Shallow Copy and Deep Copy
+'''
+
+
+# A shallow copy means constructing a new collection object and then
+# populating it with references to the child objects found in the original.
+# In essence, a shallow copy is only one level deep. The copying process
+# does not recurse and therefore won’t create copies of the child objects
+# themselves.
+# A deep copy makes the copying process recursive. It means first constructing
+# a new collection object and then recursively populating it
+# with copies of the child objects found in the original.
+
 B=A
 B=list(A) # a shallow copy
 
 copy.copy(A) 
 copy.deepcopy(A)
 
-# A shallow copy means constructing a new collection object and then populating it with references to the child objects found in the original. In essence, a shallow copy is only one level deep. The copying process does not recurse and therefore won’t create copies of the child objects themselves.
-# A deep copy makes the copying process recursive. It means first constructing a new collection object and then recursively populating it with copies of the child objects found in the original. Copying an object this way walks the whole object tree to create a fully independent clone of the original object and all of its children.
 import copy
 xs = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 zs = copy.deepcopy(xs)
@@ -188,6 +199,7 @@ xs[1][0] = 'X'
 [[1, 2, 3], ['X', 5, 6], [7, 8, 9], ['new sublist']]
 >>> ys
 [[1, 2, 3], ['X', 5, 6], [7, 8, 9]]
+
 
 
 # Filter

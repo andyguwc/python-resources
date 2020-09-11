@@ -26,6 +26,24 @@ def factorial(n):
 # >>> type(factorial)
 # <class 'function'>
 
+def yell(text):
+    return text.upper() + '!'
+
+bark = yell 
+
+funcs = [bark, str.lower, str.capitalize]
+
+for f in funcs:
+    print(f, f('hey here'))
+
+# functions can be passed to other functions 
+def greet(func):
+    greeting = func("Hi, a Python program")
+    print(greeting)
+
+
+
+
 
 '''
 Variables and Parameters 
@@ -59,15 +77,60 @@ def func(positional, keyword=value, *args, **kwargs):
 # An arbitrary argument list is optional and has no default values.
 # An arbitrary keyword argument dictionary is optional and has no default values.
 
-
 # * returns tuple
 # ** returns dictionary 
 
 def hypervolume(length, *lengths): # accept a number of arguments with a lower bound
+    print(lengths)
+    print(type(lengths)) # tuple
     v = length
     for item in lengths:
         v*=length
     return v
+
+
+def foo(required, *args, **kwargs):
+    print(kwargs)
+    print(type(kwargs)) # dictionary
+
+foo('hello', 1, 2, 3, key1='value', key2=999)
+
+
+def foo(arg1, arg2, *args, kwarg1, kwarg2, **kwargs):
+    print(args)
+    print(kwargs) 
+
+
+# modify the arguments before passing to another function 
+def foo(x, *args, **kwargs):
+    kwargs['name'] = 'Alice'
+    new_args = args + ('extra', )
+    bar(x, *new_args, **kwargs)
+
+
+# extended call syntax
+def print_args(arg1, arg2, *args):
+    print(args)
+
+t = (1,2,3,4)
+print_args(*t)
+# (3, 4)
+
+
+def print_args(arg1, arg2, **kargs):
+    print(kargs)
+
+k = {'arg1': 'a', 'arg2': 'b', 'c': 'd'}
+print_args(**k)
+# {'c': 'd'}
+
+# common use case is to forward arguments
+
+def trace(f, *args, **kwargs):
+    result = f(*args, **kwargs)
+    print("result= ", result)
+    return result
+
 
 # You can use the items from a sequence as the positional arguments for a function with the * operator.
 # Using the * operator with a generator may cause your program to run out of memory and crash.
@@ -82,28 +145,6 @@ def hypervolume(length, *lengths): # accept a number of arguments with a lower b
 def function_name(arg1, arg2=8):
     # arg1 is positional argument, and arg2 is keyword argument, and 8 is default value
     pass
-
-# extending 
-def extended(*args, **kwargs): 
-    # args is passed as a tuple
-    # kwargs a dictionary
-    pass
-
-def color(red, green, blue, **kwargs):
-    print("r=", red)
-    print("g=", green)
-    print("b=", blue)
-    print(kwargs)
-
-k = {'red':21, 'green': 18, 'alpha': 10, 'blue':9}
-# >>> c
-# r= 21
-# g= 18
-# b= 9
-# {'alpha': 10}
-
-# fowarding arguments
-
 
 
 # function that accepts any uber of positional arguments
@@ -162,6 +203,9 @@ def append_to(element, to=None):
     to.append(element)
     return to 
 
+
+
+
 '''
 signature (inspect pacakge)
 '''
@@ -178,9 +222,11 @@ for name, param in sig.parameters.items():
 # Callable Objects 
 ##################################################
 
-# The call operator (i.e., ()) may be applied to other objects beyond user-defined functions.
+# The call operator (i.e., ()) may be applied to other objects beyond user-defined functions. __call__() # call method
+
 # To determine whether an object is callable, use the callable() built-in function.
 # callable instances
+callable(some_object) # checks if something is callable
 
 # following callable types 
 #  - user defined functions, def and lambda 
@@ -191,16 +237,52 @@ for name, param in sig.parameters.items():
 #  - class instances: if a class defines a __call__ method then instances can be invoked as functions
 #  - generator functions: functions or methods that use the yield keyword. When called, generator functions return a generator object
 
-__call__() # call method
-
-# classes are also callable, and ClassName() invokes constructor (__init__)
-
 def sequence_class(immutable):
     return tuple if immutable else list 
 
 seq = sequence_class(immutable=False)
 
-callable(some_object) # checks if something is callable
+# implement cache for a callable instance
+class Resolver:
+    def __init__(self):
+        self._cache = {}
+    
+    def __call__(self, host):
+        if host not in self._cache:
+            self._cache[host] = socket.gethostname(host)
+        return self._cache[host]
+    
+    def clear(self):
+        self._cache.clear()
+    
+    def has_host(self, host):
+        return host in self._cache
+
+
+# classes are also callable, and ClassName() invokes constructor (__init__)
+class Adder:
+    def __init__(self, n):
+        self.n = n 
+    
+    def __call__(self, x):
+        return self.n + x
+    
+plus_3 = Adder(3)
+plus_3(4)
+
+
+# using callable() to detect callable 
+def is_even(x):
+    return x % 2 == 0
+callable(is_even)
+
+is_odd = lambda x: x % 2 == 1
+
+callable(is_odd)
+
+# class can be made a callable with the __call__ method
+add_me = Adder()
+callable(add_me)
 
 
 ##################################################
@@ -210,10 +292,15 @@ callable(some_object) # checks if something is callable
 # A function that takes a function as argument or returns a function as the result is a
 # higher-order function.
 
+# map takes a function object and an iterable, and then calls the function 
+# on each element in the iterable, yielding the results as it goes along.
+
 # example: map, filter, reduce, apply
 list(map(fact, range(6)))
 
 [fact(n) for n in range(6)]
+
+
 
 # example: sorted function which take an optional key argument 
 # pass the len function as the key
@@ -224,6 +311,13 @@ def reverse(word):
 sorted(fruits, key=reverse)
 
 
+# Nested functions
+
+def speak(text):
+    def whisper(t):
+        return t.lower() + '...'
+    return whisper(text)
+
 
 ##################################################
 # Lambda Functions
@@ -231,14 +325,14 @@ sorted(fruits, key=reverse)
 
 # lambda functions
 # same as anonymous functions
-sorted(scientists, key=lambda name: name,split()[-1]) # creating a callable function using lambda
+sorted(scientists, key=lambda name: name.split()[-1]) # creating a callable function using lambda
 
-# using callable() to detect callable 
-def is_event(x):
-    return x % 2 == 0
-callable(is_event)
+tuples = [(1, 'd'), (2, 'b'), (4, 'a'), (3, 'c')]
+sorted(tuples, key=lambda x: x[1])
+
 
 # the inputs to lambda expression is a free variable that get bound at runtime not definition time
+
 
 
 ##################################################
@@ -266,7 +360,9 @@ def raise_to(exp):
     return raise_to_exp
 
 
-'local vs. global'
+'''
+local vs. global
+'''
 
 # LEGB
 # first checking local scope, then enclosing scope, then global, finally built-in
@@ -291,8 +387,11 @@ def enclosing():
     message = 'enclosing'
     
     def local():
+        # use global binding 
         global message
         message = 'local'
+    
+    local()
 
 enclosing()
 print(message) # 'local'
@@ -305,6 +404,7 @@ def enclosing():
     message = 'enclosing'
     
     def local():
+        # searches for enclosing binding from inner most to outer
         nonlocal message
         message = 'local'
 
@@ -312,7 +412,6 @@ def enclosing():
     local()
     print('enclosing message', message)
  
-enclosing()
 print(message) # 'global'
 enclosing() # enclosing, local
 
@@ -336,11 +435,27 @@ def make_averager():
         return total/count
     return averager 
 
+
+'''
+factory function
+'''
+
+def raise_to(exp):
+    def raise_to_exp(x):
+        return pow(x, exp)
+    return raise_to_exp
+
+cube = raise_to(3)
+cube(5) # 125
+
+
 ##################################################
 # Decorators
 ##################################################
 
-# decorators
+'''
+decorators
+'''
 # modify or enhance functions without changing their definition (calling code does not need to change)
 # implemented as callables that take and return other callables 
 
@@ -360,8 +475,10 @@ def escape_unicode(f):
 def northern_city():
     return 'Tromse'
 
-# other objects (callables) can be decorators as well 
-# classes as decorators
+'''
+class as decorators
+'''
+# classes as decorators as long as it implements __call__ (class instance is a callable)
 # example, class CallCount which counts how many times function is called
 class CallCount:
     def __init__(self, f): # init new instance
@@ -377,18 +494,54 @@ def hello(name):
     print('Hello, {}'.format(name))
 
 
-# instances as decorators
+class Trace:
+    def __init__(self):
+        self.enabled = True
+    
+    def __call__(self, f):
+        def wrap(*args, **kwargs):
+            if self.enabled:
+                print(f'Calling {f}')
+            return f(*args, **kwargs)
+        return wrap
 
+tracer = Trace()
 
-# multiple decorators
+@tracer
+def northern_city():
+    return 'Tromse'
+
+# >>> northern_city()
+# Calling <function northern_city at 0x109849400>
+# 'Tromse'
+# >>> tracer.enabled = False
+# >>> northern_city()
+# 'Tromse'
+# >>> 
+
+'''
+multiple decorators
+'''
+
 @decorator1
 @decorator2
 def some_func():
 # first passed to decorator2 then passed to decorator1
 
+'''
+functools.wraps
+'''
 # naive decorators can lose important metadata
-# help() only shows the wrapper function not the original function
-# so have to update the __name__ and __doc__ 
+import functools
+functools.wraps()
+# properly update metadata on wrapped functions
+
+# get metadata like below
+hello.__name__
+hello.__doc__
+help(hello)
+
+
 def noop(f):
     @functiontools.wrap(f)
     def noop_wrapper():
@@ -413,10 +566,39 @@ def create_list(value, size):
     return [value] *size 
 
 
-
 ##################################################
 # Closures
 ##################################################
+
+# Actually, a closure is a function with an extended scope that encompasses nonglobal
+# variables referenced in the body of the function but not defined there. It does not matter
+# whether the function is anonymous or not; what matters is that it can access nonglobal
+# variables that are defined outside of its body.
+
+def make_averager():
+    series = []
+    def averager(new_value):
+        series.append(new_value)
+        total = sum(series)
+        return total/len(series)
+    return averager 
+
+# avg = make_averager()
+# >>> avg(10)
+# 10.0
+# >>> avg(11)
+# 10.5
+# >>> avg(12)
+
+# The binding for series is kept in the __closure__ attribute of the returned function
+# avg. Each item in avg.__closure__ corresponds to a name in avg.__code__.co_free
+# vars.
+
+# To summarize: a closure is a function that retains the bindings of the free variables that
+# exist when the function is defined, so that they can be used later when the function is
+# invoked and the defining scope is no longer available.
+
+
 # Replacing Single Method classes with functions using closures 
 
 # Closure is just like a function but wiht an extra environment of the variables taht are used inside the function
@@ -595,5 +777,99 @@ a, *middle, c = [1, 2, 3, 4]
 
 # ignoring
 basename, _, ext = filename.rpartition('.')
+
+
+
+
+##################################################
+# References
+##################################################
+
+
+'''
+Copy
+'''
+# Copies are shallow by default 
+# easiest way to copy a list (or any built-in mutable collections) is to use the built-in constructor for the type itself
+l1 = [3, [55, 44], (7, 8, 9)]
+l2 = list(l1)
+l2 == l1 # True 
+l2 is l1 # False 
+
+# Using the constructor or [:] produces a shallow copy (i.e., the outermost
+# container is duplicated, but the copy is filled with references to the same items held by
+# the original container). 
+
+
+# Deep copy
+# Working with shallow copies is not always a problem, but sometimes you need to make
+# deep copies (i.e., duplicates that do not share references of embedded objects). The copy
+# module provides the deepcopy and copy functions that return deep and shallow copies
+# of arbitrary objects
+
+
+# >>> import copy
+# >>> bus1 = Bus(['Alice', 'Bill', 'Claire', 'David'])
+# >>> bus2 = copy.copy(bus1) # shallow copy
+# >>> bus3 = copy.deepcopy(bus1) # deep copy
+# >>> id(bus1), id(bus2), id(bus3)
+# (4301498296, 4301499416, 4301499752)
+# >>> bus1.drop('Bill')
+# >>> bus2.passengers 
+# ['Alice', 'Claire', 'David'] # if bus1 changes, so does bus2
+# >>> id(bus1.passengers), id(bus2.passengers), id(bus3.passengers)
+# (4302658568, 4302658568, 4302657800)
+# >>> bus3.passengers
+# ['Alice', 'Bill', 'Claire', 'David']
+
+
+'''
+Function Parameters as References
+'''
+
+# Call by sharing means that each formal parameter of the function gets a copy of each reference in the arguments. In other words,
+# the parameters inside the function become aliases of the actual arguments
+
+# The result of this scheme is that a function may change any mutable object passed as a
+# parameter, but it cannot change the identity of those objects
+
+# example: a function may change any mutable object it receives
+def f(a, b):
+    a += b
+    return a 
+
+a = [1,2]
+b = [3,4]
+f(a, b)
+# >>> a, b
+# ([1, 2, 3, 4], [3, 4]) # the list is changed
+
+
+# Don't use mutable types as parameter defaults 
+# The problem is that each default value is evaluated when the function is defined—i.e., usually when the module is loaded—and the
+# default values become attributes of the function object. So if a default value is a mutable
+# object, and you change it, the change will affect every future call of the function.
+
+# instead use None as default 
+
+def __init__(self, names=None):
+    if names is None:
+        self.names = []
+    else:
+        self.names = list(names)
+
+'''
+Weak References 
+'''
+
+
+# The presence of references is what keeps an object alive in memory. When the reference
+# count of an object reaches zero, the garbage collector disposes of it. But sometimes it is
+# useful to have a reference to an object that does not keep it around longer than necessary.
+
+# A common use case is a cache
+# Weak references are useful in caching applications because you don’t want the cached
+# objects to be kept alive just because they are referenced by the cache.
+
 
 

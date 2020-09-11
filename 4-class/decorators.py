@@ -2,12 +2,19 @@
 #  Decorators / Wrapping 
 ##################################################
 
-# A decorator is a callable that takes another function as argument (the decorated function).
+# A decorator is a callable that takes a callable as an argument (the decorated function) and returns a callable
 # The decorator may perform some processing with the decorated function, and returns it or replaces it with another function or callable object.
 # benefits
 #  - improve maintainability 
 #  - increase clarity
 #  - reduce complexity 
+
+# Use cases:
+# • logging
+# • enforcing access control and authentication
+# • instrumentation and timing functions
+# • rate-limiting
+# • caching, and more
 
 # when python executes decorators 
 # decorators run right after the decorated function is defined 
@@ -45,13 +52,72 @@ def target():
     print('running target()')
 
 
+# this uppercase decorator defines a new function on the fly (a closure) and uses it 
+# to wrap the input function in order to modify its behavior at call time
+
+def uppercase(func):
+    # @functools.wraps(func)
+    def wrapper():
+        original_result = func()
+        modified_result = original_result.upper()
+        return modified_result
+    return wrapper 
+
+@uppercase
+def greet():
+    return 'hello'
+
+# >>> greet()
+# 'HELLO'
+
+
+'''
+multiple decorators
+'''
+# applied from bottom to top 
+
+def strong(func):
+    def wrapper():
+        return '<strong>' + func() + '</strong>'
+    return wrapper
+
+def emphasis(func):
+    def wrapper():
+        return '<em>' + func() + '</em>'
+    return wrapper
+
+@strong
+@emphasis 
+def greet():
+    return 'Hello!'
+
+# similar to greet = strong(emphasis(greet))
+
+# >>> greet()
+# '<strong><em>Hello!</em></strong>'
+
+
+'''
+arguments
+'''
+
+def trace(func):
+    def wrapper(*args, **kwargs):
+        print(f'TRACE: calling {func.__name__}() '
+              f'with {args}, {kwargs}')
+        original_result = func(*args, *kwargs)
+
+        print(f'TRACE: {func.__name__}() '
+              f'returned {original_result!r}')
+        return original_result
+    return wrapper 
+
+
 '''
 using wraps
 '''
-# another example that adds extra processing (logging, timing)
-# @wraps(func) is pretty important to preserve function metadata
-# Using functools.wraps decorator assures that the original function
-# name and docstring are preserved in the result function.
+# use @functools.wraps(func) in your own decorators to copy over the
+# lost metadata (name, docstring, etc.) from the undecorated function to the decorator closure.
 
 # The code inside a decorator typically involves creating a new function that accepts any
 # arguments using *args and **kwargs, as shown with the wrapper() function in this
@@ -59,6 +125,7 @@ using wraps
 # result. However, you also place whatever extra code you want to add (e.g., timing). The
 # newly created function wrapper is returned as a result and takes the place of the original
 # function.
+
 
 import time
 from functools import wraps 
@@ -128,8 +195,6 @@ def debug(function):
         logging.debug( "%s = %r", function.__name__, result )
         return result
     return logged_function 
-
-
 
 
 '''

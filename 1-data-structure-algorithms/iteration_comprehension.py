@@ -26,6 +26,11 @@ fruits = ['apple', 'pear', 'apricot', 'cherry', 'peach']
 for idx, fruit in enumerate(fruits):
     print(idx, fruit)
 
+for i, item in enumerate(my_items):
+    print(f'{i}:{item}')
+
+
+
 # while loop
 def sumTo(aBound):
     """ Return the sum of 1+2+3 ... n """
@@ -137,6 +142,14 @@ d = {i: i*2 for i in range(10)}
 # nested comprehensions
 vals = [[y*3 for y in range(x)] for x in range(10)]
 
+even_squares = [x * x for x in range(10)
+                if x % 2 == 0] 
+
+values = [expression 
+          for item in collection 
+          if condition]
+
+
 # list comprehensions do everything map and filter functions do 
 symbols = '$¢£¥€¤'
 
@@ -167,6 +180,12 @@ squared = [[x**2 for x in row] for row in matrix]
 print(squared)
 # >>> [[1, 4, 9], [16, 25, 36], [49, 64, 81]]
 
+[(x, y) for x in range(10) for y in range(x)]
+# same thing as before
+result = []
+for x in range(10):
+    for y in range(x):
+        result.append((x, y))
 
 
 '''
@@ -195,11 +214,10 @@ for tshirt in ('%s %s' % (c, s) for c in colors for s in sizes):
     print(tshirt)
 
 
-
 '''
 map()
 '''
-# map - apply a function to every element in a sequence, production a new sequence
+# map - apply a function to every element in a sequence, producing a new sequence
 # returns a map object, it only produces values as it's needed 
 map(ord, 'the quick brown') # ord is the mapping function
 list(map(ord, 'the quick brown')) # use list for use a for loop 
@@ -213,6 +231,7 @@ list(map(combine, sizes, colors, animals))
 
 # filter
 # apply a function to each element in a sequence, constructing a new sequence with the elements for which the function returns True
+# returns lazy iterable, needs to apply list to evaluate
 filter(is_odd, [1,2,3,4,5])
 positives = filter(lambda x:x>0, [1,-5,0,2])
 
@@ -240,9 +259,9 @@ list(map(factorial, filter(lambda n: n%2, range(6))))
 from functools import reduce 
 import operator 
 reduce(operator.add, [1,2,3,4,5])
-
-# Anonymous Functions 
-
+# takes an optional default value 
+values = [1,2,3]
+reduce(operator.add, values, 0)
  
 
 ##################################################
@@ -279,6 +298,18 @@ iterable = ['a','b','c']
 iterator = iter(iterable)
 next(iterator) # prints 'a'
 next(iterator) # prints 'b'
+
+# for loop is a syntactic implementation for a while loop 
+for item in iterable: 
+    print(item)
+
+# similar to 
+iterator = iterable.__iter__()
+
+while True: 
+    item = iterator.__next__()
+    print(item)
+
 
 '''
 Iterable vs.Iterator
@@ -369,6 +400,7 @@ class CapitalIterable:
 
     def __iter__(self):
         return CapitalIterator(self.string)
+    
     
 class CapitalIterator:
     def __init__(self, string):

@@ -7,6 +7,9 @@
 # - allows us to make changes without resetting
 # alembic is SqlAlchemy specific 
 
+# example project setup https://github.com/oreillymedia/essential-sqlalchemy-2e/tree/master/ch11
+
+
 '''
 setup
 '''
@@ -41,17 +44,24 @@ revision
 '''
 run migrations
 '''
+# check current and history before performing migrations
+# $ alembic current 
+# $ alembic history --verbose 
+
 # head is a shortcut to the latest revision
+# this runs upgrade from the current state of the database state ot the highest alembic migration
 # $ alembic upgrade head 
 
 # how it works
 # alembic checks if the alembic_version table exists, if not it creates one 
 # revision hash will be a new row
 
+# downgrade to a specific revision D
+# $ alembic downgrade 124430047 
 
-# check current and history
-# $ alembic current 
-# $ alembic history --verbose 
+# explicitly mark the database being at a specific migration level
+# can be used to skip a migration or restore a database 
+# $ alembic stamp 124430047
 
 
 '''
@@ -84,6 +94,22 @@ class Task(DeclarativeBase):
     __tablename__ = "task"
     __table_args__ = {"schema": "sample"}
 
+
+'''
+manual migration
+'''
+# alembic auto can't detect table or column name changes and constraints without an explicit name 
+class Cookie(Base):
+    __tablename__ = 'new_cookies'
+
+# alembic revision -m "renaming cookies to new_cookies"
+
+
+def upgrade():
+    op.rename_table('cookies', 'new_cookies')
+
+def downgrade():
+    op.rename_table('new_cookies', 'cookies')
 
 
 

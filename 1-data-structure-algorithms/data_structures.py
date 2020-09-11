@@ -13,7 +13,7 @@ Numeric
 # Numeric 
 int # unlimited precision signed integer
 float # double precision 64 bit float - 1 sign, 11 exponent, 52 fraction
-
+sys.float_info # more info about float 
 # for large numbers - float can lose precision 
 float(2*53+1) # outputs the same as float(2*53)
 
@@ -24,17 +24,22 @@ float(2*53+1) # outputs the same as float(2*53)
 import decimal
 decimal.getcontext() # decimal configured with 28 places of decimal precisiion 
 # always quote literal values to avoid intermediate inprecise base 2 
+Decimal('0.8') - Decimal('0.7') # Decimal('0.1)
+Decimal(0.8) - Decimal(0.7) # Decimal('0.1000000000000000888178419700')
 
 # decimal precision is propagated 
 Decimal(3)
 Decimal(2.0)
 # Fraction for representing fraction numbers 
+# can be constructed from string and decimals
 Fraction(2,3)
 
 abs() # distance from zero
-round() # aviid bias, round to event numbers
+round() # aviid bias, round towards even numbers
 round(1.5) # 2
 round(2.5) # 2
+round(Decimal('3.25', 1)) # Decimal('3.2')
+# round can show suprising behavior with float which can't be represented as binary numbers
 
 
 '''
@@ -55,6 +60,18 @@ d.month
 d.day 
 d.isoformat()
 
+# transform from epoch time 
+datetime.date.fromtimestamp(10000000)
+
+# attributes
+d = datetime.date.today()
+d.year
+d.month
+d.day
+d.weekday()
+d.isoweekday()
+d.isoformat()
+
 # strftime()
 # string-format-time 
 "the date is {:%A %d %B %Y}".format(d) # day, date, month, year
@@ -65,8 +82,6 @@ d = datetime.date.today()
 t = datetime.time(8,15)
 datetime.datetime.combine(d,t)
 
-# datetime
-# composite of date and time 
 
 # timedelta
 # duration - represent differences between timestamps
@@ -83,9 +98,9 @@ datetime.date.today() + datetime.timedelta(weeks=3) # in three weeks time
 # timezone (optional)
 # tzinfo object
 datetime.timezone 
-cet = datetime.timezone(datetime.timedelta(hours=1), "CET")
+cet = datetime.timezone(datetime.timedelta(hours=1), "CET") # define a timezone
 departure = datetime.datetime(year=2014, month=1, day=7, hour=11, minute=30, tzinfo=cet)
-arrival = datetie.datetime(year=2014, month=1, day=8, hour=10, minute=30, tzinfo=datetime.timezon.utc)
+arrival = datetie.datetime(year=2014, month=1, day=8, hour=10, minute=30, tzinfo=datetime.timezone.utc)
 str(arrival - departure) 
 
 
@@ -96,6 +111,10 @@ str(arrival - departure)
 '''
 List
 '''
+# list is not ideal for queues
+# inserting and deleting an element at the beginning requires shifting 
+# the other elemnts by one, requiring O(n) time 
+
 
 # Lists
 alist = [10,20,30,40]
@@ -425,6 +444,12 @@ format(x, '0.3f')
 print("Sub: ${0:0.2f} Tax: ${1:0.2f} Total: ${total:0.2f}".format(subtotal, tax, total=total))
 
 
+def greet(name, question):
+    return f"Hello {name}! How is {question}"
+
+
+# use Template Strings to avoid user injected data 
+
 
 '''
 byte strings
@@ -556,6 +581,8 @@ heapq
 '''
 # useful data structure for maintaining priority queue
 # heapq module for finding nlargest or nsmallest 
+# priority queue manages a set of records with totally-ordered keys 
+# retries the highest-priority element 
 
 import heapq 
 
@@ -567,6 +594,18 @@ a = []
 heappush(a, 1)
 heappush(a, 3)
 heappop(a)
+
+q = [] 
+heapq.heappush(q, (2, 'a'))
+heapq.heappush(q, (1, 'b'))
+heapq.heappush(q, (3, 'c'))
+while q: 
+    next_item = heapq.heappop(q)
+    print(next_item)
+# Result:
+# (1, 'eat')
+# (2, 'code')
+# (3, 'sleep')
 
 # Accessing the 0 index of the heap will always return the smallest item.
 
@@ -589,6 +628,27 @@ portfolio = [
 cheap = heapq.nsmallest(3, portfolio, key=lambda s: s['price'])
 expensive = heapq.nlargest(3, portfolio, key=lambda s: s['price'])
 
+'''
+PriorityQueue
+'''
+# priorityqueue uses heapq internally and has the same time and space complexities
+# PriorityQueue is synchronizedand and provides locking semantics to support multiple concurrent producers and consumers.
+
+from queue import PriorityQueue
+
+q = PriorityQueue()
+q.put((2, 'a'))
+q.put((1, 'b'))
+q.put((3, 'c'))
+
+while not q.empty():
+    next_item = q.get()
+    print(next_item)
+
+# Result:
+# (1, 'eat')
+# (2, 'code')
+# (3, 'sleep')
 
 
 ##################################################
@@ -653,6 +713,12 @@ class Deck(deque):
             cards = [card(r,s) for r in range(10) for s in Suits] 
             super().extend(cards)
         random.shuffle(self)
+
+from collections import dequeue 
+s = dequeue()
+s.append('a')
+s.append('b')
+
 
 
 '''
@@ -726,9 +792,6 @@ Card = collections.namedtuple('Card', ['rank', 'suit'])
 # - a class name and 
 # - a list of field names, which can be given as an iterable of strings or as a single spacedelimited string.
 
-# namedtuple is helpful for cases we need to name a fixed set of attributes
-City = namedtuple('City', 'name country population coordinates')
-
 BlackjackCard = namedtuple('BlackjackCard', 'rank, suit, hard, soft')
 # subclass a namedtuple class 
 class AceCard(BlackjackCard):
@@ -739,6 +802,8 @@ class AceCard(BlackjackCard):
     def __new__(self, rank, suit):
         return super().__new__(AceCard, 'A', suit, 1, 11)
     
+# namedtuple is helpful for cases we need to name a fixed set of attributes
+City = namedtuple('City', 'name country population coordinates')
 
 # Data must be passed as positional arguments to the constructor (in contrast, the
 # tuple constructor takes a single iterable).
@@ -748,7 +813,7 @@ tokyo = City('Tokyo', 'JP', 36.933, (35.689722, 139.691667))
 tokyo.population
 tokyo[1]
 
-
+# assign values to Namedtuples
 from collections import namedtuple
 Stock = namedtuple('Stock', ['name', 'shares', 'price'])
 def compute_cost(records):
@@ -764,9 +829,46 @@ def compute_cost(records):
 # Move your bookkeeping code to use multiple helper classes when your internal state
 # dictionaries get complicated
 
+'''
+subclassing namedtuple
+'''
+# since named tuples are built on top of regular python classes, 
+# you can add methods to a namedtuple object 
 
+Car = namedtuple('Car', 'color mileage')
 
+class MyCarWithMethods(car):
+    def hexcolor(self):
+        if self.color == 'red':
+            return '#ff0000'
+        else:
+        return '#000000' 
 
+c = MyCarWithMethods('red', 1234)
+>>> c.hexcolor()
+
+# create hierarchies of namedtuples 
+Car = namedtuple('Car', 'color mileage')
+ElectricCar = namedtuple(
+    'ElectricCar', Car._fields + ('charge',))
+
+'''
+helper methods
+'''
+# returns contents as an OrderedDict
+my_car._asdict()
+# OrderedDict([('color', 'red'), ('mileage', 3812.4)])
+
+json.dumps(my_car._asdict())
+# '{"color": "red", "mileage": 3812.4}'
+
+# replace method to create a shallow copy of a tuple and replace some fields
+my_car._replace(color='blue')
+# Car(color='blue', mileage=3812.4)
+
+# Create new instances of a tuple from a sequence or iterable
+Car._make(['red', 999])
+# Car(color='red', mileage=999)
 
 
 ##################################################
@@ -954,6 +1056,11 @@ json.dumps(d)
 # to insertion order. When a new item is first inserted, it is placed at the end of this list.
 # Subsequent reassignment of an existing key doesn’t change the order
 
+from collections import OrderedDict
+d = collections.OrderedDict(one=1, two=2, three=3)
+d['four'] = 4
+# >>> d 
+# OrderedDict([('one', 1), ('two', 2), ('three', 3), ('four', 4)])
 
 
 
@@ -974,6 +1081,9 @@ from operator import itemgetter
 
 rows_by_fname = sorted(rows, key=itemgetter('fname'))
 rows_by_uid = sorted(rows, key=itemgetter('uid'))
+# similar to 
+rows_by_uid = sorted(rows, key=itemgetter(2))
+
 
 from operator import itemgetter
 l = [('h', 4), ('n', 6), ('o', 5), ('p', 1), ('t', 3), ('y', 2)]
@@ -985,6 +1095,16 @@ rows_by_fname = sorted(rows, key=lambda r: r['fname'])
 
 print(rows_by_fname)
 print(rows_by_uid)
+
+# sort the key, value pairs
+xs = {'a': 4, 'c': 2, 'b': 3, 'd': 1}
+sorted(xs.items())
+# [('a', 4), ('b', 3), ('c', 2), ('d', 1)]
+
+sorted(xs.items(), key=lambda x: x[1])
+# [('d', 1), ('c', 2), ('b', 3), ('a', 4)]
+
+
 
 
 '''
@@ -1054,6 +1174,34 @@ ct # Counter({'a': 5, 'b': 2, 'r': 2, 'c': 1, 'd': 1})
 ct.update('aaaaazzz')
 ct # Counter({'a': 10, 'z': 3, 'b': 2, 'r': 2, 'c': 1, 'd': 1})
 
+'''
+emulating case statements with dicts
+'''
+if cond == 'cond_a':
+    handle_a()
+elif cond == 'cond_b':
+    handle_b()
+else: 
+    handle_default()
+
+# can be achieved with below 
+func_dict = {
+    'cond_a': handle_a, 
+    'cond_b': handle_b 
+}
+
+func_dict.get(cond, handle_default)()
+
+'''
+pretty print with json.dumps()
+'''
+import json 
+json.dumps(mapping, indent=4, sort_keys=True)
+
+# or use pprint 
+import pprint 
+pprint.pprint(mapping)
+
 
 
 ##################################################
@@ -1114,6 +1262,21 @@ Practical Implications of How Set Works
 # - Membership testing is very efficient.
 # - Element ordering depends on insertion order.
 # - Adding elements to a set may change the order of other elements.
+
+'''
+frozenset
+'''
+# frozenset implements an immutable version of set that cannot be changed after it has been constructed 
+# froezensets are static and hashable 
+
+vowel = frozenset({'a', 'b', 'c'})
+vowels.add('p')
+
+# Frozensets are hashable and can
+# be used as dictionary keys:
+# >>> d = { frozenset({1, 2, 3}): 'hello' }
+# >>> d[frozenset({1, 2, 3})]
+
 
 
 

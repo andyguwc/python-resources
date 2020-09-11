@@ -33,10 +33,30 @@ class Point2D:
         return 'Point2D(x={}, y={})'.format(self.x, self.y)
 
 
+class Car: 
+    def __init__(self, color, mileage):
+        self.color = color 
+        self.mileage = mileage 
+
+    def __repr__(self):
+        return f'Car({self.color!r}, {self.mileage!r})'
+
+    # or even use 
+    def __repr__(self):
+        return (f'{self.__class__.__name__}('
+                f'{self.color!r}, {self.mileage!r})')
+
+    # optional __str__ method 
+    def __str__(self):
+        return f'a {self.color} car'
+
+
 # Specifically, the special !r formatting code indicates that the
 # output of __repr__() should be used instead of __str__(), the default
 
 # >>> p = Pair(3, 4)
+# >>> str(p)
+# >>> repr(p)
 # >>> print('p is {0!r}'.format(p))
 # p is Pair(3, 4)
 # >>> print('p is {0}'.format(p))
@@ -44,7 +64,9 @@ class Point2D:
 
 
 # format options 
+# by default, __format__() just calls __str__()
 __format__
+
 
 # customized formatting 
 _formats = {
@@ -65,8 +87,6 @@ class Date:
         fmt = _formats[code]
         return fmt.format(d=self)
     
-
-
 
 class Vector2d:
     typecode = 'd'
@@ -167,3 +187,12 @@ class Vector2d:
     __slots__ = ('__x', '__y')
     typecode = 'd'
     # methods follow 
+
+
+'''
+ascii
+'''
+# ascii escapes the non-ascii characters
+x = 'Hello'
+ascii(x)
+

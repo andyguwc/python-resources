@@ -1253,10 +1253,18 @@ for fruit in new_order:
     print(fruit)
 
 
-# https://runestone.academy/runestone/static/fopp/NestedData/ListswithComplexItems.html
 
-# Shallow Copy 
-[:] # the nested copy would also change
+x = [[1,2,3]], [4,5,6]]
+y = list(x) # makes a shallow copy 
+
+x.append(['new sublist'])
+>>> x
+x = [[1,2,3]], [4,5,6], ['new sublist']]
+y = [[1,2,3]], [4,5,6]]
+
+# Deep Copy
+
+
 
 # Test Cases
 # For example, before writing a function, write a few test cases that check that it returns an object of the right type and that it returns the correct values when invoked on particular inputs.

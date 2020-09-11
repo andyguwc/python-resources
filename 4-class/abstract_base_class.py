@@ -190,3 +190,30 @@ class Flat(BettingStrategy):
 
 
 
+'''
+Use ABC to Enforce 
+'''
+
+from abc import ABCMeta, abstractmethod
+
+class Base(metaclass=ABCMeta):
+    @abstractmethod 
+    def foo(self):
+        pass 
+    
+    @abstractmethod
+    def bar(self):
+        pass 
+
+class Concrete(Base):
+    def foo(self):
+        pass 
+
+assert issubclass(Concrete, Base) 
+# Since Concrete didn't implement a required method,
+# will raise an error at initiation 
+
+# >>> C = Concrete()
+# TypeError:
+# "Can't instantiate abstract class Concrete
+# with abstract methods bar"
