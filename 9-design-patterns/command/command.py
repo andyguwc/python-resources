@@ -26,7 +26,7 @@
 structure
 '''
 # encapsulate a request as an object 
-    # - separate command logic from the client
+# # - separate command logic from the client
 # parameterize objects 
 # also known as action pattern or transaction pattern 
 
@@ -60,6 +60,7 @@ class Document:
     def __init__(self, filename):
         self.filename = filename
         self.contents = "This file cannot be modified"
+    
     def save(self):
         with open(self.filename, 'w') as file:
             file.write(self.contents)
@@ -89,6 +90,7 @@ class MenuItem:
 class SaveCommand:
     def __init__(self, document):
         self.document = document
+    
     def execute(self):
         self.document.save()
 
@@ -123,21 +125,18 @@ menu_item.command = window.exit
 '''
 example command line order processing system
 '''
+# Also known as the action pattern or transaction pattern
 
-# parse the command line 
-# execute the command line 
-# get logs to the user 
-
-# separate concerns of parsing commands and executing commands
-
-# client
-# Invoker (main program)
-# - ask commands to perform a request
-# ConcreteCommand 
-# - concrete command for every command in the system 
+# three operation: CreateOrder, UpdateQuantity, ShipOrder
 
 # abstract command
+
 class AbsCommand(metaclass=ABCMeta):
+    @abstractproperty
+    def execute(self):
+        pass
+
+class AbsOrderCommand(metaclass=ABCMeta):
     @abstractproperty
     def name(self):
         pass 
@@ -146,8 +145,17 @@ class AbsCommand(metaclass=ABCMeta):
     def description(self):
         pass 
 
+class NoCommand(AbsCommand):
+    def __init__(self, args):
+        self._command = args[0]
+        pass
+
+    def execute(self):
+        print('No command named %s' % self._command)
+
 # concrete command
 class UpdateOrder(AbsCommand, AbsOrderCommand):
+    # abstract base class properties
     name = 'UpdateQuantity'
     description = 'UpdateQuantity number'
     
@@ -158,7 +166,6 @@ class UpdateOrder(AbsCommand, AbsOrderCommand):
         oldqty=5
         print('Update database')
         print('Logging: update quantity from %s to %s' % (oldqty, self.newqty))
-
 
 # main program
 # mapping the name to the class 

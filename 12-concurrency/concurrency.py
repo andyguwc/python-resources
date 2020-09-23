@@ -45,6 +45,11 @@ threading concepts
 # - the saving and restoring of thread state
 # - thread interference (race conditions, both threads read and update the same variable)
 
+# shared memory
+# threads have access to all the memory and thus all the variables in the program
+# this can lead to inconsistencies in the pgoram state - can lead to race conditions
+# shared memory is also fast 
+
 '''
 create threads
 '''
@@ -62,6 +67,27 @@ t.join() # suspend execution of thread
 # can also inherit from the threading.Thread 
 
 # https://github.com/tim-ojo/python-concurrency-getting-started/blob/master/thumbnail_maker.py
+
+
+# expand the Thread class
+# then call the start method
+from threading import Thread
+
+class InputReader(Thread):
+    def run(self):
+        self.line_of_text = input()
+
+thread = InputReader()
+thread.start()
+
+count = result = 1
+while thread.is_alive():
+    result = count * count
+    count += 1
+
+print("calculated squares up to {0} * {0} = {1}".format(count, result))
+print("while you typed '{}'".format(thread.line_of_text))
+
 
 '''
 thread synchronization
@@ -128,7 +154,7 @@ multiple read threads
 '''
 global interpreter lock
 '''
-# global lock ensures only one thread accessing python data structures at a time
+# global lock ensures only one thread accessing python data structures at a time (using the CPU)
 # instead of true multi-threading, cooperatively threads take turns 
 # help with I/O bound operations, not helping for CPU bound operations
 # The Python interpreter is an application which only runs as one single process by default and is therefore not able to take advantage of more than one virtual core.
@@ -161,6 +187,14 @@ multiprocessing
 # items passes to process has to be pickable (converted to bytes)
 # - basic types, collections, class with pickalable attributes
 
+# In the case of multiprocessing, the primary drawback is that sharing data between
+# processes is very costly. All communication between processes,
+# whether by queues, pipes, or a more implicit mechanism requires pickling the objects.
+
+# Excessive pickling quickly dominates processing time. Multiprocessing works best
+# when relatively small objects are passed between processes and a tremendous amount
+# of work needs to be done on each one.
+
 import multiprocessing
 
 def work(val):
@@ -188,6 +222,16 @@ p.exitcode # 0 means normally exited
 '''
 process pool
 '''
+
+# - Only cpu_count() processes can run simultaneously
+# - Each process consumes resources with a full copy of the Python interpreter
+# - Communication between processes is expensive
+# - Creating processes takes a nonzero amount of time
+
+# Benefits
+# - Hide the process of passing data between processes
+# - Abstract away the overhead of figuring out what code is executing in the main process vs. subprocess
+
 # specify number of working processes
 # if none, default to number of CPU cores available to the machine
 # no need for pickling of args
@@ -219,6 +263,7 @@ map async
 # when the call needs result of map operation
 # with async, result is returned immediately and only be fetched when calling result.get()
 # pool has apply and apply_async
+# the result variable is a promise to return values by calling get(). Also has methods like ready() and wait()
 
 from multiprocessing import Pool
 import time
@@ -249,6 +294,27 @@ inter-process communication
 shared state
 '''
 # shared memory with multiprocessing.Value
+
+# one for incoming queries and one to send outgoing results
+def search(paths, query_q, results_q):
+    lines = []
+    for path in paths:
+        lines.extend(l.strip() for l in path.open())
+    query = query_q.get()
+    while query:
+        results_q.put([l for l in lines if query in l])
+        query = query_q.get()
+
+from multiprocessing import Process, Queue, cpu_count
+from path import path
+cpus = cpu_count()
+
+pathnames = [f for f in path('.').listdir() if f.isfile()]
+paths = [pathnames[i::cpus] for i in range(cpus)]
+query_queues = [Queue() for p in range(cpus)]
+results_queue = Queue()
+
+
 
 
 ##################################################

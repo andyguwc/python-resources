@@ -105,6 +105,7 @@ class ChevyFactory(AbsFactory):
 '''
 example - simple car manufacturer (just one factory)
 '''
+# autos.py
 # abstract model
 class AbsAuto(metaclass=ABCMeta):
     @abstractmethod
@@ -144,16 +145,21 @@ class NullCar(AbsAuto):
 
 
 # simple factory function
-# the factory has a name to object mappin 
+# the factory has a name to object mapping 
 # and a create instance method to create appropriate instances based on the carname passed in 
+
+from inspect import getmembers, isclass, isabstract
+import autos
+
+# create an instance of desired class
 class AutoFactory(object):
-    autos = {}
+    autos = {} # a dictionary of car model name mapping to the class of car
 
     def __init__(self):
         self.load_autos()
     
     def load_autos(self):
-        # get classes imported in the package 
+        # get concrete classes imported in the package 
         classes = getmembers(autos, lambda m: isclass(m) and not isabstract(m))
 
         for name, _type in classes:

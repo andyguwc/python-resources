@@ -273,4 +273,15 @@ locals() and globals()
 # - locals() returns a dictionary of the attributes in the current local namespace (e.g., within a function), along with their values.
 
 
+# to avoid function to be called during module import 
+# all module level code is executed immediately while imported
+class Database:
+    pass 
+
+database = None
+
+def initialize_database():
+    global database
+    database = Database()
+
 

@@ -11,9 +11,8 @@ structure
 # and certain actions may drive it to a different state 
 
 # To make this work, we need a manager, or context class that provides an interface
-# for switching states. Internally, this class contains a pointer to the current state; each
-# state knows what other states it is allowed to be in and will transition to those states
-# depending on actions invoked upon it.
+# for switching states. Internally, this class contains a pointer to the current state; 
+# each state knows what other states it is allowed to be in and will transition to those states depending on actions invoked upon it.
 
 # So we have two types of classes, the context class and multiple state classes. The
 # context class maintains the current state, and forwards actions to the state classes.
@@ -25,39 +24,9 @@ structure
 
 
 '''
-example - a XML Parser
+State vs. Strategy
 '''
-# the context class 
 
-class Parser: 
-    def __init__(self, parse_string):
-        self.parse_string = parse_string 
-        self.root = None
-        self.current_node = None 
-
-        self.state = FirstTag()
-    
-    def process(self, remaining_string):
-        # important method which accepts remaining string and passes to current state 
-        remaining = self.state.process(remaining_string, self)
-        if remaining:
-            self.process(remaining)
-    
-    def start(self):
-        self.process(self.parse_string)
-
-class ChildNode:
-    def process(self, remaining_string, parser):
-        stripped = remaining_string.strip()
-        if stripped.startswith("</"):
-            parse.state = CloseTag()
-        elif stripped.startswith("<"):
-            parser.state = OpenTag()
-        else:
-            parser.state = TextNode()
-        return stripped
-
-# State vs. Strategy
 # While the two patterns have identical structures, they solve completely different
 # problems. The strategy pattern is used to choose an algorithm at runtime; generally,
 # only one of those algorithms is going to be chosen for a particular use case. The state

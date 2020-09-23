@@ -8,7 +8,9 @@ structure
 '''
 # adapters allow two pre-existing objects to work together even if interfaces are not compatible
 # The adapter object's sole purpose is to perform this translation job. 
+
 # Adapting may entail a variety of tasks, such as converting arguments to a different format, rearranging the order of arguments, calling a differently named method, or supplying default arguments.
+
 # Map between two interfaces to let classes work together 
 #  - Object adapaters: Composition (better approach with flatter class structure)
 #  - Class adapaters: Inheritance
@@ -49,6 +51,8 @@ class DateAgeAdapter:
         date = self._str_date(date)
         return self.calculator.calculate_age(date)
 
+calculator = DateAgeAdapter(birthday=datetime.datetime.today())
+calculator.get_age(datetime.datetime.today())
 
 '''
 example - composition adapter 
@@ -70,26 +74,11 @@ class Customer(object):
         return self._address 
 
 
-# define an abstract adapater base class 
-class AbsAdapter(metaclass=ABCMeta):
+# concrete vendor adapater 
+class VendAdapter(Object):
     def __init__(self, adaptee):
         self.adaptee = adaptee 
-    
-    @property 
-    def adaptee(self):
-        return self.adaptee 
-    
-    @abstractproperty 
-    def name(self):
-        pass 
 
-    @abstractproperty
-    def address(self):
-        pass 
-
-
-# concrete vendor adapater 
-class VendAdapter(AbsAdapter):
     @property 
     def name(self):
         return self.adaptee.name 
@@ -110,10 +99,11 @@ for item in mock_vendors:
 
 
 '''
-example - class adapter 
+example - class adapter to modify the address printed out
 '''
 # the adapter inherits from both the original class and the adapted class 
 # class adapter overwrites the adaptee methods 
+# adapt the vendor properties into customer property
 
 class VendorAdapter(Vendor, Customer):
     def __init__(self, *args, **kwargs):

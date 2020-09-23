@@ -18,7 +18,6 @@
 # updating a database or file, and so on. The code for each of these tasks would all be
 # mixed in with the observed object.
 
-
 '''
 structure
 '''
@@ -49,6 +48,8 @@ class Inventory:
     @property
     def product(self):
         return self._product
+    
+    # when the property is set, call the _update_observers on itself
     @product.setter 
     def product(self, value):
         self._product = value 
@@ -57,6 +58,7 @@ class Inventory:
     @property
     def quantity(self):
         return self._quantity
+
     @quantity.setter 
     def quantity(self, value):
         self._quantity = value 
@@ -82,11 +84,12 @@ class ConsoleObserver:
 # i.attach(c)
 # i.product = "Widget"
 
-
-
 '''
 another example - dashboard consuming changes from KPI Data 
 '''
+# Observer pattern - when the state of one changes, its dependents are notified
+# Also known as dependents pattern or publish-subscribe pattern
+
 # Use ABCs for subject and observer
 # build concrete classes using the ABCs
 # Use two observers
@@ -108,18 +111,21 @@ class AbsObserver(metaclass=ABCMeta):
         pass
 
 # abstract subject
+# publisher
 class AbsSubject(metaclass=ABCMeta):
     _observers = set()
-
+    
+    # add new observer
     def attach(self, observer):
         if not isinstance(observer, AbsObserver):
             raise TypeError('Observer not derived from AbsObserver')
         self._observers |= {observer}
     
+    # remove observer from the set
     def detach(self, observer):
         self._observers -= {observer}
     
-    # notify observers and invoke the update methods
+    # for each observer, invoke the update method
     def notify(self, value=None):
         for observer in self._observers:
             if value is None:
@@ -132,6 +138,7 @@ class AbsSubject(metaclass=ABCMeta):
     @abstractmethod
     def __exit__(self, exc_type, exc_value, traceback):
         self._observers.clear()
+
 
 # KPI class (subject)
 class KPI(AbsSubject):
@@ -167,10 +174,12 @@ class CurrentKPI(AbsObserver):
     new_tickets = -1 
 
     def __init__(self, kpis):
+        # take a reference of the subject/publisher
         self._kpis = kpis
         kpis.attach(self)
     
     # implement the update method
+    # observer can get/set state
     def update(self):
         self.open_tickets = self._kpis.open_tickets
         self.closed_tickets = self._kpis.closed_tickets
@@ -181,7 +190,12 @@ class CurrentKPI(AbsObserver):
         print('Current open tickets: {}'.format(self.open_tickets))
         print('New tickets closed: {}'.format(self.new_tickets))
 
-# this ensures after exited observers are no longer notified
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._kpis.detach(self)
+
+
+# this ensures after exit the observers are no longer notified
+# observers will detach themselves - no dangling relationships
 with KPIs() as kpis:
     with CurrentKPI(kpis):
         kpis.set_kpis(25,10,5)

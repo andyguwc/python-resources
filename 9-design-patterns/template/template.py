@@ -10,16 +10,11 @@ structure
 # in subclasses to provide custom behavior. In some ways, it's like a generalized
 # strategy pattern, except similar sections of the algorithms are shared using a base class.
 
-# define skeleton deferring some steps to concrete algorithms. This ensures all required steps are implemented
-#  - Abstract method 
-#  - Concrete methods 
-#  - Hooks (may be overwritten)
-#  - Fixed process order 
+# when there are similarities between classes, concrete methods are implemented by overridables - to follow DRY principle
 
 '''
-example 
+tempalte pattern example 
 '''
-
 # connect to SQLite database get results and format the results.
 # The common steps are connecting and outputing which we can put into a template pattern 
 
@@ -56,8 +51,11 @@ class QueryTemplate:
 
 # concete class 
 import datetime
+
+
 class NewVehiclesQuery(QueryTemplate):
     def construct_query(self):
-    self.query = "select * from Sales where new='true'"
+        self.query = "select * from Sales where new='true'"
+    
     def output_results(self):
-    print(self.formatted_results)
+        print(self.formatted_results)

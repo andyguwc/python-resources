@@ -9,6 +9,9 @@
 # class. The class can extend the abstract base class itself in order to be used as an
 # instance of that class, but it must supply all the appropriate methods.
 
+# abstract - meaning cannot be meaningfully instantiated itself
+# base - meaning to be inherited by another subclass
+
 
 '''
 using ABCs from Collections 

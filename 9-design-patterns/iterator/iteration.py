@@ -5,12 +5,9 @@
 '''
 structure
 '''
-
-
 # Hide the implementation and exposes method for iteration 
-# collection 
+# add new abilities to a collection 
 # set, list, dictionary, tree 
-
 
 
 '''
@@ -19,6 +16,7 @@ examples
 from collections improt Iterable, Iterator
 # this supports multiple iterators upon initialization
 # an iterable has __iter__() which returns an iterator 
+
 class Employees(Iterable):
     _employees = {}
     _headcount = 0 
@@ -31,6 +29,8 @@ class Employees(Iterable):
     def __iter__(self):
         return EmployeesIterator(self._employees, self._headcount)
 
+
+# proper implementation which supports multiple iterators
 class EmployeesIterator(Iterator):
     def __init__(self, employees, headcount):
         self._employees = employees 
@@ -49,8 +49,8 @@ class EmployeesIterator(Iterator):
         else:
             raise StopIteration 
 
-# using generator expressions 
 
+# alternative - using generator expressions 
 class Employees(Iterable):
     _employees = {}
     _headcount = 0 
@@ -60,11 +60,16 @@ class Employees(Iterable):
         self._employees[self._headcount] = employee
     
     def __iter__(self):
+        # generator expression which does the iterating
+        # the __next__() method is essentially implemented by the generator
         return (e for e in self._employees.values())
 
 
 # alternative - inherit from the sequence type of iterator 
 # implements the __getitem__ method and __len__ method
+# sequence iterator 
+from collections import Sequence 
+
 class Department(Sequence):
     _departments = []
 
@@ -76,3 +81,13 @@ class Department(Sequence):
     
     def __len__(self):
         return len(self._departments)
+
+# utilize internal structure
+class Members(Iterable):
+    members = []
+
+    def __init__(self, members):
+        self.members = members
+    
+    def __iter__(self):
+        return iter(self.members)

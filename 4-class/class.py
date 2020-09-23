@@ -357,6 +357,25 @@ class ValidPlayer:
         self.game_strategy = game_strategy
         self.table= table
 
+'''
+__new__
+'''
+# inherited __new__() allocates the object which is passed to __init__() as self
+class ChessCoordinates:
+    def __new__(cls, *args, **kwargs):
+        print("args=" , repr(args))
+        print("kwargs= ", repr(kwargs))
+        obj = super().__new__(cls)
+        print(id(obj))
+        return obj
+
+    def __init__(self, file, rank):
+        print(id(self)) # this id should be same as the one printed in __new__
+        self.file = file
+        self.rank = rank
+
+
+
 ##################################################
 #  Class Method vs. Static Method
 ##################################################

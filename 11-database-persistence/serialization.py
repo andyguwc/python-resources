@@ -235,10 +235,15 @@ with open("some_source.yaml", "r", encoding="UTF-8") as source:
 
 # pickle an object 
 # file is written as raw bytes
+
+
 import pickle 
+
+# The dump method accepts an object to be written and a file-like object to write the serialized bytes to.
 with open("travel_blog.p", "wb") as target:
     pickle.dump(travel, target)
 
+# The load method does exactly the opposite; it reads a serialized object from a file-like object. 
 with open("travel_blog.p", "rb") as source:
     copy = pickle.load(source)
 

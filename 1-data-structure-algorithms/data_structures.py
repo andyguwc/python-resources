@@ -282,15 +282,29 @@ print(s)
 ss = "Hello, World"
 els = ss.count("l")
 
+'''
+Encoding
+'''
+
 # ascii
 # serialize data as ascii
 
 # ord() converts a character to an integer unicode 
 # chr() converts an integer unicode into a single character string
 
-'''
-Regular Expressions (re)
+# unicode 
+# If you are encoding text and don't know which encoding to use, it is best to use
+# the UTF-8 encoding. UTF-8 is able to represent any Unicode character. In modern
+# software, it is a de facto standard encoding to ensure documents in any language—or
+# even multiple languages—can be exchanged.
 
+characters = "cliché"
+print(characters.encode("UTF-8"))
+print(characters.encode("ascii"))
+
+
+'''
+Regular Expressions (regex)
 '''
 # matching patterns 
 
@@ -313,21 +327,30 @@ else:
 print(template.format(search_string, pattern))
 
 . # any character as long as not empty
+'hel o world' matches pattern 'hel.o world'
+'helo world' does not match pattern 'hel.o world'
+
 [] # a set of characters as long as matches one of them
 'hello world' matches pattern 'hel[lp]o world'
-
 'hello 2 world' matches pattern 'hello [a-zA-Z0-9] world'
+
+* # the previous character zero or many times
+'heo' matches pattern 'hel*o'
+'helllllo' matches pattern 'hel*o' # can be zero or more times 
 
 # \. matches . escaping 
 
-'helllllo' matches pattern 'hel*o' # can be zero or more times 
-
+# repeat sequence of patterns
 'abcabcabc' matches pattern '(abc){3}'
 
 'abccc' matches pattern 'abc{3}'
 
-# Make repeated regular expressions efficient 
+# get information from it
+# re.search
+# re.findall
 
+# making repeated regular expressions efficient
+re.compile 
 
 # specify multiple patterns for the separator 
 # use the re.split() method 
@@ -391,6 +414,7 @@ print(a, b, c, sep=':')
 '''
 format (interpolating values in strings)
 '''
+
 # format
 s = '{name} has {n} messages'
 s.format(name='Hello', n=37)
@@ -441,7 +465,8 @@ format(x, '0.3f')
 'value is {:0.3f}'.format(x)
 
 
-print("Sub: ${0:0.2f} Tax: ${1:0.2f} Total: ${total:0.2f}".format(subtotal, tax, total=total))
+print("Sub: ${0:0.2f} Tax: ${1:0.2f} "
+      "Total: ${total:0.2f}".format(subtotal, tax, total=total))
 
 
 def greet(name, question):
@@ -1313,5 +1338,24 @@ print(utc_dt)
 pacific = pytz.timezone('US/Pacific')
 sf_dt = pacific.normalize(utc_dt.astimezone(pacific))
 print(sf_dt)
+
+
+##################################################
+# Bit Operations
+##################################################
+
+0b111000 #56
+
+bin(66)
+
+bin(0b111000 ^ 0b111000)
+
+# operators
+& # and
+| # or
+^ # exclusive-or
+~ # not
+<< # left shift
+>> # right shift
 
 

@@ -21,6 +21,16 @@ def delete_product(product_id, user):
     stre.get_product(product_id).delete()
 
 
+# class that only takes even numbers
+class EvenOnly(list):
+    def append(self, interger):
+        if not isinstance(integer, int):
+            raise TypeError("Only integers can be added")
+        if integer % 2:
+            raise ValueError("Only even numbers can be added")
+        super().append(integer)
+
+
 '''
 type of errors
 '''
@@ -38,15 +48,23 @@ BaseException
         AssertionError
 
 
-'''
-exception payloads
-'''
+# exception payloads
 try:
     median([])
 except ValueError as e:
     # print out the payload
     print('Payload', e.args)
     print(str(e))
+
+# using the exception payload
+try:
+    result = divide(x, y)
+except ValueError as e: 
+    print('Payload', e.args)
+    print(str(e)) # an alternative
+else:
+    print('Result is %.1f' % result)
+
 
 
 '''
@@ -85,15 +103,6 @@ try:
 except Exception as e:
     # some code
     print("Exception occured: {}".format(e))
-
-
-# never let exceptions pass silently
-# the except clause needs specified exception 
-
-try:
-    print('abc')
-except:
-    pass 
 
 
 # example handling 
@@ -140,14 +149,19 @@ except ValueError:
 else:
     print('Result is %.1f' % result)
 
-# using the exception payload
-try:
-    result = divide(x, y)
-except ValueError as e: 
-    print('Payload', e.args)
-    print(str(e)) # an alternative
-else:
-    print('Result is %.1f' % result)
+
+# without using else
+def login(self, username, password):
+    try:
+        user = self.users[username]
+    except KeyError:
+        raise InvalidUsername(username)
+
+    if not user.check_password(password):
+        raise InvalidPassword(username, user)
+
+    user.is_logged_in = True
+    return True
 
 
 '''

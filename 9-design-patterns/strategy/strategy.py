@@ -12,26 +12,7 @@ Original Implementation (without using first class function)
 
 # Define a family of algorithms, encapsulate each one, and make them interchangeable.
 # Strategy lets the algorithm vary independently from clients that use it.
-# Example Order uses Promotion and we can implement variations of Promotions objects
 
-# Context
-# Provides a service by delegating some computation to interchangeable components
-# that implement alternative algorithms. In the ecommerce example, the context is
-# an Order, which is configured to apply a promotional discount according to one of
-# several algorithms.
-
-# Strategy
-# The interface common to the components that implement the different algorithms.
-# In our example, this role is played by an abstract class called Promotion.
-
-# Concrete Strategy
-# One of the concrete subclasses of Strategy. FidelityPromo, BulkPromo, and Large
-# OrderPromo are the three concrete strategies implemented.
-
-
-# Enscapsulate algorithms
-# Several techniques available (using objects or functions)
-# Eliminate the need for a lot of if/elif
 
 from abs import ABC, abstractmethod
 from collections import namedtuple
@@ -95,6 +76,7 @@ class BulkItemPromo(Promotion): # second concrete strategy
 #         LineItem('watermellon', 5, 5.0)]
 # Order(joe, cart, FidelityPromo())
 
+
 '''
 Refactoring Using Functions 
 '''
@@ -130,10 +112,6 @@ class Order: # the Context
         else:
             discount = self.promotion(self) # using the function. To compute a discount, just call the self.promotion() function.
         return self.total() - discount 
-
-def fidelity_promo(order):
-    """5% discount for customers with 1000 or more fidelity points"""
-    return order.total() * .05 if order.customer.fidelity >= 1000 else 0
 
 # To apply a discount strategy to an Order, just pass the promotion function as an
 # argument.
@@ -196,34 +174,52 @@ def best_promo(order):
 '''
 another example shipping cost and order 
 '''
-# context with strategy as part of the input
+
+# enscapsulate strategy as functions
 class ShippingCost(object):
     def __init__(self, strategy):
+        # takes in a strategy function
         self._strategy = strategy 
     
-    def shipping_cost(self, other):
+    def shipping_cost(self, order):
+        # then leverages the specific implementation on the strategy object
+        return self._strategy(order)
+
+fedex_strategy = lambda order: 4.0
+ups_strategy = lambda order: 3.0
+
+cost_calculator = ShippingCost(fedex_strategy)
+cost = cost_calculator.shipping_cost(order)
+assert cost == 4.0
+
+# context with strategy as part of the input
+# enscapsulate strategy as functions
+class ShippingCost(object):
+    def __init__(self, strategy):
+        # takes in a strategy object in the constructor
+        self._strategy = strategy 
+    
+    def shipping_cost(self, order):
+        # then leverages the specific implementation on the strategy object
         return self._strategy.calculation(order)
     
 # the strategy ABC interface
 from abc import ABCmeta, abstractclassmethod
 
 class AbsStrategy(metaclass=ABCMeta)):
-
     @abstractclassmethod
     def calculate(self, order):
         """calculate shipping costs 
         """
 
 # the concrete strategy / implementation 
-
 class FedExStrategy(AbsStrategy):
     def calculate(self, order):
         return 3.00
 
 class PostalStrategy(AbsStrategy):
-    def calculate(self, other):
+    def calculate(self, order):
         return 5.00
-
 
 # test 
 order = Order()

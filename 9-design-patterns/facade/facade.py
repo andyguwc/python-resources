@@ -10,11 +10,8 @@ structure
 # components. For complex tasks, we may need to interact with these objects directly,
 # but there is often a "typical" usage for the system for which these complicated
 # interactions aren't necessary.
-# The facade pattern allows us to define a new object that encapsulates this typical usage of the system
-# facade is like an adapter, difference is facade is trying to abstract a simpler interface out of a complex one while adapater is mapping one to another 
 
-# provide an unified interface 
-# higher level interface to reduce complexity 
+# The facade pattern allows us to define a new object that encapsulates this typical usage of the system. Facade is like an adapter, difference is facade is trying to abstract a simpler interface out of a complex one while adapater is mapping one to another.
 
 '''
 example write a email tool
@@ -62,16 +59,5 @@ class EmailFacade:
             messages.append(message[0][1])
         return messages 
 
-'''
-example - pull records 
-'''
-# def get_employees():
-#     connection = connect()
-#     query = '''
-#     '''
-#     cursor = connection.cursor()
-#     # ...
-#     connection.commit()
-#     connection.close()
 
 

@@ -61,7 +61,11 @@ class MyComputerBuilder(AbsBuilder):
         self._computer.hard_drive = 'Seagate'
 
 class AnotherComputerBuilder(AbsBuilder):
-    pass 
+    def get_case(self):
+        pass
+        
+    def get_mainboard(self):
+        pass
 
 class Director(object):
     def __init__(self, builder):

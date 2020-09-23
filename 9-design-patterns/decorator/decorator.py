@@ -8,6 +8,7 @@ structure
 
 # The decorator pattern allows us to "wrap" an object that provides core functionality with other objects that alter this functionality.
 # Any object that uses the decorated object will interact with it in exactly the same way as if it were undecorated (that is, the interface of the decorated object is identical to that of the core object).
+
 # There are two primary uses of the decorator pattern:
 # - Enhancing the response of a component as it sends data to a second component
 # - Supporting multiple optional behaviors
@@ -38,6 +39,7 @@ class LogSocket:
     def __init__(self, socket):
         self.socket = socket
     
+    # wraps the key methods to achieve the same interface
     def send(self, data):
         print("Sending {0} to {1}".format(
             data, self.socket.getpeername()[0]))
@@ -52,14 +54,12 @@ class LogSocket:
 # alternatives
 #  - monkey patching
 #  - multi inheritance
-#  - function decorators 
+#  - function decorators
 
 # usage
 # respond(LogSocket(client))
 
-'''
-decorator example - add gzip functionality 
-'''
+# add gzip functionality 
 # another decorator
 import gzip 
 from io import BytestIO
@@ -79,6 +79,7 @@ class GzipSocket:
         self.socket.close()
     
 # now we can write code that dynamically switches between the decorators when responding 
+# this use case is better than inheritance
 client, addr = server.accpet()
 if log_send:
     client = LoggingSocket(client)
@@ -90,6 +91,7 @@ respond(client)
 '''
 example - car dealership with models and many kinds of options
 '''
+# add new abilities to an object, dynamically at run time
 # abstract base class 
 class AbsCar(metaclass=ABCMeta):
     @abstractproperty
@@ -130,4 +132,5 @@ class V6(AbsDecorator):
     def cost(self):
         return self.car.cost + 1200 
 
-
+car = Economy()
+car = V6(car)

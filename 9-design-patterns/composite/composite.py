@@ -8,7 +8,8 @@ structure
 # The composite pattern allows complex tree-like structures to be built from simple
 # components. These components, called composite objects, are able to behave sort
 # of like a container and sort of like a variable depending on whether they have child
-# components. Composite objects are container objects, where the content may actually
+# components. 
+# Composite objects are container objects, where the content may actually
 # be another composite object.
 
 # clients can handle individual objects and collections of objects 
@@ -33,6 +34,7 @@ class Component:
     def delete(self):
         del self.parent.children[self.name]
     
+
 class Folder(Component):
     def __init__(self, name):
         super().__init__(name)
@@ -42,13 +44,21 @@ class Folder(Component):
         child.parent = self 
         self.children[child.name]
 
+    def move(self, new_path):
+        pass
+
     def copy(self, new_path):
         pass
+
 
 class File(Component):
     def __init__(self, name, contents):
         super().__init__(name)
         self.contents = contents
+
+    def move(self, new_path):
+        pass 
+    
     def copy(self, new_path):
         pass
 

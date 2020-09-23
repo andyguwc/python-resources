@@ -3,16 +3,59 @@
 ##################################################
 
 '''
+__dict__
+'''
+v = Vector(5,3)
+v.__dict__
+# name of attributes as keys, values as values
+del v.__dict__['x']
+v.x # deleted, hence throw attribute error
+
+vars(v) # access __dict__
+
+'''
+methods in __class__.__dict__
+'''
+# methods are __class__ attributes
+
+v = Vector(x=3, y=3)
+v.__class__
+v.__class__.__dict__
+v.__class__.__dict__['__repr__'](v) # self argument
+
+
+
+'''
 __getattr__(), __setattr__(), and __delattr__()
 '''
 
 # The __setattr__() method will create and set attributes.
-# The __getattr__() method will do two things. Firstly, if an attribute
-# already has a value, __getattr__() is not used; the attribute value is
-# simply returned. Secondly, if the attribute does not have a value, then
-# __getattr__() is given a chance to return a meaningful value. If there is
-# no attribute, it must raise an AttributeError exception.
+
+# The __getattr__() invoked after requested attribute/property not found by normal lookup
+
+# The __getattribute__() invoked instead of normal lookup
+
 # The __delattr__() method deletes an attribute.
+
+getattr(v, 'y')
+hasattr(v, 'x')
+delattr(v, 'z')
+setattr(v, 'x', 9)
+v.x 
+
+
+class Vector:
+    def __init__(self, **coords):
+        private_coords = {'_' + k:v for k,v in coord.items()}
+        self.__dict__.update(private_coords)
+    
+    def __repr__(self):
+        return "{}({})".format(
+            self.__class__.__name__,
+            ', '.join("{k}={v}".format(
+                k=k[1:],
+                v=self.__dict__[k])
+                for k in sorted(self.__dict__.keys())))
 
 
 import math 
@@ -30,6 +73,36 @@ class Point:
 
 p = Point(2,3)
 d = getattr(p, 'distance')(0, 0) # Calls p.distance(0,0)
+
+
+class LoggingProxy:
+    def __init__(self, target):
+        super().__setattr__('target', target)
+    
+    def __getattribute__(self, name):
+        target = super().__getattribute__('target')
+
+        try:
+            value = getattr(target, name)
+        except AttributeError as e:
+            raise AttributeError("{} cold not forward request {} to {}".format(
+                super().__getattribute__('__class__').__name__,
+                name,
+                target)) from e
+        print("Retrieved attribute {!r} = {!r} from {!r}".format(name, value, target))
+        return value
+
+    def __setattribute__(self, name):
+        target = super().__getattribute__('target')
+
+        try:
+            setattr(target, name, value)
+        except AttributeError as e:
+            raise AttributeError("{} cold not forward request {} to {}".format(
+                super().__getattribute__('__class__').__name__,
+                name,
+                target)) from e
+        print("Set attribute {!r} = {!r} from {!r}".format(name, value, target))
 
 
 '''

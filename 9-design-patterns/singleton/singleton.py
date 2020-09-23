@@ -17,7 +17,6 @@ structure
 # control access to limited resource 
 
 
-
 '''
 singleton implementation 
 '''
@@ -27,7 +26,7 @@ class OneOnly:
     _singleton = None 
     def __new__(cls, *args, **kwargs):
         if not cls._singleton:
-            cls._singleton = super(OneOnly, cls).
+            cls._singleton = super(OneOnly, cls)
             __new__(cls, *args, **kwargs)
         return cls._singleton
 # by overriding __new__, we first check if our singleton if our singleton instance has been created; if not, we create
@@ -38,23 +37,74 @@ o2 = OneOnly()
 o1 == o2 
 
 # can also let another class inherit the Singleton class 
-
-'''
-metaclass implementation 
-'''
-# metaclass controls the building of classes 
-
-class Singleton(type):
-    # contains mapping between class and instances
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            instance = super().__call__(*args, **kwargs)
-            cls._instances[cls] = instance 
+class Singleton(object):
+    _instances = {} # {cls: instance}
+    def __new__(cls, *args, **kwargs):
+        if cls not in cls.__instances:
+            instance = super().__new__(cls)
+            cls._instances[cls] = instance
         return cls._instances[cls]
 
-# inherit Singleton as the metaclass 
-class Logger(metaclass=Singleton):
-    pass 
+class Logger(Singleton):
+    log_file = None
+
+    def __init__(self, path):
+        if self.log_file is None:
+            self.log_file = open(path, mode='w')
+    
+    def write_log(self, record):
+        self.log_file.write(record)
+
+    def close_log(self):
+        self.log_file.close()
+        self.log_file = None
+
+
+class OneOnly(object):
+    client = None
+
+    @classmethod
+    def create_client(cls, *args, **kwargs):
+        return ElasticSearch(
+            **settings.ELASTIC_CLIENT_KWARGS
+        )
+
+    def __new__(cls, *args, **kwargs):
+        if cls.client is None:
+            cls.client = cls.create_client()
+        instance = super().__new__(cls)
+        return instance
+
+'''
+example using metaclass - logging subsystem
+'''
+# only one instance to write
+# metaclass controls the building of classes 
+
+class MonoState(object):
+    _state = {}
+
+    # no matter how many instance you create
+    # they all share the same state
+    def __new__(cls, *args, **kwargs):
+        self = super().__new__(cls)
+        self.__dict__ = cls._state
+        return self
+
+
+class Logger(MonoState):
+    log_file = None
+
+    def __init__(self, path):
+        if self.log_file is None:
+            self.log_file = open(path, mode='w')
+    
+    def write_log(self, log_record):
+        now = str(datetime.datetime.now())
+        record = '%s: %s\n' % (now, log_record)
+        self.log_file.write(record)
+    
+    def close_log(self):
+        self.log_file.close()
+        self.log_file = None
 

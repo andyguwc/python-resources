@@ -610,6 +610,24 @@ for x in flatten(items):
 # yield from flatten(x) is the same as for i in flatten(x): yield i 
 n 
 
+
+# using yield as generator expressions
+import sys
+inname, outname = sys.argv[1:3]
+
+# filter for specific patterns
+def warnings_filter(insequence):
+    for l in insequence:
+        if 'WARNING' in l:
+            yield l.replace('\tWARNING', '')
+
+with open(inname) as infile:
+    with open(outname, "w") as outfile:
+        filter = warnings_filter(infile)
+        for l in filter:
+            outfile.write(l)
+
+
 '''
 slice of an iterator 
 '''
