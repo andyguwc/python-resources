@@ -314,6 +314,21 @@ Leveraging __init__() via a factory function
 
 # example factory function for Card subclasses 
 # This function builds a Card class from a numeric rank number and a suit object
+class Card:
+    def __init__(self, rank, suit):
+        self.suite = suit
+        self.rank = rank
+        self.hard, self.soft = self._points()
+
+
+class NumberCard(Card):
+    def _points(self):
+        return int(self.rank), int(self.rank)
+
+
+class AceCard(Card):
+    def _points(self):
+        return 1, 11 
 
 
 def card(rank, suit):
@@ -321,7 +336,7 @@ def card(rank, suit):
         return AceCard('A', suit)
     elif 2 <= rank < 11: 
         return NumberCard(str(rank), suit)
-    elif 11 <= rank <14:
+    elif 11 <= rank < 14:
         # use mapping to simplify many elif mappings
         name = { 11: 'J', 12: 'Q', 13: 'K' }[rank]
         return FaceCard(name, suit)
@@ -335,12 +350,39 @@ deck = [card(rank, suit)
         for suit in (Club, Diamond, Heart, Spade)]
 
 
+# alternative implementations, replacing the elif statements with mapping
+def card(rank, suit):
+    cls = {1: AceCard, 11: FaceCard, 12: FaceCard, 13: FaceCard}.get(rank, NumberCard)
+    return cls(rank, suit)
+
+# alternative implementations, using __init__ in each subclass to rely on super().__init__
+class Card:
+    def __init__(self, rank, suit, hard, soft):
+        self.rank = rank
+        self.suit = suit
+        self.hard = hard
+        self.soft = soft
+
+
+class NumberCard(Card):
+    def __init__(self, rank, suit):
+        super().__init__(str(rank), suit, rank, rank)
+
+
+class AceCard(Card):
+    def __init__(self, rank, suit):
+        super().__init__("A", suit, 1, 11)
+
+
+
 '''
 using keyword argument values during initialization
 '''
 class Player:
-    def __init__(self, **kw):
-        self.__dict__.update(kw)        
+    def __init__(self, table, bet_strategy, **extras):
+        self.table = table
+        self.bet_strategy = bet_strategy
+        self.__dict__.update(extras)        
 
 # The disadvantage of this is that we have obscure instance variables that aren't formally documented via a subclass definition
 
@@ -361,6 +403,7 @@ class ValidPlayer:
 __new__
 '''
 # inherited __new__() allocates the object which is passed to __init__() as self
+# the __new__() method is how to build unitialized object, allows processing before the __init__() method is called
 class ChessCoordinates:
     def __new__(cls, *args, **kwargs):
         print("args=" , repr(args))
@@ -373,6 +416,9 @@ class ChessCoordinates:
         print(id(self)) # this id should be same as the one printed in __new__
         self.file = file
         self.rank = rank
+
+
+# __new__() method is automatically a static method, without using @staticmethod. And doesn't use a self variable
 
 
 
@@ -511,3 +557,61 @@ class Pizza:
         return r ** 2 * math.pi
 
 # Because the circle_area() method is completely independent from the rest of the class it’s much easier to test.
+
+
+'''
+Collection Class
+'''
+# wrapper design that contains an internal collection
+
+# implementation uses delegate to the internal underlying class
+class Deck:
+    def __init__(self):
+        self._cards = [card(r+1, s) for r in range(13) for s in (Club, Diamond, Heart, Spade)]
+        random.shuffle(self._cards)
+
+    def pop(self):
+        return self._cards.pop()
+
+d = Deck()
+hand = [d.pop(), d.pop()]
+
+
+# alternative implementation by extending a collection class 
+# other methods inherit from 
+class Deck(list):
+    def __init__(self):
+        super().__init__(card(r+1, s) for r in range(13) for s in (Club, Diamond, Heart, Spade))
+        random.shuffle(self)
+
+
+'''
+circular reference and weakref
+'''
+# here parent and child classes have circular reference
+# they both contain references to each other
+
+class Parent:
+    def __init__(self, *children):
+        self.children = list(children)
+        for child in self.children:
+            child.parent = self
+
+    def __del__(self):
+        print(f"Removing {(self.__class__, id(self))}")
+    
+
+class Child:
+    def __init__(self):
+        print(f"Removing {self.__class__, }")
+
+
+import weakref
+class Parent:
+    def __init__(self, *children):
+        self.children = list(children)
+        for child in self.children:
+            child.parent = weakref.ref(self)
+    
+    def __del__(self):
+        print(f"Removing {(self.__class__, id(self))}")

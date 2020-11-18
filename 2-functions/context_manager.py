@@ -163,6 +163,108 @@ with managed_file('hello.txt') as f:
     f.write('hello world')
 
 
+# context manager using ContextDecorator
+
+import contextlib.ContextDecorator 
+
+class TestDeck(ContextDecorator, Deck):
+    def __init__(self, size=1, seed=0):
+        super().__init__(size=size)
+        self.seed=seed
+
+    def _init_shuffle(self):
+        pass 
+    
+    def __enter__(self):
+        self.rng.seed(self.seed, version=1)
+        self.rng.shuffle(self)
+        return self 
+    
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass 
+
+'''
+context manager (global state change)
+'''
+
+# We'll often use context managers to make global state changes. This might be a change to the database transaction status or a change to the locking status of a resource, something that we want to do and then undo when the transaction is complete.
+# For this example, we'll make a global change to the random number generator. We'll create a context in which the random number generator uses a fixed and known seed, providing a fixed sequence of values.
+
+import random
+from typing import Optional, Type
+from types import TracebackType
+
+class KnownSequence:
+    def __init__(self, seed):
+        self.seed = 0
+    
+    def __enter__(self):
+        self.was = random.getstate()
+        random.seed(self.seed, version=1)
+        return self
+    
+    def __exit__(self):
+        random.setstate(self.was)
+        return False
 
 
+# Context manager as a factory
+# produce deterministic deck
+# here context manager ensures we are changing global random generator temporarily
+class Deterministic_Deck:
+    def __init__(self, *args, **kw):
+        self.args = args
+        self.kw = kw
+    
+    def __enter__(self):
+        self.was = random.getstate()
+        random.seed(0, version=1)
+        return Deck(*self.args, **self.kw)
+
+    def __exit__(self):
+        random.setstate(self.was)
+        return False
+
+with Deterministic_Deck(size=6) as deck:
+    h = Hand(deck.pop())
+
+
+# Context manager to clean up 
+# have original file renamed if the context works normally
+# abort and rename old file back if the context raises error
+
+with Updating(some_path):
+    with some_path.open('w') as target_file:
+        process(target_file)
+
+from pathlib import Path
+from typing import Optional
+
+class Updating:
+    def __init__(self, target):
+        self.target = target
+        self.previous = None
+
+    def __enter__(self):
+        try:
+            self.previous = (
+                self.target.parent / (self.target.stem + "backup")
+            ).with_suffix(self.target.suffix)
+        except FileNotFoundError:
+            self.previous = None
+    
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is not None:
+            try:
+                self.failure = (
+                    self.target.parent / (self.target.stem + "error")
+                ).with_suffix(self.target.suffix)
+                self.target.rename(self.failure)
+            except FileNotFoundError:
+                pass
+            if self.previos:
+                self.previous.rename(self.target)
+        return False
+        
+                
 

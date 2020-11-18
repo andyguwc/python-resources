@@ -285,6 +285,46 @@ add_me = Adder()
 callable(add_me)
 
 
+# using callable to make it easier to call from other API
+class BettingStrategy:
+    def __init__(self):
+        self._win = 0
+        self._loss = 0
+    
+    @property
+    def win(self):
+        return self._win
+
+    @win.setter
+    def win(self, value):
+        self._win = value
+    
+    @property
+    def loss(self):
+        return self._loss
+    
+    @loss.setter
+    def loss(self, value):
+        self._loss = value
+
+    def __call__(self):
+        return 1
+    
+
+# we can use the above BettingStrategy
+def win(self, amount):
+    self.bet.win += 1
+    self.stake += amount
+    
+# when player placing a bet can use something like this
+def initial_bet(self):
+    return self.bet()
+
+bt = BettingStrategy()
+
+
+
+
 ##################################################
 # High-Order Functions
 ##################################################

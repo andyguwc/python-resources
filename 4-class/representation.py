@@ -63,6 +63,7 @@ class Car:
 # p is (3, 4)
 
 
+
 # format options 
 # by default, __format__() just calls __str__()
 __format__
@@ -195,4 +196,25 @@ ascii
 # ascii escapes the non-ascii characters
 x = 'Hello'
 ascii(x)
+
+
+'''
+Collection objects
+'''
+
+class Hand:
+    def __init__(self, dealer_card, *cards):
+        self.dealer_card = dealer_card
+        self.cards = list(cards)
+    
+    def __str__(self):
+        return ",".join(map(str, self.cards))
+
+    # here !r formatting ensures the attribute uses the repr()
+    def __repr__(self):
+        return "{__class__.__name__}({dealer_card!r}, {cards_str})".format(
+            __class__=self.__class__,
+            cards_str=",".join(map(repr, self.cards)),
+            **self.__dict__)
+
 

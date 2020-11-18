@@ -24,7 +24,6 @@ v.__class__.__dict__
 v.__class__.__dict__['__repr__'](v) # self argument
 
 
-
 '''
 __getattr__(), __setattr__(), and __delattr__()
 '''
@@ -33,7 +32,7 @@ __getattr__(), __setattr__(), and __delattr__()
 
 # The __getattr__() invoked after requested attribute/property not found by normal lookup
 
-# The __getattribute__() invoked instead of normal lookup
+# The __getattribute__() invoked instead of normal lookup. Lower level attribute processing. If the attribute is not found, it calls __getattr__() as a fallback
 
 # The __delattr__() method deletes an attribute.
 
@@ -103,6 +102,25 @@ class LoggingProxy:
                 name,
                 target)) from e
         print("Set attribute {!r} = {!r} from {!r}".format(name, value, target))
+
+
+# use __getattribute__ to prevent access to internal __dict__ attribute
+
+class BlackJack:
+    def __init__(self, rank, suit):
+        super().__setattr__('rank', rank)
+        super().__setattr__('suit', suit)
+    
+    def __setattr__(self, name, value):
+        if name in self.__dict__:
+            raise AttributeError(f"cannot set {name}")
+        raise AttributeError("Have no attribute")
+
+    def __getattribute__(self, name):
+        if name.startswith('_'):
+            raise AttributeError
+        return objet.__getattribute__(self, name)
+
 
 
 '''

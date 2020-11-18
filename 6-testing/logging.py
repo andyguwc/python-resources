@@ -5,6 +5,9 @@
 # https://www.loggly.com/ultimate-guide/python-logging-basics/
 # https://docs.python.org/3/howto/logging-cookbook.html
 # https://docs.python-guide.org/writing/logging/
+# https://www.machinelearningplus.com/python/python-logging-guide/
+# https://www.pylenin.com/blogs/python-logging-guide/
+
 
 '''
 logging basics
@@ -32,8 +35,7 @@ log.info("Hello, world")
 
 # The best practice is to have a distinct logger for each of our classes or modules. As
 # Logger names are .-separated strings, the Logger names can parallel class or module
-# names; our application's hierarchy of component definitions will have a parallel
-# hierarchy of loggers.
+# names; our application's hierarchy of component definitions will have a parallel hierarchy of loggers.
 
 
 import logging
@@ -135,6 +137,160 @@ def __init__(self, player_name):
 
 # - class names 
 # using __class__.__qualname__ as the Logger name and assign Logger to the class as a whole
+
+
+'''
+logging in applications / modules
+'''
+
+# Logging hierarchy
+# https://docs.python.org/3/howto/logging-cookbook.html
+# https://stackoverflow.com/questions/4150148/logging-hierarchy-vs-root-logger
+# Application code can define and configure a parent logger in one module and create (but not configure) a child logger in a separate module, and all logger calls to the child will pass up to the parent. Here is a main module
+
+# Here is a main module:
+
+import logging
+import auxiliary_module
+
+# create logger with 'spam_application'
+logger = logging.getLogger('spam_application')
+logger.setLevel(logging.DEBUG)
+# create file handler which logs even debug messages
+fh = logging.FileHandler('spam.log')
+fh.setLevel(logging.DEBUG)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+ch.setLevel(logging.ERROR)
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(fh)
+logger.addHandler(ch)
+
+logger.info('creating an instance of auxiliary_module.Auxiliary')
+a = auxiliary_module.Auxiliary()
+logger.info('created an instance of auxiliary_module.Auxiliary')
+logger.info('calling auxiliary_module.Auxiliary.do_something')
+a.do_something()
+logger.info('finished auxiliary_module.Auxiliary.do_something')
+logger.info('calling auxiliary_module.some_function()')
+auxiliary_module.some_function()
+logger.info('done with auxiliary_module.some_function()')
+
+
+# Here is the auxiliary module:
+
+import logging
+
+# create logger
+module_logger = logging.getLogger('spam_application.auxiliary')
+
+class Auxiliary:
+    def __init__(self):
+        self.logger = logging.getLogger('spam_application.auxiliary.Auxiliary')
+        self.logger.info('creating an instance of Auxiliary')
+
+    def do_something(self):
+        self.logger.info('doing something')
+        a = 1 + 1
+        self.logger.info('done doing something')
+
+def some_function():
+    module_logger.info('received a call to "some_function"')
+
+
+'''
+logging examples for applications
+'''
+
+# Example 1
+# Configure logging 
+# https://github.com/CryptoSignal/Crypto-Signal/blob/7ea9255ed5c3dd9b3212a43bd489e85271792670/app/logs.py#L10-L40
+
+
+
+# Example 2
+# configure logging in the main entrypoint file 
+# https://github.com/Diaoul/subliminal/blob/a4113adb745dc5cd2da7254ee14802077237bb15/subliminal/cli.py#L263-L268
+if debug:
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+    logging.getLogger('subliminal').addHandler(handler)
+    logging.getLogger('subliminal').setLevel(logging.DEBUG)
+# in other places (submodules of subliminal) just use getLogger(__name__) which is child of that logger
+# https://github.com/Diaoul/subliminal/blob/a4113adb745dc5cd2da7254ee14802077237bb15/subliminal/providers/shooter.py#L12
+
+
+# Example 3
+# configure logging in basicConfig in the __main__.py entry file https://github.com/0xHJK/music-dl/blob/883b643d62c63496572f5b883f76359324a5c853/music_dl/__main__.py#L142-L147
+def main(...):
+    level = logging.INFO if verbose else logging.WARNING
+    logging.basicConfig(
+        level=level,
+        format="[%(asctime)s] %(levelname)-8s | %(name)s: %(msg)s ",
+        datefmt="%H:%M:%S",
+    )
+# use the logging in specific files https://github.com/0xHJK/music-dl/blob/69ca4ded11a0318e700d3bb0de0ed19bdc9fb798/music_dl/source.py#L30
+
+class MusicSource:
+    """
+        Music source proxy object
+    """
+
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+
+'''
+logging for flask
+'''
+
+# Example 1 Flask application
+# configure the logger
+# https://github.com/cookiecutter-flask/cookiecutter-flask/blob/3e53bdb824c057a64331e6fa034cae54dc7d3b0d/%7B%7Bcookiecutter.app_name%7D%7D/%7B%7Bcookiecutter.app_name%7D%7D/app.py#L87-L91
+def configure_logger(app):
+    """Configure loggers."""
+    handler = logging.StreamHandler(sys.stdout)
+    if not app.logger.handlers:
+        app.logger.addHandler(handler)
+# using the logger
+# https://github.com/cookiecutter-flask/cookiecutter-flask/blob/a3e168e3facf2304bd2b4b6e5e868dfd95e8df94/%7B%7Bcookiecutter.app_name%7D%7D/%7B%7Bcookiecutter.app_name%7D%7D/public/views.py#L33
+from flask import current_app
+current_app.logger.info("Hello from the home page!")
+
+
+# Example 2 Flask application
+# configure logger https://github.com/lufficc/flask_ishuhui/blob/a3444b3679c45d5ba94c5c9a66551207eff1a646/ishuhui/logger/__init__.py#L1-L11
+import logging
+from logging.handlers import RotatingFileHandler
+
+def init_logger(app):
+    handler = RotatingFileHandler('logs/ishuhui.log', maxBytes=1024 * 1024 * 2, backupCount=2)
+    logging_format = logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
+    handler.setFormatter(logging_format)
+    app.logger.addHandler(handler)
+    app.logger.setLevel(logging.INFO)
+
+
+def create_app(config, should_register_blueprints=True):
+    app = Flask(__name__)
+    app.config.from_object(config)
+    from ishuhui.logger import init_logger
+    init_logger(app)
+
+
+# using the logger
+# https://github.com/lufficc/flask_ishuhui/blob/a3444b3679c45d5ba94c5c9a66551207eff1a646/ishuhui/tasks/task.py#L33
+def refresh_comics():
+    page = 0
+    comics = load_comics(page)
+    current_app.logger.info('get {} comics of page {}'.format(len(comics), page))
+    result = []
+
+
 
 
 '''

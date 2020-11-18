@@ -220,3 +220,64 @@ assert issubclass(Concrete, Base)
 # TypeError:
 # "Can't instantiate abstract class Concrete
 # with abstract methods bar"
+
+
+
+# We'll use ABC's within a method to confirm that an operation is possible
+import collections.abc
+
+def some_method(self, other):
+    assert isinstance(other, collections.abc.Iterator)
+
+# We'll use ABC's within a diagnostic message or exception to indicate why an operation can't work
+# Write a warning that shows the base classes for a given object
+try:
+    some_obj.some_method(another)
+except AttributeError:
+    warnings.warn("{0!r} not an Iterator, found {0.__class__.__bases__!r}".format(another))
+    raise
+
+# minimize the upfront testing of arguments
+# combine diagonostic information with the exception that an inappropriate type is used
+try:
+    found = value in some_argument
+except TypeError:
+    if not isinstance(some_argument, collections.abc.Container):
+        warnings.warn("{0!r} not an Container".format(some_argument))
+    raise
+
+
+'''
+__subclasscheck__ and __instancecheck__
+'''
+from abc import ABCMeta, abstractmethod
+
+
+class AbstractBettingStrategy(metaclass=ABCMeta):
+    __slots__ = ()
+
+    @abstractmethod
+    def bet(self, hand):
+        return 1
+    
+    @abstractmethod
+    def record_win(self, hand):
+        pass
+
+    @abstractmethod
+    def record_loss(self, hand):
+        pass
+
+    # implementation of __subclasshook__ method requires all of the three abstract methods be provided by a subclass
+    @classmethod
+    def __subclasshook__(cls, subclass):
+        if cls is Hand:
+            if (any("bet" in B.__dict__ for B in subclass.__mro__)
+                and any("record_win" in B.__dict__ for B in
+                subclass.__mro__)
+                and any("record_loss" in B.__dict__ for B in
+                subclass.__mro__)
+                ):
+            return True
+        return NotImplemented
+

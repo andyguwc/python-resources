@@ -71,6 +71,16 @@ class SortedList(SimpleList):
     def __repr__(self):
         return "SortedList({!r})".format(list(self))
 
+'''
+object base class
+'''
+# every class
+class X:
+    pass
+X.__class__ # <class 'type'> class is an object of the class named type
+X.__class__.__base__ # <class 'object'> base class is named object
+
+
 
 '''
 cross reference attributes between super and sub class 
