@@ -42,6 +42,9 @@ round(Decimal('3.25', 1)) # Decimal('3.2')
 # round can show suprising behavior with float which can't be represented as binary numbers
 
 
+##################################################
+# Datetime Module
+##################################################
 '''
 Datetime
 '''
@@ -64,7 +67,7 @@ d.isoformat()
 datetime.date.fromtimestamp(10000000)
 
 # attributes
-d = datetime.date.today()
+d = datetime.date.today() # current date
 d.year
 d.month
 d.day
@@ -73,8 +76,13 @@ d.isoweekday()
 d.isoformat()
 
 # strftime()
-# string-format-time 
+# string format time
+# default string representation uses the ISO format YYYY-MM-DDTHH:MM:SS.mmmmmm
 "the date is {:%A %d %B %Y}".format(d) # day, date, month, year
+
+format = "%a %b %d %H:%M:%S %Y"
+today = datetime.datetime.today()
+s = today.strftime(format)
 
 # time
 datetime.time(hour=23, minute=59, second=59, microsecond=9999)
@@ -82,6 +90,11 @@ d = datetime.date.today()
 t = datetime.time(8,15)
 datetime.datetime.combine(d,t)
 
+# create datetime from time 
+import time
+import datetime
+t = time.time()
+print('fromtimestamp(t):', datetime.date.fromtimestamp(t))
 
 # timedelta
 # duration - represent differences between timestamps
@@ -89,7 +102,10 @@ a = datetime.datetime(year=2004, month=1, day=8, hour=12, minute=22)
 b = datetime.datetime(year=2010, month=2, day=6, hour=10, minute=20)
 d = a - b # outputs datetime.timedelta 
 d.total_seconds() # output number of seconds
-datetime.date.today() + datetime.timedelta(weeks=3) # in three weeks time 
+datetime.date.today() + datetime.timedelta(weeks=3) # in three weeks time
+datetime.timedelta(seconds=1)
+datetime.timedelta(days=1)
+
 # timedelta constructor
 # instances store only days, seconds, microseconds
 # while constructor accepsts almost everything from microseconds to weeks 
@@ -102,6 +118,37 @@ cet = datetime.timezone(datetime.timedelta(hours=1), "CET") # define a timezone
 departure = datetime.datetime(year=2014, month=1, day=7, hour=11, minute=30, tzinfo=cet)
 arrival = datetie.datetime(year=2014, month=1, day=8, hour=10, minute=30, tzinfo=datetime.timezone.utc)
 str(arrival - departure) 
+
+
+from datetime import datetime, timezone
+now = datetime(2014, 8, 10, 18, 18, 30)
+
+# convert utc to local time 
+now_utc = now.replace(tzinfo=timezone.utc) # utc time 
+now_local = now_utc.astimezone() # local time
+print(now_local)
+
+# convert local time to utc 
+time_format = '%Y-%m-%d %H:%M:%S'
+time_str = '2014-08-10 11:18:30'
+now = datetime.strptime(time_str, time_format)
+time_tuple = now.timetuple()
+utc_now = mktime(time_tuple)
+print(utc_now)
+
+# pytz for converting between time zones 
+# first convert Eastern Time time to UTC datetime
+arrival_nyc = '2014-05-01 23:33:24'
+nyc_dt_naive = datetime.strptime(arrival_nyc, time_format)
+eastern = pytz.timezone('US/Eastern')
+nyc_dt = eastern.localize(nyc_dt_naive)
+utc_dt = pytz.utc.normalize(nyc_dt.astimezone(pytz.utc))
+print(utc_dt)
+
+# once with UTC datetime, can covnert to Pacific Time 
+pacific = pytz.timezone('US/Pacific')
+sf_dt = pacific.normalize(utc_dt.astimezone(pacific))
+print(sf_dt)
 
 
 ##################################################
@@ -254,251 +301,6 @@ for x in chain(a, b):
 
 
 ##################################################
-# Strings and Text
-##################################################
-
-
-'''
-String Operations
-'''
-# Count and Index
-a = "I have had an apple on my desk before!"
-print(a.count("e"))
-
-z = ['atoms', 4, 'neutron', 6, 'proton', 4, 'electron', 4, 'electron', 'atoms']
-print(z.count("4"))
-
-# split
-song = "this is a song"
-wds = song.split()
-print(wds)
-
-# join
-wds = ["red", "blue", "green"]
-glue = ';'
-s = glue.join(wds)
-print(s)
-
-ss = "Hello, World"
-els = ss.count("l")
-
-'''
-Encoding
-'''
-
-# ascii
-# serialize data as ascii
-
-# ord() converts a character to an integer unicode 
-# chr() converts an integer unicode into a single character string
-
-# unicode 
-# If you are encoding text and don't know which encoding to use, it is best to use
-# the UTF-8 encoding. UTF-8 is able to represent any Unicode character. In modern
-# software, it is a de facto standard encoding to ensure documents in any language—or
-# even multiple languages—can be exchanged.
-
-characters = "cliché"
-print(characters.encode("UTF-8"))
-print(characters.encode("ascii"))
-
-
-'''
-Regular Expressions (regex)
-'''
-# matching patterns 
-
-# regular expressions
-import re
-search_string = "hello world"
-pattern = "hello world"
-match = re.match(pattern, search_string)
-if match:
-	print("regex matches")
-
-import re
-pattern = sys.argv[1]
-search_string = sys.argv[2]
-match = re.match(pattern, search_string)
-if match:
-	template = "'{}' matches pattern '{}'"
-else:
-	template = "'{}' does not match pattern '{}'"
-print(template.format(search_string, pattern))
-
-. # any character as long as not empty
-'hel o world' matches pattern 'hel.o world'
-'helo world' does not match pattern 'hel.o world'
-
-[] # a set of characters as long as matches one of them
-'hello world' matches pattern 'hel[lp]o world'
-'hello 2 world' matches pattern 'hello [a-zA-Z0-9] world'
-
-* # the previous character zero or many times
-'heo' matches pattern 'hel*o'
-'helllllo' matches pattern 'hel*o' # can be zero or more times 
-
-# \. matches . escaping 
-
-# repeat sequence of patterns
-'abcabcabc' matches pattern '(abc){3}'
-
-'abccc' matches pattern 'abc{3}'
-
-# get information from it
-# re.search
-# re.findall
-
-# making repeated regular expressions efficient
-re.compile 
-
-# specify multiple patterns for the separator 
-# use the re.split() method 
-line = 'asdf fjdk; afed, fjek,asdf, foo'
-
-import re
-re.split(r'[;,\s]\s*', line)
-
-# matching test 
-str.startswith()
-str.endswith()
-filename = 'spam.txt'
-filename.endswith('.txt')
-
-# Normally, fnmatch() matches patterns using the same case-sensitivity rules as the system’s underlying filesystem
-import os 
-filenames = os.listdir('.')
-filenames
-[name for name in filenames if name.endswith(('.c','.h'))]
-[name for name in names if fnmatch(name, 'Dat*.csv')]
-
-# replacing text 
-text = 'yeah, but not, yeah'
-text.replace('yeah', 'yep')
-
-# for more complicated patterns, use the sub() function
-# The first argument to sub() is the pattern to match and the second argument is the replacement pattern. 
-# Backslashed digits such as \3 refer to capture group numbers in the pattern.
-text = 'Today is 11/27/2012. PyCon starts 3/13/2013.'
-import re
-re.sub(r'(\d+)/(\d+)/(\d+)', r'\3-\1-\2', text)
-
-# strip chracters from strings 
-s = ' hello world \n'
-s.strip()
-# >>> t = '-----hello====='
-# >>> t.lstrip('-')
-# 'hello====='
-# >>> t.strip('-=')
-# 'hello'
-
-text = 'Hello World'
-format(text, '=>20s')
-# '=========Hello World'
-format(text, '*^20s')
-# '****Hello World*****'
-
-# combining and concatenating string 
-parts = ['Is', 'Chicago', 'Not', 'Chicago?']
-' '.join(parts)
-
-a = 'Is Chicago'
-b = 'Not Chicago?'
-print('{} {}'.format(a,b))  
-# Is Chicago Not Chicago?
-
-','.join(str(d) for d in data)
-print(a, b, c, sep=':')
-
-
-'''
-format (interpolating values in strings)
-'''
-
-# format
-s = '{name} has {n} messages'
-s.format(name='Hello', n=37)
-
-name = 'Guido'
-n = 37
-'%(name) has %(n) messages.' % vars()
-
-# container lookup 
-# we can access complex objects (indexes, variables of arrays, lists, etc.) from the format string
-emails = ("a@example.com", "b@example.com")
-message = {
-    'subject': "You Have Mail!",
-    'message': "Here's some mail for you!"
-}
-template = """
-From: <{0[0]}>
-To: <{0[1]}>
-Subject: {message[subject]}
-{message[message]}"""
-print(template.format(emails, message=message))
-# so 0[0] maps to emails[0], in the emails tuple
-
-# object lookup
-# We can pass arbitrary objects as parameters, and use the dot notation to look up attributes on those objects.
-class EMail:
-    def __init__(self, from_addr, to_addr, subject, message):
-        self.from_addr = from_addr
-        self.to_addr = to_addr
-        self.subject = subject
-        self.message = message
-email = EMail("a@example.com", "b@example.com",
-"You Have Mail!",
-"Here's some mail for you!")
-
-template = """
-From: <{0.from_addr}>
-To: <{0.to_addr}>
-Subject: {0.subject}
-{0.message}"""
-print(template.format(email))
-
-'{:10s} {:10d} {:10.2f}'.format('ACME', 100, 490.1).encode('ascii')
-
-x = 1.23456
-format(x, '0.2f')
-format(x, '0.3f')
-'value is {:0.3f}'.format(x)
-
-
-print("Sub: ${0:0.2f} Tax: ${1:0.2f} "
-      "Total: ${total:0.2f}".format(subtotal, tax, total=total))
-
-
-def greet(name, question):
-    return f"Hello {name}! How is {question}"
-
-
-# use Template Strings to avoid user injected data 
-
-
-'''
-byte strings
-'''
-# byte strings support most of the operations for regular strings 
-data = b'Hello World'
-data[0:5]
-data.startwith(b'Hello')
-
-data = b'FOO:BAR,SPAM'
-re.split(b'[:,]',data) # pattern as bytes
-
-
-
-
-
-'''
-datetime
-'''
-from datetime improt timedelta 
-a = timedelta(days=2, hours=6)
-
-
-##################################################
 # Sorting
 ##################################################
 
@@ -571,6 +373,8 @@ print(sorted(states, key=lambda state: s_cities_count(states[state])))
 '''
 bisect
 '''
+# https://pymotw.com/3/bisect/index.html
+
 # bisect and insort use the binary search algorithm to find and insert items in any sorted sequence
 # bisect(haystack, meedle) to locate the position where needle can be inserted 
 # maintaining haystack in ascending order. All items appearing up to that position are less than or equal to needle
@@ -600,10 +404,17 @@ for i in range(SIZE):
     bisect.insort(my_list, new_item)
     print()
 
+##################################################
+# Queues
+##################################################
+
+# The queue module provides a first-in, first-out (FIFO) data structure suitable for multi-threaded programming. It can be used to pass messages or other data between producer and consumer threads safely. Locking is handled for the caller, so many threads can work with the same Queue instance safely and easily. The size of a Queue (the number of elements it contains) may be restricted to throttle memory usage or processing.
 
 '''
 heapq
 '''
+# https://pymotw.com/3/heapq/index.html
+
 # useful data structure for maintaining priority queue
 # heapq module for finding nlargest or nsmallest 
 # priority queue manages a set of records with totally-ordered keys 
@@ -653,11 +464,18 @@ portfolio = [
 cheap = heapq.nsmallest(3, portfolio, key=lambda s: s['price'])
 expensive = heapq.nlargest(3, portfolio, key=lambda s: s['price'])
 
+
 '''
 PriorityQueue
 '''
+# Sometimes the processing order of the items in a queue needs to be based on characteristics of those items, rather than just the order they are created or added to the queue.
+
+# https://pymotw.com/3/queue/index.html
+
 # priorityqueue uses heapq internally and has the same time and space complexities
 # PriorityQueue is synchronizedand and provides locking semantics to support multiple concurrent producers and consumers.
+
+
 
 from queue import PriorityQueue
 
@@ -674,6 +492,132 @@ while not q.empty():
 # (1, 'eat')
 # (2, 'code')
 # (3, 'sleep')
+
+import functools
+import queue
+import threading
+
+# define a class with total ordering implemented
+@functools.total_ordering
+class Job:
+    def __init__(self, priority, description:
+        self.priority = priority
+        self.description = description
+
+    def __eq__(self, other):
+        try:
+            return self.priority = other.priority
+        except AttributeError:
+            return NotImplemented
+        
+    def __lt__(self, other):
+        try:
+            return self.priority < other.priority
+        except AttributeError:
+            return NotImplemented
+
+q = queue.PriorityQueue()
+q.put(Job(3, 'Mid Job'))
+q.put(Job(10, 'Low Job'))
+q.put(Job(1, 'High Job'))
+
+# multiple threads consuming the jobs
+# processed based on the priority of items in the queue at the time get() was called
+def process_job(q):
+    while True:
+        next_job = q.get()
+        print('Processing job:', next_job.description)
+        q.task_done()
+
+workers = [
+    threading.Thread(target=process_job, args=(q,)),
+    threading.Thread(target=process_job, args=(q,)),
+]
+for w in workers:
+    w.setDaemon(True)
+    w.start()
+
+q.join()
+
+
+'''
+using queue for thread management
+'''
+# https://pymotw.com/3/queue/index.html
+
+# The program reads one or more RSS feeds, queues up the enclosures for the five most recent episodes from each feed to be downloaded, and processes several downloads in parallel using threads
+
+from queue import Queue
+import threading
+import time
+import urllib
+from urllib.parse import urlparse
+
+import feedparser
+
+# Set up global variables
+num_fetch_threads = 2
+enclosure_queue = Queue()
+
+feed_urls = [
+    'http://talkpython.fm/episodes/rss',
+]
+
+def mesage(s):
+    print('{}: {}'.format(threading.current_thread().name, s))
+
+# download_enclosures() runs in the worker thread and processes the downloads using urllib
+
+def download_enclosures(q):
+    """This is the worker thread function.
+    It processes items in the queue one after
+    another.  These daemon threads go into an
+    infinite loop, and exit only when
+    the main thread ends.
+    """
+    while True:
+        message('look for the next enclosure')
+        url = q.get()
+        filename = url.rpartition('/')[-1]
+        message('downloading {}'.format(filename))
+        response = urllib.request.urlopen(url)
+        data = response.read()
+        # Save the downloaded file to the current directory
+        message('writing to {}'.format(filename))
+        with open(filename, 'wb') as outfile:
+            outfile.write(data)
+        q.task_done()
+    
+# Once the target function for the threads is defined, the worker threads can be started. When download_enclosures() processes the statement url = q.get(), it blocks and waits until the queue has something to return. That means it is safe to start the threads before there is anything in the queue.
+
+# Set up some threads to fetch the enclosures
+for i in range(num_fetch_threads):
+    worker = threading.Thread(
+        target=download_enclosures,
+        args=(enclosure_queue,),
+        name='worker-{}'.format(i)
+    )
+    worker.setDaemon(True)
+    worker.start()
+
+# The next step is to retrieve the feed contents using the feedparser module and enqueue the URLs of the enclosures. As soon as the first URL is added to the queue, one of the worker threads picks it up and starts downloading it. The loop continues to add items until the feed is exhausted, and the worker threads take turns dequeuing URLs to download them.
+
+# Downloads the feed(s) and put the enclosure URLs into the queue
+for url in feed_urls:
+    response = feedparser.parse(url, agent='fetch_podcasts.py')
+    for entry in response['entries'][:5]:
+        for enclosure in entry.get('enclosures', []):
+            parsed_url = urlparse(enclosure['url'])
+            message('queuing {}'.format(
+                parsed_url.path.rpartition('/')[-1]))
+            enclosure_queue.put(enclosure['url'])
+
+# Now wait for the queue to be empty, indicating that we have
+# processed all of the downloads.
+message('*** main thread waiting')
+enclosure_queue.join()
+message('*** done')
+
 
 
 ##################################################
@@ -693,11 +637,14 @@ floats[-1] # the last item in the array
 ##################################################
 # Dequeue
 ##################################################
-# The .append, and .pop makes a lit usable as a stack or queue (using .append and .pop(0) to get LIFO behavior)
+
+# A double-ended queue, or deque, supports adding and removing elements from either end of the queue. The more commonly used stacks and queues are degenerate forms of deques, where the inputs and outputs are restricted to a single end.
+
+# The class collections.deque is a thread-safe double-ended queue designed for fast inserting and removing from both ends. Provides constant time operations for inserting or removing items from beginning or end
+
+# The .append, and .pop makes a list usable as a stack or queue (using .append and .pop(0) to get LIFO behavior)
 # But inserting and removing from left of list is costly 
 
-# The class collections.deque is a thread-safe double-ended queue designed for fast
-# inserting and removing from both ends. Provides constant time operations for inserting or removing items from beginning or end
 
 from collections import deque
 dq = deque(range(10), maxlen=10) # optional maxlen set the maximum number of items allowed 
@@ -708,6 +655,31 @@ dq.appendleft(4) # append to the beginning
 dq[0] # retrieve but not remove the element at the front
 dq.popleft() # remove and return element at the front of the queue
 dq.pop() # pops on the right 
+
+
+# A deque can be populated from either end, termed “left” and “right” in the Python implementation.
+import collections
+
+# Add to the right
+d1 = collections.deque()
+d1.extend('abcdefg')
+print('extend    :', d1)
+d1.append('h')
+print('append    :', d1)
+
+# Add to the left
+d2 = collections.deque()
+d2.extendleft(range(6))
+print('extendleft:', d2)
+d2.appendleft(6)
+print('appendleft:', d2)
+
+# extend    : deque(['a', 'b', 'c', 'd', 'e', 'f', 'g'])
+# append    : deque(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
+# extendleft: deque([5, 4, 3, 2, 1, 0])
+# appendleft: deque([6, 5, 4, 3, 2, 1, 0])
+
+
 # keeping a limited history using deque
 # example yielding matching line and previous n lines while found
 from collections import deque 
@@ -757,476 +729,6 @@ a.shape = 3,4
 array([[ 0, 1, 2, 3],
        [ 4, 5, 6, 7],
        [ 8, 9, 10, 11]])
-
-
-
-##################################################
-# Tuple
-##################################################
-
-'''
-Tuple
-'''
-# use tuple as data records 
-
-
-# In ptyhon automatically packed into a tuple
-julia = ("Julia", "Roberts", 1967, "Duplicity", 2009, "Actress", "Atlanta, Georgia")
-
-# Slice Operator
-singers = "Peter, Paul, and Mary"
-print(singers[0:5])
-print(singers[7:11])
-fruit = "banana"
-print(fruit[:3])
-
-# Concatenation and Repitition
-fruit = ["a", "b", "c"]
-print([1,2]+[3,4])
-print([0]*4)
-
-# tuple assignment 
-city, year, pop, chg, area = ('Tokyo', 2003, 32450, 0.66, 8014)
-
-
-# tuple unpacking
-authors = [('a1','a2'),('b1','b2')]
-for first_name, last_name in authors:
-    print("first name:", first_name, "last name:", last_name)
-
-
-# unpacking tuple as arguments
-def add(x, y):
-    return x + y
-z = (5,4)
-print(add(*z))
-
-# using * to grab excess items
-a,b, *rest = range(5) # rest will be assigned [2,3,4]
-
-'''
-named tuple
-'''
-
-# collections.namedtuple function is a factory that produces subclasses of tuple enhanced with field names and a class name 
-from collections import namedtuple
-
-Card = collections.namedtuple('Card', ['rank', 'suit'])
-
-# Two parameters are required to create a named tuple: 
-# - a class name and 
-# - a list of field names, which can be given as an iterable of strings or as a single spacedelimited string.
-
-BlackjackCard = namedtuple('BlackjackCard', 'rank, suit, hard, soft')
-# subclass a namedtuple class 
-class AceCard(BlackjackCard):
-    __slots__ = ()
-    # making __slots__() empty ensures that the subclass has no __dict__ and we can't add any new attributes
-
-    # override the __new__() so we can construct instances with only two values 
-    def __new__(self, rank, suit):
-        return super().__new__(AceCard, 'A', suit, 1, 11)
-    
-# namedtuple is helpful for cases we need to name a fixed set of attributes
-City = namedtuple('City', 'name country population coordinates')
-
-# Data must be passed as positional arguments to the constructor (in contrast, the
-# tuple constructor takes a single iterable).
-tokyo = City('Tokyo', 'JP', 36.933, (35.689722, 139.691667))
-
-# can access fields by name or position
-tokyo.population
-tokyo[1]
-
-# assign values to Namedtuples
-from collections import namedtuple
-Stock = namedtuple('Stock', ['name', 'shares', 'price'])
-def compute_cost(records):
-    total = 0.0
-    for rec in records: 
-        s = Stock(*rec)
-        total += s.shares * s.price
-    return total 
-
-# note on using dict, namedtuple or class for book-keeping 
-# Use namedtuple for lightweight, immutable data containers before you need the
-# flexibility of a full class.
-# Move your bookkeeping code to use multiple helper classes when your internal state
-# dictionaries get complicated
-
-'''
-subclassing namedtuple
-'''
-# since named tuples are built on top of regular python classes, 
-# you can add methods to a namedtuple object 
-
-Car = namedtuple('Car', 'color mileage')
-
-class MyCarWithMethods(car):
-    def hexcolor(self):
-        if self.color == 'red':
-            return '#ff0000'
-        else:
-        return '#000000' 
-
-c = MyCarWithMethods('red', 1234)
->>> c.hexcolor()
-
-# create hierarchies of namedtuples 
-Car = namedtuple('Car', 'color mileage')
-ElectricCar = namedtuple(
-    'ElectricCar', Car._fields + ('charge',))
-
-'''
-helper methods
-'''
-# returns contents as an OrderedDict
-my_car._asdict()
-# OrderedDict([('color', 'red'), ('mileage', 3812.4)])
-
-json.dumps(my_car._asdict())
-# '{"color": "red", "mileage": 3812.4}'
-
-# replace method to create a shallow copy of a tuple and replace some fields
-my_car._replace(color='blue')
-# Car(color='blue', mileage=3812.4)
-
-# Create new instances of a tuple from a sequence or iterable
-Car._make(['red', 999])
-# Car(color='red', mileage=999)
-
-
-##################################################
-# Dictionaries 
-##################################################
-
-'''
-Hashable
-'''
-
-# All mapping types in the standard library use the basic dict in their implementation,
-# so they share the limitation that the keys must be hashable (the values need not be
-# hashable, only the keys).
-
-# An object is hashable if it has a hash value which never changes during its lifetime (it
-# needs a __hash__() method), and can be compared to other objects (it needs an
-# __eq__() method). Hashable objects which compare equal must have the same hash
-# value.
-
-# User-defined types are hashable by default because their hash value is their id() and
-# they all compare not equal. If an object implements a custom __eq__ that takes into
-# account its internal state, it may be hashable only if all its attributes are immutable.
-
-
-'''
-Dictionary
-'''
-# building dictionaries 
-a = dict(one=1, two=2, three=3)
-b = {'one': 1, 'two': 2, 'three': 3}
-c = dict(zip(['one', 'two', 'three'], [1, 2, 3]))
-d = dict([('two', 2), ('one', 1), ('three', 3)])
-e = dict({'three': 3, 'one': 1, 'two': 2})
-a == b == c == d == e # True
-
-b = {'one':1, 'two':2, 'three':3}
-
-
-d.get(ke, default) # is an alternative to d[k] whenever a default value is more convenient than handling KeyError
-
-# dict comprehensions
-# build a dict instance by producing key:value pair from any iterable 
-DIAL_CODES = [
-    (81, 'Japan'),
-    (7, 'Russia'),
-    (55, 'Brazil'),
-]
-
-country_code = {country:code for code, country in DIAL_CODES}
-
-{code:country.upper() for country, code in country_code.items()}
-
-# empty dictionary is denoted {}
-eng2sp = {}
-eng2sp['one'] = 'uno'
-eng2sp['two'] = 'dos'
-eng2sp['three'] = 'tres'
-
-# dictionary methods
-# keys
-# values
-# items
-
-# find keys in common 
-a.keys() & b.keys()
-# find (key, value) pairs in common 
-a.items() & b.items()
-
-# alter or filter dictionary contents
-# make a new dictionary with certain keys removed 
-c = {key:a[key] for key in a.keys() - {'z', 'w'}}
-
-inventory = {'apples': 430, 'bananas': 312, 'oranges': 525, 'pears': 217}
-for akey in inventory.keys():
-    print("Got key", akey, "which maps to value", inventory[akey])
-
-ks = list(inventory.keys())
-print(ks)
-
-# copy and alias (given dictionary is mutable)
-opposites = {'up':'down','right':'wrong'}
-alias = opposites
-print(alias is opposites) # return True, both point to the same 
-alias['right'] = 'left'
-print(opposites['right'])
-
-# if you want to modify a dictionary and keep a copy of the original, use the dictionary copy method
-acopy = opposites.copy()
-acopy['right'] = 'left'
-
-# accumulating multiple results in a dictionary
-f = open('')
-
-
-# accumulator pattern for dictionary
-f = open('scarlet.txt', 'r')
-txt = f.read()
-letter_counts = {}
-for c in txt:
-    if c not in letter_counts:
-        letter_counts[c] = 0
-    letter_counts[c] +=1
-for c in letter_counts.keys():
-    print(c+": "+str(letter_counts[c])+" occurrences")
-
-
-'''
-Calculating with Dictionaries
-'''
-# to perform useful calculations on dictionary contents, you can invert the keys and values of the dictionary using zip()
-prices = {
-    'ACME': 45.23,
-    'FB': 10.75
-}
-min_price = min(zip(prices.values(), prices.keys()))
-
-# regular solution
-min(prices, key=lambda k: prices[k]) # Returns 'FB'
-min_value = prices[min(prices, key=lambda k: prices[k])]
-
-
-'''
-Missing Keys & Default Keys
-'''
-# The end result of this line
-# my_dict.setdefault(key, []).append(new_value)
-
-# is the same as running
-for key, value in pairs: 
-    if key not in my_dict:
-        my_dict[key] = []
-        my_dict[key].append(new_value)
-
-# Using defaultdict leads to cleaner code 
-d = defaultdict(list)
-for key, value in pairs:
-    d[key].append(value)
-
-
-'''
-defaultdict
-'''
-# automatically initializes the first value so you can add items 
-
-# if 'new-key' is not in dd, the expression dd['new-key'] does the following steps:
-# 1. Calls list() to create a new list.
-# 2. Inserts the list into dd using 'new-key' as key.
-# 3. Returns a reference to that list.
-d = defaultdict(list)
-d['a'].append(1)
-
-d = defaultdict(set)
-d['a'].add(1)
-d['a'].add(2)
-
-# counter
-stats = defaultdict(int)
-stats['my_counter'] +=1 
-
-
-# The __missing__ Method
-# Underlying the way mappings deal with missing keys is the aptly named __missing__
-# method. This method is not defined in the base dict class, but dict is aware of it: if you
-# subclass dict and provide a __missing__ method, the standard dict.__getitem__ will
-# call it whenever a key is not found, instead of raising KeyError.
-
-'''
-OrderedDict
-'''
-# OrderedDict preserves the original insertion order of data when iterating 
-# An OrderedDict can be particularly useful when you want to build a mapping that you
-# may want to later serialize or encode into a different format. For example, if you want
-# to precisely control the order of fields appearing in a JSON encoding, first building the
-# data in an OrderedDict will do the trick
-
-from collections import OrderedDict
-d = OrderedDict()
-d['foo'] = 1
-d['bar'] = 2
-
-import json 
-json.dumps(d)
-
-# An OrderedDict internally maintains a doubly linked list that orders the keys according
-# to insertion order. When a new item is first inserted, it is placed at the end of this list.
-# Subsequent reassignment of an existing key doesn’t change the order
-
-from collections import OrderedDict
-d = collections.OrderedDict(one=1, two=2, three=3)
-d['four'] = 4
-# >>> d 
-# OrderedDict([('one', 1), ('two', 2), ('three', 3), ('four', 4)])
-
-
-
-'''
-sorting dictionary 
-'''
-# sort entries according to dictionary values 
-# use itemgetter function
-
-rows = [
-    {'fname': 'Brian', 'lname': 'Jones', 'uid': 1003},
-    {'fname': 'David', 'lname': 'Beazley', 'uid': 1002},
-    {'fname': 'John', 'lname': 'Cleese', 'uid': 1001},
-    {'fname': 'Big', 'lname': 'Jones', 'uid': 1004}
-]
-
-from operator import itemgetter
-
-rows_by_fname = sorted(rows, key=itemgetter('fname'))
-rows_by_uid = sorted(rows, key=itemgetter('uid'))
-# similar to 
-rows_by_uid = sorted(rows, key=itemgetter(2))
-
-
-from operator import itemgetter
-l = [('h', 4), ('n', 6), ('o', 5), ('p', 1), ('t', 3), ('y', 2)]
-l.sort(key=itemgetter(1))
-
-
-# or use the lambda expression 
-rows_by_fname = sorted(rows, key=lambda r: r['fname'])
-
-print(rows_by_fname)
-print(rows_by_uid)
-
-# sort the key, value pairs
-xs = {'a': 4, 'c': 2, 'b': 3, 'd': 1}
-sorted(xs.items())
-# [('a', 4), ('b', 3), ('c', 2), ('d', 1)]
-
-sorted(xs.items(), key=lambda x: x[1])
-# [('d', 1), ('c', 2), ('b', 3), ('a', 4)]
-
-
-
-
-'''
-Dictionary List Comprehension
-'''
-# make a dictionary that is subset of another using list comprehension
-p1 = {key:value for key, value in prices.items() if value > 100}
-p1 = dict((key, value) for key, value in prices.items() if value > 200)
-
-
-
-'''
-Practical Implications of How Dict Works
-'''
-# keys must be hashable objects 
-# An object is hashable if:
-#  - support hash() function that returns the same value over the lifetime of the object
-#  - support equality via an eq() method 
-#  - if a == b then hash(a) == hash(b)
-
-
-# dicts have significant memory overhead
-# Because a dict uses a hash table internally, and hash tables must be sparse to work, they
-# are not space efficient. For example, if you are handling a large quantity of records, it
-# makes sense to store them in a list of tuples or named tuples instead of using a list of
-# dictionaries in JSON style, with one dict per record. Replacing dicts with tuples reduces
-# the memory usage in two ways: by removing the overhead of one hash table per record
-# and by not storing the field names again with each record.
-
-
-# Key search is very fast
-# The dict implementation is an example of trading space for time: dictionaries have
-# significant memory overhead, but they provide fast access regardless of the size of the
-# dictionary—as long as it fits in memory. As Table 3-5 shows, when we increased the size
-# of a dict from 1,000 to 10,000,000 elements, the time to search grew by a factor of 2.8,
-# from 0.000163s to 0.000456s. The latter figure means we could search more than 2
-# million keys per second in a dict with 10 million items.
-
-'''
-counters
-'''
-# determine the most frequently occurring items in the sequence 
-words = ['look', 'into', 'this', 'look']
-
-
-from collections import Counter
-word_counts = Counter(words)
-top_three = word_counts.most_common(3)
-print(top_three)
-
-# update counters
-word_counts.update(morewords)
-
-# combine counts
-c = a+b
-
-'''
-update
-'''
-a = {'x': 1, 'z': 3 }
-b = {'y': 2, 'z': 4 }
-merged = dict(b)
-merged.update(a)
-
-ct = collections.Counter('abracadabra')
-ct # Counter({'a': 5, 'b': 2, 'r': 2, 'c': 1, 'd': 1})
-ct.update('aaaaazzz')
-ct # Counter({'a': 10, 'z': 3, 'b': 2, 'r': 2, 'c': 1, 'd': 1})
-
-'''
-emulating case statements with dicts
-'''
-if cond == 'cond_a':
-    handle_a()
-elif cond == 'cond_b':
-    handle_b()
-else: 
-    handle_default()
-
-# can be achieved with below 
-func_dict = {
-    'cond_a': handle_a, 
-    'cond_b': handle_b 
-}
-
-func_dict.get(cond, handle_default)()
-
-'''
-pretty print with json.dumps()
-'''
-import json 
-json.dumps(mapping, indent=4, sort_keys=True)
-
-# or use pprint 
-import pprint 
-pprint.pprint(mapping)
-
 
 
 ##################################################
@@ -1306,41 +808,6 @@ vowels.add('p')
 
 
 ##################################################
-# Datetime Module
-##################################################
-
-from datetime import datetime, timezone
-now = datetime(2014, 8, 10, 18, 18, 30)
-
-# convert utc to local time 
-now_utc = now.replace(tzinfo=timezone.utc) # utc time 
-now_local = now_utc.astimezone() # local time
-print(now_local)
-
-# convert local time to utc 
-time_format = '%Y-%m-%d %H:%M:%S'
-time_str = '2014-08-10 11:18:30'
-now = datetime.strptime(time_str, time_format)
-time_tuple = now.timetuple()
-utc_now = mktime(time_tuple)
-print(utc_now)
-
-# pytz for converting between time zones 
-# first convert Eastern Time time to UTC datetime
-arrival_nyc = '2014-05-01 23:33:24'
-nyc_dt_naive = datetime.strptime(arrival_nyc, time_format)
-eastern = pytz.timezone('US/Eastern')
-nyc_dt = eastern.localize(nyc_dt_naive)
-utc_dt = pytz.utc.normalize(nyc_dt.astimezone(pytz.utc))
-print(utc_dt)
-
-# once with UTC datetime, can covnert to Pacific Time 
-pacific = pytz.timezone('US/Pacific')
-sf_dt = pacific.normalize(utc_dt.astimezone(pacific))
-print(sf_dt)
-
-
-##################################################
 # Bit Operations
 ##################################################
 
@@ -1358,4 +825,52 @@ bin(0b111000 ^ 0b111000)
 << # left shift
 >> # right shift
 
+
+##################################################
+# Enum
+##################################################
+
+# https://pymotw.com/3/enum/index.html
+# A new enumeration is defined using the class syntax by subclassing Enum and adding class attributes describing the values.
+
+import enum
+
+class BugStatus(enum.Enum):
+
+    new = 7
+    incomplete = 6
+    invalid = 5
+    wont_fix = 4
+    in_progress = 3
+    fix_committed = 2
+    fix_released = 1
+
+print('\nMember name: {}'.format(BugStatus.wont_fix.name))
+print('Member value: {}'.format(BugStatus.wont_fix.value))
+
+# iterating over the num class 
+
+for status in BugStatus:
+    print('{:15} = {}'.format(status.name, status.value))
+
+
+# create mapping programatically
+import enum
+
+BugStatus = enum.Enum(
+    value='BugStatus',
+    names=[
+        ('new', 7),
+        ('incomplete', 6),
+        ('invalid', 5),
+        ('wont_fix', 4),
+        ('in_progress', 3),
+        ('fix_committed', 2),
+        ('fix_released', 1),
+    ],
+)
+
+print('All members:')
+for status in BugStatus:
+    print('{:15} = {}'.format(status.name, status.value))
 

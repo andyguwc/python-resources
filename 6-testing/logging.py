@@ -211,7 +211,6 @@ logging examples for applications
 # https://github.com/CryptoSignal/Crypto-Signal/blob/7ea9255ed5c3dd9b3212a43bd489e85271792670/app/logs.py#L10-L40
 
 
-
 # Example 2
 # configure logging in the main entrypoint file 
 # https://github.com/Diaoul/subliminal/blob/a4113adb745dc5cd2da7254ee14802077237bb15/subliminal/cli.py#L263-L268
@@ -242,6 +241,39 @@ class MusicSource:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+
+
+# Example 4
+# logger.py has the get_logger(name, leve=None) function
+# https://github.com/airbnb/streamalert/blob/bfde778bc216bff1dfd7372164fd20cb78012dee/streamalert/shared/logger.py#L57-L81
+def get_logger(name, level=None):
+    """Get a logger instance for the specified name.
+    Args:
+        name (str): Name for logger object being created
+        level (str='INFO'): Initial log level for logger object being created
+    Returns:
+        logging.Logger: Instance of logging.Logger with the specified name
+    """
+    if not level:
+        level = os.environ.get('LOGGER_LEVEL', 'INFO')
+
+    logger = logging.getLogger(name)
+
+    set_formatter(logger)
+
+    try:
+        logger.setLevel(level.upper())
+    except (TypeError, ValueError) as err:
+        logger.setLevel('INFO')
+        logger.error('Defaulting to INFO logging: %s', str(err))
+
+    return logger
+
+
+# to use this
+# https://github.com/airbnb/streamalert/blob/bfde778bc216bff1dfd7372164fd20cb78012dee/streamalert_cli/helpers.py#L25-L28
+from streamalert.shared.logger import get_logger
+LOGGER = get_logger(__name__)
 
 '''
 logging for flask

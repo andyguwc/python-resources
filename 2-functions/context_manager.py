@@ -70,14 +70,19 @@ with ManagedFile('hello.txt') as f:
     f.write('Hello world')
 
 
+##################################################
+# contextlib
+##################################################
+
 '''
-contextlib
+contextlib.contextmanager
 '''
-# standard library module for working with context managers
-# provides additional tools that help turn functions into context maangers
+# https://pymotw.com/3/contextlib/index.html
+
+# A context manager is enabled by the with statement, and the API involves two methods. The __enter__() method is run when execution flow enters the code block inside the with. It returns an object to be used within the context. When execution flow leaves the with block, the __exit__() method of the context manager is called to clean up any resources being used.
+
 
 # enforce the call of an object's close() method 
-
 from contextlib import closing 
 with closing(open("outfile.txt", "w")) as output:
     output.write("abc")
@@ -86,6 +91,7 @@ with closing(open("outfile.txt", "w")) as output:
 with open("outfile.txt", "w") as output: 
     pass 
 
+# from generator to context manager
 # contextlib.contextmanager is a decorator you can use to create new context managers
 # Essentially the contextlib.contextmanager decorator wraps the function in a class that implements the __enter__ and __exit__ methods
 
@@ -103,8 +109,10 @@ def my_context_manager():
     except:
         # exceptional exit from with block
         raise
+    finally:
+        # final cleanup code to execute
 with my_context_manager() as x:
-
+    pass
 # exception propagated from inner context mansgers will be seen by outer context managers
 
 # passing multiple context managers
@@ -151,7 +159,7 @@ with managed_resource(timeout=3600) as resource:
 # back to the system.
 
 
-@contextlib.contextmanager 
+@contextlib.contextmanager
 def managed_file(name):
     try:
         f = open(name, 'w')
@@ -162,26 +170,41 @@ def managed_file(name):
 with managed_file('hello.txt') as f:
     f.write('hello world')
 
-
+'''
+contextlib.ContextDecorator
+'''
 # context manager using ContextDecorator
+The class ContextDecorator adds support to regular context manager classes to let them be used as function decorators as well as context managers.
 
-import contextlib.ContextDecorator 
+contextlib_decorator.py
+import contextlib
 
-class TestDeck(ContextDecorator, Deck):
-    def __init__(self, size=1, seed=0):
-        super().__init__(size=size)
-        self.seed=seed
 
-    def _init_shuffle(self):
-        pass 
-    
+class Context(contextlib.ContextDecorator):
+
+    def __init__(self, how_used):
+        self.how_used = how_used
+        print('__init__({})'.format(how_used))
+
     def __enter__(self):
-        self.rng.seed(self.seed, version=1)
-        self.rng.shuffle(self)
-        return self 
-    
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass 
+        print('__enter__({})'.format(self.how_used))
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print('__exit__({})'.format(self.how_used))
+
+
+@Context('as decorator')
+def func(message):
+    print(message)
+
+
+print()
+with Context('as context manager'):
+    print('Doing work in the context')
+
+print()
+func('Doing work in the wrapped function')
 
 '''
 context manager (global state change)

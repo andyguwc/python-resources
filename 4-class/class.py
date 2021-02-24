@@ -585,33 +585,3 @@ class Deck(list):
         random.shuffle(self)
 
 
-'''
-circular reference and weakref
-'''
-# here parent and child classes have circular reference
-# they both contain references to each other
-
-class Parent:
-    def __init__(self, *children):
-        self.children = list(children)
-        for child in self.children:
-            child.parent = self
-
-    def __del__(self):
-        print(f"Removing {(self.__class__, id(self))}")
-    
-
-class Child:
-    def __init__(self):
-        print(f"Removing {self.__class__, }")
-
-
-import weakref
-class Parent:
-    def __init__(self, *children):
-        self.children = list(children)
-        for child in self.children:
-            child.parent = weakref.ref(self)
-    
-    def __del__(self):
-        print(f"Removing {(self.__class__, id(self))}")

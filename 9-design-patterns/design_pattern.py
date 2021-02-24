@@ -19,4 +19,5 @@
 # - Inteface segregation
 # - Dependency inversion: abstrations not implementations
 
-
+# More examples
+# https://github.com/faif/python-patterns

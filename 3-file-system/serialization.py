@@ -228,13 +228,28 @@ with open("some_source.yaml", "r", encoding="UTF-8") as source:
 # Pickle
 ##################################################
 
+
+'''
+pickle basics
+'''
+# https://pymotw.com/3/pickle/index.html
+# The pickle module implements an algorithm for turning an arbitrary Python object into a series of bytes. This process is also called serializing the object. The byte stream representing the object can then be transmitted or stored, and later reconstructed to create a new object with the same characteristics.
+
+# The documentation for pickle makes clear that it offers no security guarantees. In fact, unpickling data can execute arbitrary code. Be careful using pickle for inter-process communication or data storage, and do not trust data that cannot be verified as secure.
+
+
+import pickle
+
+data = [{'a': 'A', 'b': 2, 'c': 3.0}]
+
+data_string = pickle.dumps(data)
+print('PICKLE: {!r}'.format(data_string))
+
+data2 = pickle.loads(data_string)
+
 # native format to make objects persistent 
 
-# The pickle module can transform a complex object into a byte stream and it can
-# transform the byte stream into an object with the same internal structure.
-
-# pickle an object 
-# file is written as raw bytes
+# The pickle module can transform a complex object into a byte stream and it can transform the byte stream into an object with the same internal structure.
 
 
 import pickle 
@@ -254,6 +269,61 @@ serial_data = pickle.dumps(sample_dict)
 
 # use loads to de-serialize an object 
 received_data = pickle.loads(serial_data)
+
+
+'''
+pickle and file like streams
+'''
+# write a pickled object to stream and load from it
+
+import io
+import pickle
+
+class SimpleObject:
+
+    def __init__(self, name):
+        self.name = name
+        self.name_backwards = name[::-1]
+        return
+
+data = []
+data.append(SimpleObject('pickle'))
+data.append(SimpleObject('preserve'))
+data.append(SimpleObject('last'))
+
+# simulate a file
+out_s = io.BytesIO()
+
+# write to the stream
+for o in data:
+    print('WRITING : {} ({})'.format(o.name, o.name_backwards))
+    pickle.dump(o, out_s)
+    out_s.flush()
+
+# setup a readable stream
+in_s = io.BytesIO(out_s.getvalue())
+
+while True:
+    try:
+        o = pickle.load(in_s)
+    except EOFError:
+        break
+    else:
+        print('READ    : {} ({})'.format(
+            o.name, o.name_backwards))
+
+'''
+pickle objects
+'''
+
+# note for reconstructing an object from a pickled file / stream, need to make sure the file has the object Class
+
+# unpickable objects
+# file handles, database connections,and other objects with runtime state that depends on OS or another process may not be saved in a meaningful way
+
+
+
+
 
 
 # designing a class for reliable pickle processin
@@ -299,43 +369,6 @@ class Hand:
         self.__dict__.update(state)
         for c in self.cards:
             audit_log.info( "Initial (unpickle) %s", c )
-
-
-##################################################
-# CSV
-##################################################
-
-# Steps to create a CSV writer:
-# 1. Open a file with the newline option set to "". This will support the (possibly)
-# nonstandard line ending for CSV files.
-# 2. Create a CSV writer object. In this example, we created the DictWriter
-# instance because it allows us to easily create rows from dictionary objects.
-# 3. Put a header in the first line of the file. This makes data exchange slightly
-# simpler by providing some hint as to what's in the CSV file.
-
-# Once writer object has been prepared, we can use the writer's writerow() method
-# to write each dictionary to the CSV file. We can, to an extent, simplify this slightly
-# by using the writerows() method.
-
-# write a series of object to file
-with open("blackjack.stats","w",newline="") as target:
-writer= csv.DictWriter( target, GameStat._fields )
-writer.writeheader()
-for gamestat in gamestat_iter( Player_Strategy_1, Martingale_Bet):
-    writer.writerow(gamestat._asdict())
-
-
-# convert from csv to object
-with open("blackjack.stats","r",newline="") as source:
-    reader= csv.DictReader( source )
-    for gs in ( GameStat(**r) for r in reader ):
-        print( gs )
-
-with open("blackjack.stats","r",newline="") as source:
-    reader= csv.DictReader( source )
-    assert set(reader.fieldnames) == set(GameStat._fields)
-    for gs in gamestat_iter(reader):
-        print( gs )
 
 
 ##################################################
