@@ -635,6 +635,20 @@ with open("blackjack.stats","r",newline="") as source:
 #  JSON
 ##################################################
 
+# https://pymotw.com/3/json/index.html
+# The encoder understands Python’s native types by default (str, int, float, list, tuple, and dict).
+
+# re-decoding may not give example the same type of object
+import json
+data = [{'a': 'A', 'b': (2, 4), 'c': 3.0}]
+data_string = json.dumps(data)
+
+decoded = json.loads(data_string)
+print('ORIGINAL:', type(data[0]['b']))
+print('DECODED :', type(decoded[0]['b']))
+
+
+
 import json 
 
 # turn python data structure into JSON string
@@ -674,6 +688,10 @@ resp = json.loads(u.read().decode('utf-8'))
 from pprint import pprint
 pprint(resp)
 
+# similar to indent
+json.dumps(data, sort_keys=True, indent=2)
+
+
 # json deocding typically creates dicts or lists from the supplied data.
 # if you want different objects, supply the object_pairs_hook to json.loads()
 s = '{"name": "ACME", "shares": 50, "price": 490.1}'
@@ -683,12 +701,66 @@ data = json.loads(s, object_pairs_hook=OrderedDict)
 
 
 '''
-compressed datafiles
+custom objects
 '''
-# read / write data in a file with gzip or bz2 compression 
+# https://pymotw.com/3/json/index.html#working-with-custom-types
+# The simple way of encoding a MyObj instance is to define a function to convert an unknown type to a known type. It does not need to do the encoding, so it should just convert one object to another.
 
-# gzip compression
-import gzip
-with gzip.open('somefile.gz','rt') as f:
-    text = f.read()
+class MyObj:
 
+    def __init__(self, s):
+        self.s = s
+
+    def __repr__(self):
+        return '<MyObj({})>'.format(self.s)
+ 
+obj = MyObj('instance value goes here')
+
+def convert_to_builtin_type(obj):
+    print('default(', repr(obj), ')')
+    # Convert objects to a dictionary of their representation
+    d = {
+        '__class__': obj.__class__.__name__,
+        '__module__': obj.__module__,
+    }
+    d.update(obj.__dict__)
+    return d
+
+print(json.dumps(obj, default=convert_to_builtin_type))
+
+# {"__class__": "MyObj", "__module__": "json_myobj", "s": "instance
+# value goes here"}
+
+# convert from dict back to object
+
+import json
+
+def dict_to_object(d):
+    if '__class__' in d:
+        class_name = d.pop('__class__')
+        module_name = d.pop('__module__')
+        module = __import__(module_name)
+        print('MODULE:', module.__name__)
+        class_ = getattr(module, class_name)
+        print('CLASS:', class_)
+        args = {
+            key: value
+            for key, value in d.items()
+        }
+        print('INSTANCE ARGS:', args)
+        inst = class_(**args)
+    else:
+        inst = d
+    return inst
+
+
+encoded_object = '''
+    [{"s": "instance value goes here",
+      "__module__": "json_myobj", "__class__": "MyObj"}]
+    '''
+
+myobj_instance = json.loads(
+    encoded_object,
+    object_hook=dict_to_object,
+)
+print(myobj_instance)

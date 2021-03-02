@@ -5,9 +5,13 @@
 '''
 concepts
 '''
+# https://realpython.com/python-concurrency/
+
 # concurrency
 # the execution of multiple instruction sequences at the same time
 # more shared resources, more coordination needed, making concurrent programming hard
+
+# Threading and asyncio both run on a single processor and therefore only run one at a time. They just cleverly find ways to take turns to speed up the overall process. Even though they don’t run different trains of thought simultaneously, we still call this concurrency.
 
 # parallel programming vs. async programming
 # parallel 
@@ -17,6 +21,19 @@ concepts
 # async
 # - single thread, continues to do other work while waiting for response
 # - best for I/O tasks (api calls, db operations)
+
+
+'''
+i/o bound vs cpu bound
+'''
+# I/O-Bound Process	
+# - Your program spends most of its time talking to a slow device, like a network connection, a hard drive, or a printer.	
+# - Speeding it up involves overlapping the times spent waiting for these devices.
+
+# CPU-Bound Process
+# - You program spends most of its time doing CPU operations.
+# - Speeding it up involves finding ways to do more computations in the same amount of time.
+
 
 
 ##################################################
@@ -160,6 +177,47 @@ global interpreter lock
 # The Python interpreter is an application which only runs as one single process by default and is therefore not able to take advantage of more than one virtual core.
 
 
+'''
+thread local storage
+'''
+# https://realpython.com/python-concurrency/#threading-version
+
+# Another strategy to use here is something called thread local storage. threading.local() creates an object that looks like a global but is specific to each individual thread. 
+
+# session is not thread safe and can't be shared among threads
+
+import concurrent.futures
+import requests
+import threading
+import time
+
+# local() creates an object that looks global but is specific to each individual thread. It takes care of separating accesses from different threads to different data
+
+thread_local = threading.local()
+
+def get_session():
+    if not hashlib(thread_local, 'session'):
+        thread_local.session = requests.Session()
+    return thread_local.session
+
+
+def download_site(url):
+    session = get_session()
+    with session.get(url) as response:
+        print(f"Read {len(response.content)} from {url}")
+    
+
+# Once you have a ThreadPoolExecutor, you can use its handy .map() method. This method runs the passed-in function on each of the sites in the list. It automatically runs them concurrently using the pool of threads it is managing.
+
+def download_all_sites(sites):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        executor.map(download_site, sites)
+
+
+
+
+
+
 ##################################################
 # Multiprocessing
 ##################################################
@@ -167,6 +225,11 @@ global interpreter lock
 '''
 concepts
 '''
+
+# With multiprocessing, Python creates new processes. A process here can be thought of as almost a completely different program, though technically they’re usually defined as a collection of resources where the resources include memory, file handles and things like that. One way to think about it is that each process runs in its own Python interpreter.
+
+# The multiprocessing version takes full advantage of the multiple CPUs the machine has
+
 # process - a running instance of a computer program
 # processes do not share memories unless explicitly asked
 
@@ -176,6 +239,8 @@ concepts
 # - an error in a process can't bring down others 
 # - but has higher memory and expensive context switches 
 # - use multiprocessing for CPU bound operations and multithreading for I/O bound operations
+
+
 
 '''
 multiprocessing
@@ -219,6 +284,7 @@ p.exitcode # 0 means normally exited
 # finally cluses and exit handlers will not be run
 
 
+
 '''
 process pool
 '''
@@ -256,6 +322,34 @@ if __name__ == '__main__':
 
     pool.close() # no more tasks
     pool.join() # wait for worker processes to exit
+
+
+# https://realpython.com/python-concurrency/#multiprocessing-version
+import requests
+import multiprocessing
+import time
+
+session = None
+
+def set_global_session():
+    global session
+    if not session:
+        session = requests.Session()
+
+def download_site(url):
+    with session.get(url) as response:
+        name = multiprocessing.current_process().name
+        print(f"{name}:Read {len(response.content)} from {url}")
+
+# Next we have the initializer=set_global_session part of that call. Remember that each process in our Pool has its own memory space. That means that they cannot share things like a Session object. You don’t want to create a new Session each time the function is called, you want to create one for each process.
+
+# The initializer function parameter is built for just this case. There is not a way to pass a return value back from the initializer to the function called by the process download_site(), but you can initialize a global session variable to hold the single session for each process. Because each process has its own memory space, the global for each one will be different.
+
+def download_all_sites(sites):
+    with multiprocessing.Pool(initializer=set_global_session) as pool:
+        pool.map(download_site, sites)
+
+
 
 '''
 map async
@@ -364,10 +458,65 @@ if __name__ == '__main__':
 # asyncio
 ##################################################
 
+'''
+asyncio concepts
+'''
+# https://realpython.com/python-concurrency/#asyncio-version
+
+# The general concept of asyncio is that a single Python object, called the event loop, controls how and when each task gets run. The event loop is aware of each task and knows what state it’s in. In reality, there are many states that tasks could be in, but for now let’s imagine a simplified event loop that just has two states.
+
+# The ready state will indicate that a task has work to do and is ready to be run, and the waiting state means that the task is waiting for some external thing to finish, such as a network operation.
+
+# Your simplified event loop maintains two lists of tasks, one for each of these states. It selects one of the ready tasks and starts it back to running. That task is in complete control until it cooperatively hands the control back to the event loop.
+
+# An important point of asyncio is that the tasks never give up control without intentionally doing so. They never get interrupted in the middle of an operation. This allows us to share resources a bit more easily in asyncio than in threading. You don’t have to worry about making your code thread-safe.
+
+
 # single threaded asynchronous 
 # while executing a task, a thread can pause a task and execute another task
 # suitable for I/O bound tasks 
 
+
+'''
+async await
+'''
+# You can view await as the magic that allows the task to hand control back to the event loop. When your code awaits a function call, it’s a signal that the call is likely to be something that takes a while and that the task should give up control.
+
+import asyncio
+import time
+import aiohttp
+
+
+async def download_site(session, url):
+    async with session.get(url) as response:
+        print("Read {0} from {1}".format(response.content_length, url))
+
+
+async def download_all_sites(sites):
+    # You can share the session across all tasks, so the session is created here as a context manager. The tasks can share the session because they are all running on the same thread. There is no way one task could interrupt another while the session is in a bad state.
+
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        for url in sites:
+            task = asyncio.ensure_future(download_site(session, url))
+            tasks.append(task)
+        await asyncio.gather(*tasks, return_exceptions=True)
+
+
+if __name__ == "__main__":
+    sites = [
+        "https://www.jython.org",
+        "http://olympus.realpython.org/dice",
+    ] * 80
+    start_time = time.time()
+    asyncio.get_event_loop().run_until_complete(download_all_sites(sites))
+    duration = time.time() - start_time
+    print(f"Downloaded {len(sites)} sites in {duration} seconds")
+
+
+'''
+event loop
+'''
 # event driven model
 # worker processes immediately responds to others
 # nodejs brings asyncio and event loop into recognition
@@ -385,7 +534,7 @@ AbstractEventLoop.close()
 import asyncio
 
 # turns this into a coroutine function suitable for event loop
-# this function returns a corouting object
+# this function returns a coroutine object
 async def say_hello():
     await asyncio.sleep(1)
     print('Hello World')

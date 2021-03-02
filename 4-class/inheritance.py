@@ -431,3 +431,107 @@ shuffle(deck)
 # The trick is that set_card knows that the deck object has an attribute named _cards,
 # and _cards must be a mutable sequence. The set_card function is then attached to the
 # FrenchDeck class as the __setitem__ special method
+
+
+
+##################################################
+#  Interfaces
+##################################################
+
+'''
+informal interfaces
+'''
+# https://realpython.com/python-interface/#informal-interfaces
+
+# only defines the abtract interfaces
+class InformalParserInterface:
+    def load_data_source(self, path, file_name):
+        pass
+
+    def extract_text(self, full_file_name):
+        pass
+
+# As you can see, InformalParserInterface looks identical to a standard Python class. You rely on duck typing to inform users that this is an interface and should be used accordingly.
+
+class PdfParser(InformalParserInterface):
+    def load_data_source(self, path, file_name):
+        print("concrete implementations")
+
+    def extract_text(self, full_file_name):
+        print("concrete")
+
+
+
+'''
+informal interfaces using metaclasses
+'''
+# Ideally, you would want issubclass(EmlParser, InformalParserInterface) to return False when the implementing class doesn’t define all of the interface’s abstract methods. To do this, you’ll create a metaclass called ParserMeta.
+
+# you’ll be overriding two dunder methods:
+# .__instancecheck__()
+# .__subclasscheck__()
+
+
+class ParserMeta(type):
+    def __instancecheck__(cls, instance):
+        return cls.__subclasscheck__(type(instance))
+    
+    def __subclasscheck__(cls, subclass):
+        return (hasattr(subclass, 'load_data_source') and 
+                callable(subclass.load_data_source) and 
+                hasattr(subclass, 'extract_text') and 
+                callable(subclass.extract_text))
+
+
+class UpdatedInformalParserInterface(metaclass=ParserMeta):
+    """This interface is used for concrete classes to inherit from.
+    There is no need to define the ParserMeta methods as any class
+    as they are implicitly made available via .__subclasscheck__().
+    """
+    pass
+
+# by using a mtaclass, you don't need to explicitly define the subclasses
+
+class PdfParserNew:
+    def load_data_source(self, path, file_name):
+        pass
+
+    def extract_text(self, full_file_path):
+        pass
+
+
+'''
+formal interfaces using abc.ABCMeta
+'''
+
+# Rather than create your own metaclass, you’ll use abc.ABCMeta as the metaclass. Then, you’ll overwrite .__subclasshook__() in place of .__instancecheck__() and .__subclasscheck__(), as it creates a more reliable implementation of these dunder methods.
+
+import abc
+
+class FormParserInterface(metaclass=abc.ABCMeta):
+    @classmethod
+    def __subclasshook__(cls, subclass):
+        return (hasattr(subclass, 'load_data_source') and 
+                callable(subclass.load_data_source) and 
+                hasattr(subclass, 'extract_text') and 
+                callable(subclass.extract_text))
+
+
+class PdfParserNew:
+    def load_data_source(self, path, file_Name):
+        pass
+
+    def extract_text(full_file_path):
+        pass
+
+
+issubclass(PdfParserNew, FormParserInterface) # True
+
+
+
+
+
+
+
+
+

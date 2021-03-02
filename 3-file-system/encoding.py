@@ -76,6 +76,28 @@ UnicodeDecodeError: 'utf-8' codec can't decode byte 0x80 in position 0:
 'abc'
 
 
+##################################################
+# base64 Encoding
+##################################################
 
+# https://pymotw.com/3/base64/index.html
+
+# The base64 module contains functions for translating binary data into a subset of ASCII suitable for transmission using plaintext protocols.
+
+import base64
+import textwrap
+
+with open(__file__, 'r', encoding='utf-8') as input:
+	raw = input.read()
+  	initial_data = raw.split('#end_pymotw_header')[1]
+
+byte_string = initial_data.encode('utf-8')
+encoded_data = base64.b64encode(byte_string)
+
+# base64 decoding
+encoded_data = b'VGhpcyBpcyB0aGUgZGF0YSwgaW4gdGhlIGNsZWFyLg=='
+decoded_data = base64.b64decode(encoded_data)
+print('Encoded :', encoded_data)
+print('Decoded :', decoded_data)
 
 

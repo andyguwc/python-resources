@@ -200,6 +200,22 @@ with open("temp.json", "w", encoding="UTF-8") as target:
     json.dump( travel3, target, separators=(',', ':'), default=blog_j2_encode)
 
 
+'''
+working with streams and files
+'''
+
+import io
+import json
+
+data = [{'a': 'A'}]
+
+f = io.StringIO()
+json.dump(data, f)
+print(f.getvalue())
+
+
+
+
 ##################################################
 # YAML
 ##################################################
