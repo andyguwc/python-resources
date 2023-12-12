@@ -12,6 +12,10 @@ Function as Object
 #  - passed as an argument to a function
 #  - returned as the result of a function 
 
+# high order functions
+# high-order functions are functions taht 
+#  - take a function as an argument
+#  - and/or return a function
 
 # Create and test a function, then read its __doc__ and check its type
 def factorial(n):
@@ -41,10 +45,6 @@ def greet(func):
     greeting = func("Hi, a Python program")
     print(greeting)
 
-
-
-
-
 '''
 Variables and Parameters 
 ''' 
@@ -62,161 +62,33 @@ def f(x, y =3, z=initial):
 # This means that if you perform a mutation operation on one of the original sublists, the copied version will also change.
 
 
-##################################################
-# Arguments 
-##################################################
-
 '''
-args, kwargs (extended arguments)
+Docstrings and Annotations
 '''
-def func(positional, keyword=value, *args, **kwargs):
-    pass 
+# the docstrings and annotations do not change how the code is executed
+# mainly used by external tools and modules
 
-# Positional arguments are mandatory and have no default values.
-# Keyword arguments are optional and have default values.
-# An arbitrary argument list is optional and has no default values.
-# An arbitrary keyword argument dictionary is optional and has no default values.
+# help(x) returns some documentation for x (x be a function or module or class)
+# we can document the functions to achieve the same result using docstrings
 
-# * returns tuple
-# ** returns dictionary 
+def my_func(a):
+    "documentation for my_func"
+    return a
 
-def hypervolume(length, *lengths): # accept a number of arguments with a lower bound
-    print(lengths)
-    print(type(lengths)) # tuple
-    v = length
-    for item in lengths:
-        v*=length
-    return v
+# docstrings are stored in the function's __doc__ property
 
+# function annotations
+# annotations can be any expression
+def my_func(a: str, b: 'int > 0') -> str:
+    return a * b
 
-def foo(required, *args, **kwargs):
-    print(kwargs)
-    print(type(kwargs)) # dictionary
-
-foo('hello', 1, 2, 3, key1='value', key2=999)
-
-
-def foo(arg1, arg2, *args, kwarg1, kwarg2, **kwargs):
-    print(args)
-    print(kwargs) 
-
-
-# modify the arguments before passing to another function 
-def foo(x, *args, **kwargs):
-    kwargs['name'] = 'Alice'
-    new_args = args + ('extra', )
-    bar(x, *new_args, **kwargs)
-
-
-# extended call syntax
-def print_args(arg1, arg2, *args):
-    print(args)
-
-t = (1,2,3,4)
-print_args(*t)
-# (3, 4)
-
-
-def print_args(arg1, arg2, **kargs):
-    print(kargs)
-
-k = {'arg1': 'a', 'arg2': 'b', 'c': 'd'}
-print_args(**k)
-# {'c': 'd'}
-
-# common use case is to forward arguments
-
-def trace(f, *args, **kwargs):
-    result = f(*args, **kwargs)
-    print("result= ", result)
-    return result
-
-
-# You can use the items from a sequence as the positional arguments for a function with the * operator.
-# Using the * operator with a generator may cause your program to run out of memory and crash.
-# Adding new positional parameters to functions that accept *args can introduce hard-to-find bugs.
-
-# keyword arguments
-# benefits
-# make the caller clearer to reader
-# have default values specified
-# backwards compatible 
-
-def function_name(arg1, arg2=8):
-    # arg1 is positional argument, and arg2 is keyword argument, and 8 is default value
+def my_func(a: str = 'xyz', b: int = 1) -> str:
     pass
 
-
-# function that accepts any uber of positional arguments
-# rest is a tuple of all the extra positional arguments passed
-def avg(first, *rest):
-    return (first+sum(rest)) / (1+len(rest))
-
-# example using arbitrary keyword arguments in configuration setups 
-class Options:
-    default_options = {
-        'port': 21, 
-        'host': 'localhost',
-        'username': None, 
-        'password': None, 
-        'debug': False, 
-    }
-
-    def __init__(self, **kwargs):
-        self.options = dict(Options.default_options)
-        self.options.update(kwargs)
-    
-    def __getitem__(self, key):
-        return self.options[key]
-
-
-'''
-default args
-'''
-# default values are evaluated at the moment of being imported
-# if default value is supposed to be a mutable container (list, set, ord dict) 
-# then use None
-def spam(a, b=None):
-    if be is None:
-        b = []
-
-# the values assigned as a default are bound only once at the time of function definition.
-# not at each time the function is called 
-
-# bad example 
-def append_to(element, to=[]):
-    to.append(element)
-    return to
-
-my_list = append_to(12)
-print(my_list)
-# returns [12]
-
-my_other_list = append_to(42)
-print(my_other_list)
-# returns [12, 42]
-
-# good example
-def append_to(element, to=None):
-    if to is None:
-        to = []
-    to.append(element)
-    return to 
-
-
-
-
-'''
-signature (inspect pacakge)
-'''
-from clip import clip 
-from inspect import signature 
-sig = signature(clip)
-sig 
-for name, param in sig.parameters.items():
-    print(param.kind, ":", name, "=", param.default)
-
-
+# annotations are stored in the __annotations__ property of the function
+# dictionary keys are the parameter names and values are the annotations
+# my_func.__annotations__
+# {'a': <class 'str'>, 'b': <class 'int'>, 'return': <class 'str'>}
 
 ##################################################
 # Callable Objects 
@@ -323,8 +195,6 @@ def initial_bet(self):
 bt = BettingStrategy()
 
 
-
-
 ##################################################
 # High-Order Functions
 ##################################################
@@ -360,18 +230,38 @@ def speak(text):
 
 
 ##################################################
-# Lambda Functions
+# Lambda Expressions
 ##################################################
+# lambda expressions are also called anonymous functions
+# lambda [parameter list]: expression
+# the expression is evaluated and returned when the lambda function is called
+lambda x: x*2
+lambda x, y: x + y
+lambda s: s[::-1].upper()
 
-# lambda functions
-# same as anonymous functions
+# the inputs to lambda expression is a free variable that get bound at runtime not definition time
+
+# passing as an argument to another function
+
+def apply_func(x, fn):
+    return fn(x)
+
+apply_func(3, lambda x: x **2)
+
+
+# limitations
+# the body of a lambda function is limited to a single epxression
+# no assignments and no annotations
+
+# lambda functions and sorting
+l = ['c', 'B', 'D', 'a']
+sorted(l) # ['B', 'D', 'a', 'c']
+sorted(l, key=lambda s: s.upper()) # ['a', 'B', 'c', 'D']
+
 sorted(scientists, key=lambda name: name.split()[-1]) # creating a callable function using lambda
 
 tuples = [(1, 'd'), (2, 'b'), (4, 'a'), (3, 'c')]
 sorted(tuples, key=lambda x: x[1])
-
-
-# the inputs to lambda expression is a free variable that get bound at runtime not definition time
 
 
 
@@ -488,124 +378,6 @@ def raise_to(exp):
 cube = raise_to(3)
 cube(5) # 125
 
-
-##################################################
-# Decorators
-##################################################
-
-'''
-decorators
-'''
-# modify or enhance functions without changing their definition (calling code does not need to change)
-# implemented as callables that take and return other callables 
-
-@my_decorator 
-def my_function(x,y): # function object
-    return x+y
-
-# example of defining a decorator which puts things as unicode
-# takes function f and returns wrap, which is a similar function to f 
-def escape_unicode(f):
-    def wrap(*args, **kwargs):
-        x = f(*args, **kwargs)
-        return ascii(x)
-    return wrap
-
-@escape_unicode
-def northern_city():
-    return 'Tromse'
-
-'''
-class as decorators
-'''
-# classes as decorators as long as it implements __call__ (class instance is a callable)
-# example, class CallCount which counts how many times function is called
-class CallCount:
-    def __init__(self, f): # init new instance
-        self.f = f
-        self.count = 0 
-    
-    def __call__(self, *args, **kwargs): # makes it a callable wrap function 
-        self.count +=1
-        return self.f(*args, **kwargs)
-
-@CallCount
-def hello(name):
-    print('Hello, {}'.format(name))
-
-
-class Trace:
-    def __init__(self):
-        self.enabled = True
-    
-    def __call__(self, f):
-        def wrap(*args, **kwargs):
-            if self.enabled:
-                print(f'Calling {f}')
-            return f(*args, **kwargs)
-        return wrap
-
-tracer = Trace()
-
-@tracer
-def northern_city():
-    return 'Tromse'
-
-# >>> northern_city()
-# Calling <function northern_city at 0x109849400>
-# 'Tromse'
-# >>> tracer.enabled = False
-# >>> northern_city()
-# 'Tromse'
-# >>> 
-
-'''
-multiple decorators
-'''
-
-@decorator1
-@decorator2
-def some_func():
-# first passed to decorator2 then passed to decorator1
-
-'''
-functools.wraps
-'''
-# naive decorators can lose important metadata
-import functools
-functools.wraps()
-# properly update metadata on wrapped functions
-
-# get metadata like below
-hello.__name__
-hello.__doc__
-help(hello)
-
-
-def noop(f):
-    @functiontools.wrap(f)
-    def noop_wrapper():
-        return f()
-    noop_wrapper.__name__ = f.__name__
-    noop_wrapper.__doc__ = f.__doc__
-    return noop_wrapper
-
-# example check non negatives of argments 
-def check_non_negative(index):
-    # below is a decorator function 
-    def validator(f):
-        def wrap(*args):
-            if args[index]<0:
-                raise ValueError('Argument {} must be non-negative.'.format(index))
-            return f(*args)
-        return wrap
-    return validator
-
-@check_non_negative(1)
-def create_list(value, size):
-    return [value] *size 
-
-
 ##################################################
 # Closures
 ##################################################
@@ -675,20 +447,57 @@ for line in yahoo(names='IBM,AAPL,FB', fields='sl1c1v'):
 ##################################################
 # Function Introspection
 ##################################################
+# as first class objects, functions have attributes
+
+# dir is a built-in function that, given an object as an argument, will return a list of valid attributes for that object
+dir(my_func)
+
 
 # Like the instances of a plain user-defined class, a function uses the __dict__ attribute
 # to store user attributes assigned to it
 
+# __name__ is the name of hte function
 # Within a function object, the __defaults__ attribute holds a tuple with the default
 # values of positional and keyword arguments. The defaults for keyword-only arguments
 # appear in __kwdefaults__. The names of the arguments, however, are found within the
 # __code__ attribute, which is a reference to a code object with many attributes of its own.
 
 '''
+__code__
+'''
+# The __code__ object itself has various properties
+
+# co_varnames: parameters and local variables
+# co_argcount: number of parameters
+
+
+'''
 __dict__
 '''
 # Like the instances of a plain user-defined class, a function uses the __dict__ attribute
 # to store user attributes assigned to it. This is useful as a primitive form of annotation.
+
+
+'''
+inspect
+'''
+
+import inspect
+
+inspect.ismethod(my_func)
+inspect.isfunction(my_func)
+
+# classes and objects have attributes - an object that is bound (to the class or the object)
+# an attribute that is callable is called a method
+
+# code instrospection
+inspect.getsource(my_func) # a string containig entire def statement, including annotations, docstrings
+
+# find out in which module the function was created
+inspect.getmodule(my_func)
+
+# function comments
+inspect.getcomments(my_func)
 
 
 ##################################################
