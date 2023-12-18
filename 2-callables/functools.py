@@ -1,24 +1,44 @@
 #################################################
-#  Partial (functools)
+#  Partial 
 ##################################################
-# The primary tool supplied by the functools module is the class partial, which can be used to “wrap” a callable object with default arguments. The resulting object is itself callable and can be treated as though it is the original function. It takes all of the same arguments as the original, and can be invoked with extra positional or named arguments as well. A partial can be used instead of a lambda to provide default arguments to a function, while leaving some arguments unspecified.
+# The idea is to reduce function arguments
 
-# allows partial application of a function 
-# using partial to use a two-argument function where a one-argument callable is required
-from operator import mul 
-from functools import partial 
-triple = partial(mul, 3) # binding the first positional argument to 3 
-triple(7)
-list(map(triple, range(10)))
+# The primary tool supplied by the functools module is the class partial, which can be used to “wrap” a callable object with default arguments. 
 
-# Acquiring Function Properties
-# The partial object does not have __name__ or __doc__ attributes by default, and without those attributes, decorated functions are more difficult to debug. Using update_wrapper(), copies or adds attributes from the original function to the partial object.
+# The resulting object is itself callable and can be treated as though it is the original function. It takes all of the same arguments as the original, and can be invoked with extra positional or named arguments as well. 
 
-functools.update_wrapper(triple, mul)
+# A partial can be used instead of a lambda to provide default arguments to a function, while leaving some arguments unspecified.
+
+
+def my_func(a, b, c):
+    print(a, b, c)
+
+from functools import partial
+f = partial(my_func, 10)
+f(20, 30) # my_func(10, 20, 30)
+
+
+def my_func(a, b, *args, k1, k2, **kwargs):
+    print(a, b, args, k1, k2, kwargs)
+
+
+def f(b, *args, k2, **kwargs):
+    return my_func(10, b, *args, k1='a', k2=k2, **kwargs)
+
+f = partial(my_func, 10, k1='a') # my_func(10, b, *args, k1='a', k2=k2, **kwargs)
+
+def pow(base, exponent):
+    return base ** exponent
+
+square = partial(pow, exponent=2)
+square(exponent=3) # can still override the default value
+cube = partial(pow, exponent=3)
+square(5)
+
 
 
 #################################################
-#  total_order (functools)
+#  total_order
 ##################################################
 
 # The rich comparison API is designed to allow classes with complex comparisons to implement each test in the most efficient way possible. However, for classes where comparison is relatively simple, there is no point in manually creating each of the rich comparison methods. The total_ordering() class decorator takes a class that provides some of the methods, and adds the rest of them.
@@ -49,8 +69,35 @@ pprint(inspect.getmembers(MyObject, inspect.isfunction))
  ('__lt__', <function _lt_from_gt at 0x1012e2488>)]
 
 
+
 #################################################
-#  caching (functools)
+#  reduce
+##################################################
+
+# functions that recombine an iterable recursively, ending up with a single return value
+# also called accumulators, aggregators
+
+from functools import reduce
+l = [1,2,3,4,5]
+
+reduce(lambda a, b: a if a > b else b, l)
+
+# works on any iterable
+reduce(lambda a, b: a if a > b else b, {1, 2, 3})
+
+
+# built-in reduce functions: min, max, sum, any, all
+
+
+# pass in an initializer
+# the initializer parameter defaults to None
+
+l = []
+reduce(lambda x, y: x + y, l, 1)
+
+
+#################################################
+#  caching
 ##################################################
 
 # https://pymotw.com/3/functools/index.html
@@ -97,11 +144,8 @@ print(expensive.cache_info())
 # Operators
 ##################################################
 
-# One of the most unusual features of the operator module is the concept of getters. These are callable objects constructed at runtime to retrieve attributes of objects or contents from sequences. Getters are especially useful when working with iterators or generator sequences, where they are intended to incur less overhead than a lambda or Python function.
-
-
 '''
-reduce (functools)
+arithmetic functions
 '''
 # the operator module 
 # provide arithmetic operator as a function 
@@ -113,10 +157,51 @@ def fact(n):
     # same as 
     # return reduce(lambda a, b: a*b, range(1, n+1))
 
+# add(a, b)
+# mul(a, b)
+# pow(a, b)
+
+'''
+comparison / boolean operators
+'''
+lt(a, b)
+gt(a, b)
+eq(a, b)
+is_(a, b)
+not_(a, b)
+
+'''
+sequence / mapping operators
+'''
+
+contains(s, val)
+concat(s1, s2)
+
+getitem(s, i)
+setitem(s, i, val)
+delitem(s, i)
+
 '''
 itemgetter, attrgetter
 '''
 # https://pymotw.com/3/operator/index.html
+
+# One of the most unusual features of the operator module is the concept of getters. These are callable objects constructed at runtime to retrieve attributes of objects or contents from sequences. Getters are especially useful when working with iterators or generator sequences, where they are intended to incur less overhead than a lambda or Python function.
+
+# itemgetter returns a callable
+from operator import getitem, itemgetter
+l = [1,2,3,4,5,6]
+getitem(l, 1) # 2
+
+# returns a callable which takes one parameter: a sequence object
+itemgetter(i) 
+f = itemgetter(1)
+f(l) # 2
+
+# can pass more than one index
+f = itemgetter(1,3,4)
+f(l) # (2,4,5) tuple
+
 
 # using itemgetter and attrgetter to build custom functions
 # essentially itemgetter(1) does the same as lambda fields: fields[1]: 
@@ -144,6 +229,18 @@ Metropolis = namedtuple('Metropolis', 'name cc pop coord')
 metro_areas = [Metropolis(name, cc, pop,LatLong(lat, long))
     for name, cc, pop, (lat, long) in metro_data]
 metro_areas[0] # a named tuple Metropolis(name='Tokyo', cc='JP', pop=36.933, coord=LatLong(lat=35.689722,long=139.691667))
+
+
+# the attrgetter function is similar to itemgetter, but used to retrieve object attributes
+# also returns a callable that takes the object as an argument
+# my_obj has attributes a, b, c
+f = attrgetter('a', 'c')
+f(my_obj)
+
+# string has the upper() method
+s = 'python'
+f = attrgetter('upper')
+f(s)() # same as s.upper()
 
 from operator import attrgetter
 name_lat = attrgetter('name', 'coord.lat') # get nested attribute with coord.lat

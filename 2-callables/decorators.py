@@ -2,6 +2,14 @@
 #  Decorators / Wrapping 
 ##################################################
 
+# A decorator function:
+# - takes a function as an argument
+# - returns a closure
+# - the closure usually accepts any combination of parameters
+# - runs some code in the inner function (closure)
+# - the closure function calls the original function using the arguments
+# - return whatever is returned by that function call
+
 # A decorator is a callable that takes a callable as an argument (the decorated function) and returns a callable
 # The decorator may perform some processing with the decorated function, and returns it or replaces it with another function or callable object.
 # benefits
@@ -114,18 +122,36 @@ def trace(func):
 
 
 '''
-using wraps
+using functools.wraps
 '''
 # use @functools.wraps(func) in your own decorators to copy over the
 # lost metadata (name, docstring, etc.) from the undecorated function to the decorator closure.
 
-# The code inside a decorator typically involves creating a new function that accepts any
-# arguments using *args and **kwargs, as shown with the wrapper() function in this
-# recipe. Inside this function, you place a call to the original input function and return its
-# result. However, you also place whatever extra code you want to add (e.g., timing). The
-# newly created function wrapper is returned as a result and takes the place of the original
-# function.
+# The code inside a decorator typically involves creating a new function that accepts any arguments using *args and **kwargs, as shown with the wrapper() function in this recipe. 
+# Inside this function, you place a call to the original input function and return its result. However, you also place whatever extra code you want to add (e.g., timing). The newly created function wrapper is returned as a result and takes the place of the original function.
 
+# wraps function is itself a decorator
+
+from functools import wraps
+
+def counter(fn):
+    count = 0
+
+    @wraps(fn)
+    def inner(*args, **kwargs):
+        nonlocal count
+        count += 1
+        print(count)
+        return fn(*args, **kwargs)
+    return inner
+
+@counter
+def mul(a, b, c):
+    """Returns a product
+    """
+    return a * b * c
+
+# help(mult) now still retains the original metadata
 
 import time
 from functools import wraps 
@@ -234,6 +260,54 @@ def bulk_item(order):
 def best_promo(order):
     return max(promo(order) for promo in promos)
 
+'''
+Decorator Class
+'''
+def my_dec(a, b):
+    def dec(fn):
+        def inner(*args, **kwargs):
+            print("decorated function called: a = {0}, b = {1}".format(a, b))
+            return fn(*args, **kwargs)
+        return inner
+
+    return dec
+
+
+class MyClass:
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def __call__(self, fn):
+        def inner(*args, **kwargs):
+            print("decorated function called: a = {0}, b = {1}".format(self.a, self.b))
+            return fn(*args, **kwargs)
+        return inner
+
+# obj = MyClass(10, 20) - the instance is itself callable
+
+@MyClass(10, 20)
+def my_func(s):
+    print("Hello {0}".format(s))
+
+'''
+Decorating Classes
+'''
+# python allows modifying at runtime - monkeypatching
+# add attributes dynamically
+
+from fractions import Fraction
+
+f = Fraction(2, 3)
+# add a new attribute to Fraction
+Fraction.speak = "something"
+f.speak 
+
+Fraction.speak = lambda self, message: "Fraction says {0}".format(message) 
+f.speak("something")
+
+
+
 ''' 
 Decorators in Standard Library
 '''
@@ -271,12 +345,78 @@ def f():
 
 f = d1(d2(f))
 
+# sequence is to run d1 first then run d2
+
+def d1(fn):
+    def inner():
+        result = fn()
+        print("running decorator 1")
+        return result
+    return inner
+
+
+def d2(fn):
+    def inner():
+        result = fn()
+        print("running decorator 2")
+        return result
+    return inner
+
+
+@d1
+@d2
+def my_func():
+    print("Running my_func")
+
+my_func()
+# running my_func
+# running d2
+# running d1
+
+# first run the authorization, then run the logging
+@auth
+@logged
+def save_resource():
+    pass
 
 ''' 
 Parameterized Decorators
 '''
 
 # Decorator that takes arguments
+# reps is the extra parameter
+
+
+# startegy is outer(10) will return a decorator
+# it is a decoractor factory
+
+def timed(reps):
+    def dec(fn):
+        from time import perf_counter
+
+        @wraps(fn)
+        def inner(*args, **kwargs):
+            total_elapsed = 0
+            # free variable bound to reps in outer
+            for i in range(reps):
+                start = perf_counter()
+                result = fn(*args, **kwargs)
+                total_elapsed += (perf_counter() - start)
+            avg_elapsed = total_elapsed / reps
+            print(avg_elapsed)
+            return result
+        
+        return inner
+
+    # this decorator knows what reps is
+    return dec
+
+@timed(10)
+def my_func():
+    pass
+
+
+
 from functools import wraps 
 import logging 
 
@@ -289,7 +429,7 @@ def logged(level, name=None, message=None):
     # The inner function decorate() accepts a function and puts a wrapper around it as normal.
     def decorate(func):
         logname = name if name else func.__module__
-        log logging.getLogger(logname)
+        log = logging.getLogger(logname)
         logmsg = message if message else func.__name__
 
         @wraps(func)
@@ -486,5 +626,82 @@ class SomeClass:
 
     def __repr__(self):
         return "{0.value}".format(self)
+
+
+'''
+decorator applications
+'''
+
+# logger decorator
+from functools import wraps
+from datetime import datetime, timezone
+
+def logged(fn):
+
+    @wraps(fn)
+    def inner(*args, **kwargs):
+        run_dt = datetime.now(timezone.utc)
+        result = fn(*args, **kwargs)
+        print('{0}: called {1}'.format(run_dt, fn.__name__))
+        return result
+    
+    return inner
+
+
+@logged
+def func_1():
+    pass
+
+@logged
+def func_2():
+    pass
+
+
+# memoization decorator
+# decorators can modify the behvaior of a function
+
+def fib(n):
+    print("calculating fib({0})".format(n))
+    return 1 if n < 3 else fib(n-1) + fib(n-2)
+
+# using cache
+def fib():
+    cache = {1: 1, 2: 1}
+
+    def calc_fib(n):
+        if n not in cache:
+            cache[n] = calc_fib(n-1) + calc_fib(n-2)
+        
+        return cache[n]
+    
+    return calc_fib
+
+f = fib()
+f(10) # calculating fib with cache
+
+# doesn't care about the function, just cache the outputs
+def memoize(fn):
+    cache = dict()
+    def inner(n):
+        if n not in cache:
+            cache[n] = fn(n)
+        return cache[n]
+
+    return inner
+
+# decorator returned a closure and the closure is doing the caching
+@memoize
+def fib(n):
+    print("calculating fib({0})".format(n))
+    return 1 if n < 3 else fib(n-1) + fib(n-2)
+
+
+# just use lru_cache
+# lru_cache also limits the cache size
+from functools import lru_cache
+
+@lru_cache(maxsize=None) # unlimited cache
+def fib(n):
+    return 1 if n < 3 else fib(n-1) + fib(n-2)
 
 

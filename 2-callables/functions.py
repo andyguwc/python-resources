@@ -264,10 +264,16 @@ tuples = [(1, 'd'), (2, 'b'), (4, 'a'), (3, 'c')]
 sorted(tuples, key=lambda x: x[1])
 
 
+##################################################
+# Scope
+##################################################
 
-##################################################
-# Local Functions / Namespace 
-##################################################
+'''
+scopes and namespaces
+'''
+# the variable points to some object - the variable is bound to that object
+# the variable name and its binding only exists in specific parts of our code (scope). These bindings are stored in namespaces.
+
 
 # functions defined within the scope of other functions
 def sort_by_last_letter(strings):
@@ -293,6 +299,43 @@ def raise_to(exp):
 '''
 local vs. global
 '''
+
+# the global scope is essentially the module scope. It spans a single file. 
+# global scopes are nested inside the built-in scope
+
+# local scope
+# when we create functions, we can create variable names inside those functions (using assignments)
+a = 10
+# variables defined inside a function are not created until the function is called
+# every time the function is called, a new scope is created
+# once a function finished, the scope goes away too
+# scopes are nested: local scope -> module scope -> buit-in scope
+
+'''
+global keyword
+'''
+# accessing global scope from a local scope
+# we can tell python that a variable is meant to be scoped in the global scope by using the global keyword
+
+# below the local variable a masks the global variable a
+a = 0
+
+def my_func():
+    a = 100 # assignment, interprets this as a local variable during compile time
+    print(a)
+
+
+a = 10
+def my_func():
+    print(a) # a is referenced only in entire function at compile time - a non-local
+
+a = 0
+def my_func():
+    global a
+    a = 100
+
+my_func()
+print(a) # 100
 
 # LEGB
 # first checking local scope, then enclosing scope, then global, finally built-in
@@ -326,7 +369,46 @@ def enclosing():
 enclosing()
 print(message) # 'local'
 
-# nonlocal
+
+'''
+nonlocal
+'''
+# inner functions
+# inner_func is nested within the scope of outer_func
+
+# both functions have access to global and built-in scopes and their respective local scopes
+# but the inner function also has access to its enclosing scope - the scope of the outer function
+# that scope is called nonlocal
+
+
+def outer_func():
+    a = 10
+
+    def inner_func():
+        print(a) # a is nonlocal
+
+    inner_func()
+
+outer_func()
+
+
+# declaring a variable nonlocal
+# it will look for it in the enclosing local scopes until it encounters the specified variable name
+# it will not look in the global scope
+
+def outer_func():
+    x = 'hello'
+
+    def inner_func():
+        # explicitly tell python we are modifying a nonlocal variable
+        nonlocal x
+        x = 'python'
+
+    inner_func()
+    print(x)
+# outer_func() -> python
+
+
 # if want to introduce names from the enclosing namespace into the local (i.e. let local change enclosing)
 message = 'global'
 
@@ -365,7 +447,6 @@ def make_averager():
         return total/count
     return averager 
 
-
 '''
 factory function
 '''
@@ -382,10 +463,41 @@ cube(5) # 125
 # Closures
 ##################################################
 
-# Actually, a closure is a function with an extended scope that encompasses nonglobal
-# variables referenced in the body of the function but not defined there. It does not matter
-# whether the function is anonymous or not; what matters is that it can access nonglobal
-# variables that are defined outside of its body.
+'''
+closure
+'''
+# A closure is a function with an extended scope that encompasses nonglobal variables referenced in the body of the function but not defined there. 
+# It does not matter whether the function is anonymous or not; what matters is that it can access nonglobal variables that are defined outside of its body.
+
+# value of x is shared between two scopes: outer and the closure
+# the label x is in two different scopes but always reference the same "value"
+# python does this by creating a cell as an intermediary object
+# every time the function in the closure is called and the free variable is referenced, python looks up the cell object and then whatever the cell is pointing to 
+
+
+def outer():
+    # value of x is shared between two scopes: outer and the closure
+    x = 'python'
+    def inner():
+        # x is a free variable in inner that is bound to variable x in outer
+        print("{0} rocks".format(x))
+    
+    return inner # we are returning the closure
+
+fn = outer() # outer finished running, the scope is gone
+fn() # when called fn, python determined the value of x in the extended scope
+
+def outer():
+    a = 100
+    x = 'python'
+    def inner():
+        a = 10
+        print("{0} rocks".format(x))
+    return inner
+
+# fn = outer()
+# >>> fn.__closure__
+# (<cell at 0x108e363d0: str object at 0x108ea7bb0>,)
 
 def make_averager():
     series = []
@@ -409,6 +521,134 @@ def make_averager():
 # To summarize: a closure is a function that retains the bindings of the free variables that
 # exist when the function is defined, so that they can be used later when the function is
 # invoked and the defining scope is no longer available.
+
+'''
+mulitple instances of closures
+'''
+# every time we run a function, a new scope is created
+# if that function generates a closure, a new closure is created every time as well
+
+def counter():
+    count = 0
+
+    def inc():
+        nonlocal count
+        count += 1
+        return count
+
+    return inc
+
+f1 = counter()
+f2 = counter() # a different closure
+
+'''
+shared scopes
+'''
+
+def adder(n):
+    def inner(x):
+        return x + n
+    return inner
+
+
+add_1 = adder(1)
+add_2 = adder(2)
+
+# these are separate closures
+add_1.__closure__
+add_2.__closure__ # different cells and variables
+
+adders = []
+
+# n in shared across scopes, as a global variable
+for n in range(1, 4):
+    adders.append(lambda x: x + n)
+
+adders[0].__closure__
+adders[1].__closure__
+
+'''
+closure applications
+'''
+
+# oftentimes what's written as a class can be writter as a closure
+
+
+class Averager:
+    """for calculating averages
+    """
+    def __init__(self):
+        self.total = 0
+        self.count = 0
+
+    def add(self, number):
+        self.total += number
+        self.count += 1
+        return self.total / self.count
+
+def averager():
+    numbers = []
+
+    def add(number):
+        numbers.append(number)
+        total = sum(numbers)
+        count = len(numbers)
+        return total / count
+
+    return add
+
+
+def averager():
+    total = 0
+    count = 0
+    def add(number):
+        # make total nonlocal
+        nonlocal total
+        nonlocal count
+        total = total + number
+        count = count + 1
+        return total / count
+    
+    return add
+
+a = averager()
+a(10)
+a(20)
+a(30)
+
+# For timer
+from time import perf_counter
+from typing import Any
+
+class Timer:
+    def __init__(self):
+        self.start = perf_counter()
+
+    def __call__(self):
+        return perf_counter() - self.start
+
+t1 = Timer()
+t1() # callable
+
+
+# use closure instead of class
+def timer():
+    start = perf_counter()
+    def poll():
+        return perf_counter() - start
+    
+    return poll
+
+t2 = timer()
+t2()
+
+
+def counter(initial_value=0):
+    def inc(increment=1):
+        nonlocal initial_value
+        initial_value += increment
+        return initial_value
+    return inc
 
 
 # Replacing Single Method classes with functions using closures 
