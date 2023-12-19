@@ -2,6 +2,10 @@
 #  Modules
 ##################################################
 
+'''
+module concepts
+'''
+
 # A module is a file containing Python definitions and statements intended for use in other Python programs. 
 # There are many Python modules that come with Python as part of the standard library. 
 # Providing additional functionality through modules allows you to only use the functionality you need when you need it, and it keeps your code cleaner.
@@ -9,6 +13,7 @@
 # Namespace
 # Functions imported as part of a module live in their own namespace. 
 # A namespace is simply a space within which all names are distinct from each other. The same name can be reused in different namespaces but two objects can’t have the same name within a single namespace.
+# globals() tell us all the objects in this namespace
 
 # Type of modules
 # - Pure library module: These are meant to be imported. They contain definitions of classes, functions, and perhaps some assignment statements to create a few global variables.
@@ -24,7 +29,27 @@
 # module (or package) to contain class and function definitions that are expanded just
 # once even if imported multiple times.
 
+# loaded into memory and get referenced in the globals() dict
 
+import math
+mod_math = globals()['math'] # this returns the math module
+mod_math.sqrt(2)
+type(math) # module
+id(math) # returns a memory address, import again and returns the same address
+
+# sys modules
+import sys
+sys.modules # type(sys.modules) 
+# this tells us whhere the module is located in memory
+sys.modules["math"] # where the .py code is located <module 'math' from '/Users/tianyougu/.pyenv/versions/3.8.5/lib/python3.8/lib-dynload/math.cpython-38-darwin.so'>
+id(sys.modules["math"])
+
+f = math.__dict__["sqrt"]
+f(2)
+
+# ModuleType
+import types
+isinstance(math, types.ModuleType)
 
 # Importing Modules
 import random
@@ -45,22 +70,115 @@ if __name__ == "__main__":
 # third party libraries
 # $ pip install package_name
 
+'''
+how importing works
+'''
+# python does import at run time
+# different form compiled languagtes like C where modules are compiled and linked at compile time
+# python uses a complex system to find and load modules.
+
+
+# python path
+sys.prefix
+sys.exec_prefix
+
+# python look for imports
+# when importing a module, python search for the module in the paths containes in sys.path
+sys.path
+
+# ['', '/Users/tianyougu/.pyenv/versions/3.8.5/lib/python38.zip', '/Users/tianyougu/.pyenv/versions/3.8.5/lib/python3.8', '/Users/tianyougu/.pyenv/versions/3.8.5/lib/python3.8/lib-dynload', '/Users/tianyougu/.pyenv/versions/3.8.5/lib/python3.8/site-packages']
+
+# how python imports a module from file
+# - checks the sys.modules cache to see if the module has already been imported - if so it simply uses the reference in there, otherwise
+# - creates a new module object(types.ModuleType)
+# - loads the source code from file
+# - adds an entry to sys.modules with name as key and the newly created module
+# - compiles and executes the source code
+# the compile function compiles source (text) into a code object
+# the exec function is used to execute a code object. Optionally specify the dictionary used to store global symbols
+
+
+'''
+importlib
+'''
+
+# import programatically
+# brings the code, compiles, executes it and puts the reference in sys module
+mod_name = 'math'
+
+import importlib
+
+math = importlib.import_module(mod_name)
+"math" in sys.modules # True
+
+math2 = importlib.import_module(mod_name)
+# id(math2) == id(math)
+# 'math2' in globals()
+
+# importer is basically finder and loader
+import fractions
+fractions.__spec__
+# ModuleSpec(name='fractions', loader=<_frozen_importlib_external.SourceFileLoader object at 0x101c6c8e0>, origin='/Users/tianyougu/.pyenv/versions/3.8.5/lib/python3.8/fractions.py')
+sys.meta_path # finds and loaders [<class '_frozen_importlib.BuiltinImporter'>, <class '_frozen_importlib.FrozenImporter'>, <class '_frozen_importlib_external.PathFinder'>]
+
+
+import importlib.util
+importlib.util.find_spec('enum') # ModuleSpec(name='enum', loader=<_frozen_importlib_external.SourceFileLoader object at 0x101d938e0>, origin='/Users/tianyougu/.pyenv/versions/3.8.5/lib/python3.8/enum.py')
+
+# ext_module_path
+sys.path.append(ext_module_path)
+
+# then can find the spec of the module
+importlib.util.find_spec('module2')
+
+
+'''
+import
+'''
+# in every case below, the math module was loaded into memory and referenced in sys.modules
+
+# module1.py file
+import math
+
+# if math is not in sys.modules, load it and insert reference
+# add symbol math to module1's global namespace referencing the same object
+
+import math as r_math
+# first check if math in sys.modules, if not load it and reference it
+# add symbol r_math to module1's global namepsace referencing the same object
+
+# import a function
+from math import sqrt
+# first check if math in sys.modules, if not load it and reference it
+# add symbol sqrt to module1's global namespace referencing the math.sqrt function
+
+from math import *
+# add "all" symbols defined in math to module1's global namespace
+# what "all" means can be defined by the module being imported
+
+# avoid import * which can override names
+from cmath import *
+from math import * # sqrt overrides the sqrt from the previous module
+
+# efficiency
+# from an importing standpoint, needs to import the whole module regardless
+# no such thing as partial import
 
 '''
 hierachical package of modules
 '''
 # to make a package structure, organize code and make sure every directory defines an __init__.py file 
 
-graphics/
-    __init__.py
-    primitive/
-        __init__.py
-        line.py
-        fill.py
-    formats/
-        __init__.py
-        png.py
-        jpg.py 
+# graphics/
+#     __init__.py
+#     primitive/
+#         __init__.py
+#         line.py
+#         fill.py
+#     formats/
+#         __init__.py
+#         png.py
+#         jpg.py 
 
 #  can perform the following import statements
 import graphics.primitive.line
@@ -198,14 +316,14 @@ import spam.grok
 
 
 '''
-reload
+reload modules
 '''
+import test
 
-# >>> import spam
-# >>> import imp
-# >>> imp.reload(spam)
-# <module 'spam' from './spam.py'>
-# >>>
+import importlib
+importlib.reload(test) # reload an object
+# the memory address stays the same, the content is mutated in memory
+
 
 '''
 adding directories to sys.path
@@ -222,11 +340,6 @@ adding directories to sys.path
 # typically located at /usr/local/lib/python3.3/site-packages or ~/.local/lib/python3.3/sitepackages.
 # On interpreter startup, the directories listed in the .pth file will be added to
 # sys.path as long as they exist on the filesystem.
-
-
-'''
-installing packages just for yourself
-'''
 
 
 '''
@@ -248,20 +361,23 @@ make a file executable
 
 
 '''
-create a __main__ module 
+__main__ 
 '''
-# For complex applications, we might add a __main__.py module in the
-# application's package. To provide a tidy interface, the standard library
-# offers the runpy module and the -m command-line option that will use this
-# specially named module. We can run this with python3.3 -m some_app.
 
-# A __main__.py module should be something small like the following code:
-import simulation
-with simulation.Logging_Config():
-with simulation.Application_Config() as config:
-main= simulation.Simulate_Command()
-main.config= config
-main.run()
+# when execute a program, the entry point module is renamed by python as __main__
+
+if __name__ == "__main__":
+    print("Module was executed directly")
+
+# __main__.py file
+
+# directory with the __main__.py can be executed
+
+# can also exeucte a zip file
+# python -m zilfile -c my-app __main__.py timing.py
+# python my-app 
+
+
 
 
 '''
