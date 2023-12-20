@@ -1,10 +1,19 @@
 
 ##################################################
-# Nesting Modules with Packages 
+# Modules and Packages 
 ##################################################
 
-# We can organize functionality into defined functions. 
-# We can combine the defined functions and their related data into a class. 
+'''
+package basics
+'''
+# why packages
+# - break code up into smaller chuncks, making the code easier to write, easier to test and debug, and easier to understand
+# - can be stitched together and hides inner implementation from users
+
+# packages are modules. They can contain modules or packages
+# if a module is a package, it must have a value set for __path__
+# packages represent a hierarchy of modules/packages
+
 # We can combine related classes into a module. 
 # We can combine related modules into a package.
 
@@ -13,14 +22,24 @@
 # As with module design, packages should be designed for reuse. 
 # A larger application package should properly include a __main__ module.
 
-
 '''
 packages vs. modules 
 '''
+
 # Package vs. Module  
 # - packages can contain other modules including other packages
 # - packages are generally directories while modules are generally files 
 # - package is a directory containing __init__.py
+
+# nesting and importing
+import pack1.pack1_1.module1
+
+# the import system will perform these steps
+import pack1
+import pack1.pack1_1
+import pack1.pack1_1.module1
+# the sys.modules cache will contain entries
+# the namespace where the import was run contains pack1 (top level)
 
 import urllib
 type(urllib)
@@ -39,18 +58,14 @@ urllib.__path__
 
 
 # A file modu.py in the directory pack/ is imported with the statement import pack.modu. 
-# The interpreter will look for an __init__.py file in pack and execute all of
-# its top-level statements. Then it will look for a file named pack/modu.py and execute
-# all of its top-level statements. After these operations, any variable, function, or class
-# defined in modu.py is available in the pack.modu namespace.
+# The interpreter will look for an __init__.py file in pack and execute all of its top-level statements. Then it will look for a file named pack/modu.py and execute all of its top-level statements. After these operations, any variable, function, or class defined in modu.py is available in the pack.modu namespace.
 
 # It is good practice, to leave an __init__.py empty 
 # when the package’s modules and subpackages do not need to share any code
 
-
-##################################################
-# Implementing Packages  
-##################################################
+'''
+implementing packages
+'''
 
 # A package is a directory containing __init__.py
 # 1. first create root directory (needs to be in sys.path)
@@ -60,21 +75,42 @@ urllib.__path__
 # do to tell Python that a folder is a package is place a (normally empty) file in the folder
 # named __init__.py. If we forget this file, we won't be able to import modules from that folder.
 
-parent_directory/
-    main.py
-    ecommerce/
-        __init__.py
-        database.py
-        products.py
-        payments/
-            __init__.py
-            square.py
-            stripe.py
+# parent_directory/
+#     main.py
+#     ecommerce/
+#         __init__.py
+#         database.py
+#         products.py
+#         payments/
+#             __init__.py
+#             square.py
+#             stripe.py
 
 
 ##################################################
-# Importing Modules & Packages
+# Importing Packages
 ##################################################
+
+'''
+importing packages
+'''
+
+# importing a package
+# app/
+#     pack1/
+#         __init__.py
+#         module1.py
+#         module2.py
+
+# the code for pack1 is in __init__.py
+# that code is loaded, executed, and cached in sys.modules with a key of pack1
+# the symbol pack1 is added to our namespace referencing the same object
+# but it has a __path__ property - file system directory path
+
+# package is created from a directory containing the __init__.py file
+# the package name is the directory anme
+# this __init__.py file tells Python that the directory is a package instead of a standard directory
+
 
 '''
 locating modules (sys.path & PYTHONPATH)
@@ -133,7 +169,45 @@ from foo import *
 '''
 nested packages
 '''
-import very.deep.module as modu # so it's less verbose 
+
+module1.__file__ # ../app/module1.py
+module1.__path__ # not set, since it's a module not a package
+module1.__package__ # "", root
+
+pack1.__file__ # ../app/pack1/__init__.py
+pack1.__path__ # ../app/pack1
+pack1.__package__ # pack1
+
+pack1.module1a.__file__ # ../app/pack1/module1a.py
+pack1.module1a.__package__ # pack1
+
+pack1.pack1_1.__file__ # ../app/pack1/pack1_1/__init__.py
+pack1.pack1_1.__path__ # ../app/pack1/pack1_1
+pack1.pack1_1.__package__ # pack1.pack1_1
+
+
+import pack1.pack1_1.module1_1a
+# pack1 is imported and added to sys.modules
+# pack1_1 is imported and added to sys.modules
+# module1_1a is imported and added to sys.modules
+# but note the __init__.py file could also import other modules/packages
+# below imports the module1a and module1b as well adding pack1.moduel1a and pack1.module1b to sys.modules
+
+# package1.__init__.py
+import pack1.module1a
+import pack1.module1b
+
+# app/
+#     module1.py
+#     pack1/
+#         __init__.py
+#         module1a.py
+#         module1b.py
+#     pack1_1/
+#         __init__.py
+#         module1_1a.py
+#         module1_1b.py
+
 
 
 ##################################################
@@ -143,6 +217,19 @@ import very.deep.module as modu # so it's less verbose
 '''
 namespace packages
 '''
+# package-like
+# directories that may contain modules, nesteed regular packages, but no __init__.py so no code associated with it
+# the utils/ and validators/ folders do not contain __init__.py hence it's a namespace package
+# json/ contains __init__.py hence it's a regular package
+# utils/
+#     validators/
+#         boolean.py
+#         date.py
+#         json/
+#             __init__.py
+#             serializers.py
+#             validators.py
+
 # i.e. packages split across multiple directories 
 # have no __init__.py to avoid complex initialization problems 
 # nothing will be executed while being imported
@@ -154,6 +241,7 @@ sys.path.extend(['path1','path2'])
 # 2. if a matching directory with __init__.py is found, a normal package is loaded
 # 3. if foo.py is found, then it is loaded
 # 4. otherwise, all matching directories in sys.path are considered part of the namespace package
+
 
 
 '''
@@ -184,10 +272,56 @@ cd reader
 zip -r ../reader.zip *
 
 ##################################################
-# Layout / Project Structure 
+# Structuring Packages
 ##################################################
 
-# recommended project structure
+'''
+controlling what's imported
+'''
+# the _func is not imported with import *
+def _helper_func():
+    pass
+
+# another way is to specify a list of symbols to export for this package
+# __all__ = ["is_date"]
+
+
+__all__ = ["is_json"]
+
+def is_json():
+    pass
+
+def json_helper():
+    pass
+
+
+# validators/__init__.py
+from common.validators import *
+# reducing the noise from import *
+__all__ = ["is_boolean", "is_json"]
+
+
+# validators/__init__.py
+from .boolean import *
+from .date import *
+from .json import *
+from .numeric import *
+
+__all__ = (boolean.__all__ + 
+           date.__all__ + 
+           json.__all__ +
+           numeric.__all__)
+
+'''
+structuring packages
+'''
+
+
+
+'''
+recommended project structure
+'''
+
 project_name/ # project root - not the package 
     # __main__.py (optional if want to make this an executable)
     README.rst # overview documentation
@@ -215,6 +349,30 @@ project_name/ # project root - not the package
 # $ export PYTHONPATH=core:bz2-plugin:gz-plugin
 
 # or can define extension or opener 
+
+
+# api/
+#     utilities/
+#         __init__.py
+#         database/
+#             __init__.py
+#             connections.py
+#             queries.py
+#         json/
+#             __init__.py
+#             encoders.py
+#             decoders.py
+#     security/
+#         __init__.py
+#         authentication.py
+#         authorization.py
+#     models/
+#         __init__.py
+#         users/
+#             __init__.py
+#             user.py
+#             userprofile.py
+
 
 
 ##################################################

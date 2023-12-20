@@ -97,6 +97,16 @@ sys.path
 # the compile function compiles source (text) into a code object
 # the exec function is used to execute a code object. Optionally specify the dictionary used to store global symbols
 
+# module finders
+# BuiltinImporter finds built-ins
+# FrozenImporter finds frozen modules
+# PathFinder finds path-based modules
+
+sys.meta_path # finds and loaders [<class '_frozen_importlib.BuiltinImporter'>, <class '_frozen_importlib.FrozenImporter'>, <class '_frozen_importlib_external.PathFinder'>]
+
+# PathFinder
+# finds file-based modules based on sys.path and package __path__
+# the file must exist in a path specified in sys.path or in a path specified by package.__path__
 
 '''
 importlib
@@ -121,6 +131,14 @@ fractions.__spec__
 # ModuleSpec(name='fractions', loader=<_frozen_importlib_external.SourceFileLoader object at 0x101c6c8e0>, origin='/Users/tianyougu/.pyenv/versions/3.8.5/lib/python3.8/fractions.py')
 sys.meta_path # finds and loaders [<class '_frozen_importlib.BuiltinImporter'>, <class '_frozen_importlib.FrozenImporter'>, <class '_frozen_importlib_external.PathFinder'>]
 
+# module properties
+type(math) # module
+math.__spec__
+math.__name__ 
+math.__package__ # packages
+fractions.__file__ # file name, for standar libraries
+
+
 
 import importlib.util
 importlib.util.find_spec('enum') # ModuleSpec(name='enum', loader=<_frozen_importlib_external.SourceFileLoader object at 0x101d938e0>, origin='/Users/tianyougu/.pyenv/versions/3.8.5/lib/python3.8/enum.py')
@@ -130,6 +148,7 @@ sys.path.append(ext_module_path)
 
 # then can find the spec of the module
 importlib.util.find_spec('module2')
+
 
 
 '''
