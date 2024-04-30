@@ -219,6 +219,9 @@ namespace packages
 '''
 # package-like
 # directories that may contain modules, nesteed regular packages, but no __init__.py so no code associated with it
+# namespace package does not have the __file__ set
+# dynamic path computation
+
 # the utils/ and validators/ folders do not contain __init__.py hence it's a namespace package
 # json/ contains __init__.py hence it's a regular package
 # utils/
@@ -229,6 +232,11 @@ namespace packages
 #             __init__.py
 #             serializers.py
 #             validators.py
+
+from utils.validators import date
+import utils.validators.boolean
+import utils.validators.json.serializers
+
 
 # i.e. packages split across multiple directories 
 # have no __init__.py to avoid complex initialization problems 
@@ -241,7 +249,6 @@ sys.path.extend(['path1','path2'])
 # 2. if a matching directory with __init__.py is found, a normal package is loaded
 # 3. if foo.py is found, then it is loaded
 # 4. otherwise, all matching directories in sys.path are considered part of the namespace package
-
 
 
 '''

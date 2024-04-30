@@ -145,6 +145,9 @@ importlib.util.find_spec('enum') # ModuleSpec(name='enum', loader=<_frozen_impor
 
 # ext_module_path
 sys.path.append(ext_module_path)
+# can also import from zip files
+sys.path.append("./common.zip")
+import common
 
 # then can find the spec of the module
 importlib.util.find_spec('module2')
